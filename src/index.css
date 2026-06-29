@@ -1379,3 +1379,160 @@ button:disabled {
   color: var(--nav-text);
 }
 .mini-row strong { font-size: 0.95rem; color: var(--text); }
+
+/* =========================================================
+   DISPATCH — toggle de vue, météo, pastilles
+   ========================================================= */
+.disp-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-end;
+}
+
+.view-toggle {
+  display: inline-flex;
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 3px;
+}
+.view-toggle button {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  color: var(--nav-text);
+  border: none;
+  border-radius: 7px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.view-toggle button:hover { background: #f1f5f9; }
+.view-toggle button.active { background: var(--accent); color: #fff; }
+
+/* Pastille déplaçable */
+.disp-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  user-select: none;
+}
+.disp-chip:active { cursor: grabbing; }
+.disp-chip.dragging { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
+.chip-ini {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+/* Vue projets : pastille couleur + employés empilés */
+.proj-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+.row-head { display: flex; align-items: center; }
+.cell-stack { display: flex; flex-direction: column; gap: 3px; }
+.cell-emp {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #eef2f7;
+  border-radius: 6px;
+  padding: 2px 4px;
+  cursor: pointer;
+}
+.cell-emp:hover { background: #e2e8f0; }
+.cell-emp-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.cell-emp .cell-remove { background: rgba(0,0,0,0.12); color: #475569; }
+.cell-emp .cell-remove:hover { background: rgba(0,0,0,0.25); }
+.emp-avatar.xs { width: 18px; height: 18px; font-size: 0.62rem; }
+
+/* ---------- Météo Granby ---------- */
+.weather {
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1rem;
+}
+.weather-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.weather-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.weather-err { font-size: 0.72rem; color: var(--error); }
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+}
+.weather-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.25rem;
+  border-radius: 9px;
+  background: #f8fafc;
+  text-align: center;
+}
+.weather-day.warn {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+.w-day {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.w-icon { color: #0ea5e9; }
+.weather-day.warn .w-icon { color: #ef4444; }
+.w-temp { font-size: 0.78rem; font-weight: 700; }
+.w-tmin { color: var(--muted); font-weight: 500; }
+.w-extra { display: flex; flex-direction: column; gap: 1px; font-size: 0.64rem; }
+.w-rain { color: #2563eb; display: inline-flex; align-items: center; gap: 2px; justify-content: center; }
+.w-wind { color: #d97706; display: inline-flex; align-items: center; gap: 2px; justify-content: center; }
+
+@media (max-width: 760px) {
+  .disp-controls { align-items: stretch; }
+  .weather-grid { grid-template-columns: repeat(7, minmax(42px, 1fr)); font-size: 0.7rem; overflow-x: auto; }
+}
