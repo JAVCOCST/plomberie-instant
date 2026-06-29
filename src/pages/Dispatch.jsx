@@ -102,6 +102,7 @@ export default function Dispatch() {
   const [plombiers, setPlombiers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [assignments, setAssignments] = useState([]); // liste brute
+  const [punches, setPunches] = useState([]); // punches de la semaine (live)
   const [dragged, setDragged] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -174,6 +175,35 @@ export default function Dispatch() {
     () => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)),
     [weekStart]
   );
+
+  // Punches de la semaine + temps réel (indicateur « live » dans le calendrier)
+  useEffect(() => {
+    const fromIso = iso(weekStart);
+    const toIso = iso(addDays(weekStart, 6));
+    const loadPunches = async () => {
+      const { data } = await supabase
+        .from("pi_punches")
+        .select("plombier_id,jour,periode,heure_debut,heure_fin")
+        .gte("jour", fromIso)
+        .lte("jour", toIso);
+      setPunches(data || []);
+    };
+    loadPunches();
+    const ch = supabase
+      .channel("disp-punches")
+      .on("postgres_changes", { event: "*", schema: "public", table: "pi_punches" }, loadPunches)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [weekStart]);
+
+  // État de punch par case : plombier|jour|periode -> 'live' | 'done'
+  const punchState = useMemo(() => {
+    const m = {};
+    punches.forEach((p) => {
+      m[`${p.plombier_id}|${p.jour}|${p.periode}`] = p.heure_fin ? "done" : "live";
+    });
+    return m;
+  }, [punches]);
   const plombierById = useMemo(
     () => Object.fromEntries(plombiers.map((p) => [p.id, p])), [plombiers]
   );
@@ -353,10 +383,13 @@ export default function Dispatch() {
                           {days.map((d) => PERIODS.map((per) => {
                             const key = ckey(pl.id, iso(d), per);
                             const proj = projectById[empCell[key]];
+                            const st = punchState[key];
                             return (
                               <Cell key={key} id={`e|${pl.id}|${iso(d)}|${per}`}>
                                 {proj && (
-                                  <div className="cell-assign" style={{ background: proj.color }} title={proj.name}>
+                                  <div className={`cell-assign ${st || ""}`} style={{ background: proj.color }} title={st === "live" ? `${proj.name} — sur place (punché)` : proj.name}>
+                                    {st === "live" && <span className="live-dot" title="Sur place — punché in" />}
+                                    {st === "done" && <span className="done-dot" title="Terminé" />}
                                     <span className="cell-assign-name">{proj.name}</span>
                                     {proj.address && (
                                       <button className="gps-btn" onClick={() => openGps(proj.address)} title={`GPS — ${proj.address}`} aria-label="Ouvrir le GPS">
@@ -396,10 +429,12 @@ export default function Dispatch() {
                                   {ids.map((pid) => {
                                     const pl = plombierById[pid];
                                     if (!pl) return null;
+                                    const st = punchState[`${pid}|${iso(d)}|${per}`];
                                     return (
-                                      <div key={pid} className="cell-emp" onClick={() => setSelected(pl)} title={pl.name}>
+                                      <div key={pid} className={`cell-emp ${st || ""}`} onClick={() => setSelected(pl)} title={st === "live" ? `${pl.name} — sur place` : pl.name}>
                                         <span className="emp-avatar xs">{pl.name.charAt(0)}</span>
                                         <span className="cell-emp-name">{pl.name}</span>
+                                        {st === "live" && <span className="live-dot" />}
                                         <button className="cell-remove" onClick={(ev) => { ev.stopPropagation(); removeByPlombierCell(pid, iso(d), per); }} aria-label="Retirer">
                                           <X size={11} />
                                         </button>

@@ -1850,3 +1850,27 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
   color: #15803d; font-weight: 600; font-size: 0.88rem;
 }
 .emp-hint { margin-top: 0.5rem; font-size: 0.74rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+
+/* =========================================================
+   INDICATEUR LIVE (employé punché in)
+   ========================================================= */
+.live-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  animation: livepulse 1.5s infinite;
+}
+@keyframes livepulse {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+.done-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+}
+.cell-assign.live { outline: 2px solid #22c55e; outline-offset: -2px; }
+.cell-emp.live { box-shadow: inset 0 0 0 2px #22c55e; background: #ecfdf5 !important; }
