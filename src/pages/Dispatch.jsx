@@ -4,7 +4,7 @@ import {
   PointerSensor, TouchSensor, useSensor, useSensors,
 } from "@dnd-kit/core";
 import {
-  ChevronLeft, ChevronRight, CalendarDays, Plus, X,
+  ChevronLeft, ChevronRight, CalendarDays, CalendarRange, Plus, X,
   GripVertical, Loader2, FolderKanban, Users, MapPin, Navigation,
   Pencil, Camera, Image as ImageIcon, CheckCircle2,
 } from "lucide-react";
@@ -25,6 +25,8 @@ const PALETTE = [
 
 const hhmm = (t) => (t ? String(t).slice(0, 5) : "");
 const dayKey = (rowId, jour) => `${rowId}|${jour}`;
+const pad2 = (n) => String(n).padStart(2, "0");
+const HOURS = Array.from({ length: 14 }, (_, i) => i + 6); // 6 h → 19 h
 
 /* Sélecteur de couleur */
 function ColorPicker({ value, onChange }) {
@@ -69,6 +71,7 @@ function DayCell({ id, children }) {
 export default function Dispatch() {
   const [current, setCurrent] = useState(() => new Date());
   const [viewMode, setViewMode] = useState("employees");
+  const [calView, setCalView] = useState("jour"); // 'jour' | 'semaine'
   const [plombiers, setPlombiers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [assignments, setAssignments] = useState([]);
@@ -171,6 +174,18 @@ export default function Dispatch() {
     return projects.filter((p) => !placed.has(p.id));
   }, [projects, assignments, days]);
 
+  // Vue Jour : assignations du jour groupées par plombier + heure
+  const dayIso = iso(current);
+  const dayGrid = useMemo(() => {
+    const m = {};
+    assignments.forEach((a) => {
+      if (a.jour !== dayIso) return;
+      const h = parseInt(String(a.heure || "08:00").slice(0, 2), 10);
+      (m[`${a.plombier_id}|${h}`] = m[`${a.plombier_id}|${h}`] || []).push(a);
+    });
+    return m;
+  }, [assignments, dayIso]);
+
   const addAssignment = async (plombier_id, projet_id, jour, heure = "08:00") => {
     const { data, error: e } = await supabase.from("pi_assignations")
       .insert({ plombier_id, projet_id, jour, heure }).select("id,plombier_id,projet_id,jour,heure").single();
@@ -192,9 +207,11 @@ export default function Dispatch() {
     const { active, over } = e;
     if (!over) return;
     const d = active.data.current;
-    const [type, rowId, jour] = String(over.id).split("|");
+    const parts = String(over.id).split("|");
+    const [type, rowId, jour, heure] = parts;
     if (type === "e" && d?.kind === "project") addAssignment(rowId, d.project.id, jour);
     else if (type === "p" && d?.kind === "plombier") addAssignment(d.plombier.id, rowId, jour);
+    else if (type === "d" && d?.kind === "project") addAssignment(rowId, d.project.id, jour, heure);
   };
 
   // Rend une entrée de call (employees view: projet ; projects view: plombier)
@@ -237,17 +254,32 @@ export default function Dispatch() {
           </div>
           <div className="disp-controls">
             <div className="view-toggle">
-              <button className={viewMode === "projects" ? "active" : ""} onClick={() => setViewMode("projects")}>
-                <FolderKanban size={15} /> Projets
+              <button className={calView === "jour" ? "active" : ""} onClick={() => setCalView("jour")}>
+                <CalendarDays size={15} /> Jour
               </button>
-              <button className={viewMode === "employees" ? "active" : ""} onClick={() => setViewMode("employees")}>
-                <Users size={15} /> Employés
+              <button className={calView === "semaine" ? "active" : ""} onClick={() => setCalView("semaine")}>
+                <CalendarRange size={15} /> Semaine
               </button>
             </div>
+            {calView === "semaine" && (
+              <div className="view-toggle">
+                <button className={viewMode === "projects" ? "active" : ""} onClick={() => setViewMode("projects")}>
+                  <FolderKanban size={15} /> Projets
+                </button>
+                <button className={viewMode === "employees" ? "active" : ""} onClick={() => setViewMode("employees")}>
+                  <Users size={15} /> Employés
+                </button>
+              </div>
+            )}
             <div className="week-nav">
-              <button onClick={() => setCurrent(addDays(weekStart, -7))} aria-label="Semaine précédente"><ChevronLeft size={18} /></button>
-              <span className="week-label"><CalendarDays size={16} /> {weekLabel(weekStart)}</span>
-              <button onClick={() => setCurrent(addDays(weekStart, 7))} aria-label="Semaine suivante"><ChevronRight size={18} /></button>
+              <button onClick={() => setCurrent(addDays(current, calView === "jour" ? -1 : -7))} aria-label="Précédent"><ChevronLeft size={18} /></button>
+              <span className="week-label">
+                <CalendarDays size={16} />{" "}
+                {calView === "jour"
+                  ? current.toLocaleDateString("fr-CA", { weekday: "long", day: "numeric", month: "long" })
+                  : weekLabel(weekStart)}
+              </span>
+              <button onClick={() => setCurrent(addDays(current, calView === "jour" ? 1 : 7))} aria-label="Suivant"><ChevronRight size={18} /></button>
               <button className="btn-today" onClick={() => setCurrent(new Date())}>Aujourd'hui</button>
             </div>
           </div>
@@ -293,58 +325,96 @@ export default function Dispatch() {
               </div>
             </div>
 
-            <div className="grid-wrap">
-              <table className="cal">
-                <thead>
-                  <tr>
-                    <th className="cal-corner">{viewMode === "employees" ? "Plombier" : "Projet"}</th>
-                    {days.map((d, i) => (
-                      <th key={i} className={`cal-day ${isToday(d) ? "today" : ""}`}>
-                        <span className="cal-day-name">{DAYS[i]}</span>
-                        <span className="cal-day-num">{fmtDay(d)}</span>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {viewMode === "employees"
-                    ? plombiers.map((pl) => (
-                        <tr key={pl.id}>
-                          <td className="cal-row-head">
+            {calView === "jour" ? (
+              <div className="grid-wrap dayview-wrap">
+                {plombiers.length === 0 ? (
+                  <p className="res-empty" style={{ padding: "1rem" }}>Ajoute un plombier pour commencer.</p>
+                ) : (
+                  <table className="cal dayview">
+                    <thead>
+                      <tr>
+                        <th className="dv-corner">Heure</th>
+                        {plombiers.map((pl) => (
+                          <th key={pl.id} className="dv-plombier">
                             <button className="emp-link" onClick={() => setSelected(pl)}>
                               <span className="emp-avatar sm">{pl.name.charAt(0)}</span>{pl.name}
                             </button>
-                          </td>
-                          {days.map((d) => {
-                            const list = empByDay[dayKey(pl.id, iso(d))] || [];
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {HOURS.map((h) => (
+                        <tr key={h}>
+                          <td className="dv-hour">{pad2(h)}:00</td>
+                          {plombiers.map((pl) => {
+                            const list = dayGrid[`${pl.id}|${h}`] || [];
                             return (
-                              <DayCell key={iso(d)} id={`e|${pl.id}|${iso(d)}`}>
+                              <DayCell key={pl.id} id={`d|${pl.id}|${dayIso}|${pad2(h)}:00`}>
                                 <div className="call-stack">{list.map((a) => renderEntry(a, "emp"))}</div>
                               </DayCell>
                             );
                           })}
                         </tr>
-                      ))
-                    : projects.map((pr) => (
-                        <tr key={pr.id}>
-                          <td className="cal-row-head">
-                            <ColorPicker value={pr.color} onChange={(c) => updateProjectColor(pr.id, c)} />
-                            <span className="row-head-name">{pr.name}</span>
-                            <button className="addr-btn set" onClick={() => setProjectModal(pr)} aria-label="Modifier"><Pencil size={13} /></button>
-                          </td>
-                          {days.map((d) => {
-                            const list = projByDay[dayKey(pr.id, iso(d))] || [];
-                            return (
-                              <DayCell key={iso(d)} id={`p|${pr.id}|${iso(d)}`}>
-                                <div className="call-stack">{list.map((a) => renderEntry(a, "proj"))}</div>
-                              </DayCell>
-                            );
-                          })}
-                        </tr>
                       ))}
-                </tbody>
-              </table>
-            </div>
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            ) : (
+              <div className="grid-wrap">
+                <table className="cal">
+                  <thead>
+                    <tr>
+                      <th className="cal-corner">{viewMode === "employees" ? "Plombier" : "Projet"}</th>
+                      {days.map((d, i) => (
+                        <th key={i} className={`cal-day ${isToday(d) ? "today" : ""}`}>
+                          <span className="cal-day-name">{DAYS[i]}</span>
+                          <span className="cal-day-num">{fmtDay(d)}</span>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewMode === "employees"
+                      ? plombiers.map((pl) => (
+                          <tr key={pl.id}>
+                            <td className="cal-row-head">
+                              <button className="emp-link" onClick={() => setSelected(pl)}>
+                                <span className="emp-avatar sm">{pl.name.charAt(0)}</span>{pl.name}
+                              </button>
+                            </td>
+                            {days.map((d) => {
+                              const list = empByDay[dayKey(pl.id, iso(d))] || [];
+                              return (
+                                <DayCell key={iso(d)} id={`e|${pl.id}|${iso(d)}`}>
+                                  <div className="call-stack">{list.map((a) => renderEntry(a, "emp"))}</div>
+                                </DayCell>
+                              );
+                            })}
+                          </tr>
+                        ))
+                      : projects.map((pr) => (
+                          <tr key={pr.id}>
+                            <td className="cal-row-head">
+                              <ColorPicker value={pr.color} onChange={(c) => updateProjectColor(pr.id, c)} />
+                              <span className="row-head-name">{pr.name}</span>
+                              <button className="addr-btn set" onClick={() => setProjectModal(pr)} aria-label="Modifier"><Pencil size={13} /></button>
+                            </td>
+                            {days.map((d) => {
+                              const list = projByDay[dayKey(pr.id, iso(d))] || [];
+                              return (
+                                <DayCell key={iso(d)} id={`p|${pr.id}|${iso(d)}`}>
+                                  <div className="call-stack">{list.map((a) => renderEntry(a, "proj"))}</div>
+                                </DayCell>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
       </div>

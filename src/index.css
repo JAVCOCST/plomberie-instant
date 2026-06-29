@@ -1952,6 +1952,24 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 .day-cell.over { background: #eef2ff; }
 .call-stack { display: flex; flex-direction: column; gap: 5px; }
 
+/* Vue Jour : grille heures × plombiers */
+.dayview { min-width: 520px; }
+.dv-corner {
+  position: sticky; left: 0; z-index: 3;
+  background: #f8fafc; text-align: center; width: 76px;
+  padding: 0.6rem; font-size: 0.74rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.dv-plombier {
+  background: #f8fafc; text-align: center; padding: 0.5rem 0.6rem; min-width: 160px;
+}
+.dv-hour {
+  position: sticky; left: 0; z-index: 2;
+  background: #fff; text-align: center; width: 76px;
+  font-weight: 700; font-size: 0.9rem; color: var(--muted);
+  white-space: nowrap;
+}
+
 .call-entry {
   display: flex; align-items: center; gap: 5px;
   background: #fff; border: 1px solid var(--side-border);
