@@ -183,7 +183,7 @@ export default function Dispatch() {
     const loadPunches = async () => {
       const { data } = await supabase
         .from("pi_punches")
-        .select("plombier_id,jour,periode,heure_debut,heure_fin")
+        .select("id,plombier_id,jour,periode,heure_debut,heure_fin")
         .gte("jour", fromIso)
         .lte("jour", toIso);
       setPunches(data || []);
@@ -204,6 +204,15 @@ export default function Dispatch() {
     });
     return m;
   }, [punches]);
+
+  // Map case -> punch complet (pour ouvrir le détail)
+  const cellPunch = useMemo(() => {
+    const m = {};
+    punches.forEach((p) => { m[`${p.plombier_id}|${p.jour}|${p.periode}`] = p; });
+    return m;
+  }, [punches]);
+
+  const [jobDetail, setJobDetail] = useState(null); // { punch, plombier, projet }
   const plombierById = useMemo(
     () => Object.fromEntries(plombiers.map((p) => [p.id, p])), [plombiers]
   );
@@ -387,16 +396,21 @@ export default function Dispatch() {
                             return (
                               <Cell key={key} id={`e|${pl.id}|${iso(d)}|${per}`}>
                                 {proj && (
-                                  <div className={`cell-assign ${st || ""}`} style={{ background: proj.color }} title={st === "live" ? `${proj.name} — sur place (punché)` : proj.name}>
+                                  <div
+                                    className={`cell-assign clickable ${st || ""}`}
+                                    style={{ background: proj.color }}
+                                    title={st === "live" ? `${proj.name} — sur place (punché)` : proj.name}
+                                    onClick={() => setJobDetail({ punch: cellPunch[key], plombier: pl, projet: proj })}
+                                  >
                                     {st === "live" && <span className="live-dot" title="Sur place — punché in" />}
                                     {st === "done" && <span className="done-dot" title="Terminé" />}
                                     <span className="cell-assign-name">{proj.name}</span>
                                     {proj.address && (
-                                      <button className="gps-btn" onClick={() => openGps(proj.address)} title={`GPS — ${proj.address}`} aria-label="Ouvrir le GPS">
+                                      <button className="gps-btn" onClick={(e) => { e.stopPropagation(); openGps(proj.address); }} title={`GPS — ${proj.address}`} aria-label="Ouvrir le GPS">
                                         <Navigation size={11} />
                                       </button>
                                     )}
-                                    <button className="cell-remove" onClick={() => removeByPlombierCell(pl.id, iso(d), per)} aria-label="Retirer">
+                                    <button className="cell-remove" onClick={(e) => { e.stopPropagation(); removeByPlombierCell(pl.id, iso(d), per); }} aria-label="Retirer">
                                       <X size={12} />
                                     </button>
                                   </div>
@@ -473,6 +487,89 @@ export default function Dispatch() {
           onChanged={reloadPlombiers}
         />
       )}
+
+      {jobDetail && (
+        <JobDetail
+          punch={jobDetail.punch}
+          plombier={jobDetail.plombier}
+          projet={jobDetail.projet}
+          onClose={() => setJobDetail(null)}
+        />
+      )}
     </DndContext>
+  );
+}
+
+/* Détail d'un call : statut du punch + photos en temps réel */
+function JobDetail({ punch, plombier, projet, onClose }) {
+  const [photos, setPhotos] = useState([]);
+
+  useEffect(() => {
+    if (!punch?.id) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("pi_punch_photos")
+        .select("url,created_at")
+        .eq("punch_id", punch.id)
+        .order("created_at");
+      setPhotos((data || []).map((x) => x.url));
+    };
+    load();
+    const ch = supabase
+      .channel("jobdetail-" + punch.id)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "pi_punch_photos", filter: `punch_id=eq.${punch.id}` },
+        load
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [punch?.id]);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <span className="proj-dot" style={{ background: projet?.color, width: 14, height: 14 }} />
+          <h2>{projet?.name}</h2>
+          <button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button>
+        </div>
+
+        <div className="modal-section">
+          <div className="jd-row">
+            <strong>{plombier?.name}</strong>
+            <span className={`jd-status ${punch ? (punch.heure_fin ? "done" : "live") : "none"}`}>
+              {punch ? (punch.heure_fin ? "Terminé" : "Sur place — en direct") : "Pas encore punché"}
+            </span>
+          </div>
+          {punch && (
+            <p className="jd-times">
+              Punch in {punch.heure_debut?.slice(0, 5)}
+              {punch.heure_fin ? ` · out ${punch.heure_fin.slice(0, 5)}` : ""}
+            </p>
+          )}
+          {projet?.address && (
+            <button className="emp-gps" onClick={() => openGps(projet.address)}>
+              <Navigation size={14} /> {projet.address}
+            </button>
+          )}
+        </div>
+
+        <div className="modal-section">
+          <h3>Photos du chantier {punch && `(${photos.length})`}</h3>
+          {!punch ? (
+            <p className="page-sub">Le plombier n'a pas encore punché ce call.</p>
+          ) : photos.length === 0 ? (
+            <p className="page-sub">Aucune photo pour l'instant — elles s'afficheront ici en direct dès que le plombier en ajoute.</p>
+          ) : (
+            <div className="bon-photos">
+              {photos.map((u, i) => (
+                <a key={i} href={u} target="_blank" rel="noreferrer"><img src={u} alt={`photo ${i + 1}`} /></a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

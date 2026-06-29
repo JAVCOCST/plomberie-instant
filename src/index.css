@@ -1874,3 +1874,29 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 }
 .cell-assign.live { outline: 2px solid #22c55e; outline-offset: -2px; }
 .cell-emp.live { box-shadow: inset 0 0 0 2px #22c55e; background: #ecfdf5 !important; }
+
+/* =========================================================
+   PHOTOS DE PUNCH (employé) + DÉTAIL DE CALL (admin)
+   ========================================================= */
+.cell-assign.clickable { cursor: pointer; }
+
+.emp-photos { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.emp-photo-thumb {
+  width: 64px; height: 64px; object-fit: cover;
+  border-radius: 8px; border: 1px solid var(--side-border);
+}
+.emp-add-photo {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0 0.8rem; height: 64px;
+  border: 2px dashed var(--side-border); border-radius: 8px;
+  color: var(--nav-text); font-weight: 600; font-size: 0.82rem; cursor: pointer;
+}
+.emp-add-photo:hover { background: #f8fafc; border-color: var(--accent); }
+
+.jd-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.jd-row strong { font-size: 1.02rem; }
+.jd-status { font-size: 0.74rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+.jd-status.live { background: #dcfce7; color: #15803d; }
+.jd-status.done { background: #f1f5f9; color: var(--nav-text); }
+.jd-status.none { background: #fef3c7; color: #b45309; }
+.jd-times { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }

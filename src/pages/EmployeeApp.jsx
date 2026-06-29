@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   LogOut, Navigation, LogIn, ClipboardCheck, CheckCircle2,
-  ChevronLeft, ChevronRight, CalendarDays, Loader2, Clock,
+  ChevronLeft, ChevronRight, CalendarDays, Loader2, Clock, Camera,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { BonForm } from "./BonsTravail";
@@ -24,6 +24,7 @@ export default function EmployeeApp({ plombierId }) {
   const [assignments, setAssignments] = useState([]);
   const [punches, setPunches] = useState([]);
   const [clients, setClients] = useState([]);
+  const [punchPhotos, setPunchPhotos] = useState({}); // punch_id -> [url]
   const [loading, setLoading] = useState(true);
   const [bonFor, setBonFor] = useState(null); // { projet_id, punchId }
   const [err, setErr] = useState("");
@@ -47,6 +48,19 @@ export default function EmployeeApp({ plombierId }) {
     setAssignments(as.data || []);
     setPunches(pu.data || []);
     setClients(cl.data || []);
+
+    // Photos de punch
+    const ids = (pu.data || []).map((p) => p.id);
+    const map = {};
+    if (ids.length) {
+      const { data: ph } = await supabase
+        .from("pi_punch_photos")
+        .select("punch_id,url")
+        .in("punch_id", ids)
+        .order("created_at");
+      (ph || []).forEach((x) => { (map[x.punch_id] = map[x.punch_id] || []).push(x.url); });
+    }
+    setPunchPhotos(map);
     setLoading(false);
   };
 
@@ -68,6 +82,21 @@ export default function EmployeeApp({ plombierId }) {
     if (error) { setErr("Échec du punch in : " + error.message); return; }
     load();
   };
+  const addPunchPhotos = async (punch, fileList) => {
+    setErr("");
+    const files = Array.from(fileList || []);
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+      const ext = (f.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `punch/${punch.id}/${Date.now()}_${i}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("bons-photos").upload(path, f, { contentType: f.type });
+      if (upErr) { setErr("Échec de l'envoi : " + upErr.message); continue; }
+      const { data } = supabase.storage.from("bons-photos").getPublicUrl(path);
+      await supabase.from("pi_punch_photos").insert({ punch_id: punch.id, plombier_id: plombierId, url: data.publicUrl });
+    }
+    load();
+  };
+
   const finishBon = async (punchId) => {
     const { error } = await supabase.from("pi_punches").update({ heure_fin: nowHHMM() }).eq("id", punchId);
     if (error) { setErr("Échec du punch out : " + error.message); }
@@ -150,7 +179,21 @@ export default function EmployeeApp({ plombierId }) {
                           )}
                         </div>
                         {open && (
-                          <p className="emp-hint"><Clock size={12} /> Punché à {punch.heure_debut?.slice(0,5)} — remplis le bon de travail pour puncher out.</p>
+                          <>
+                            <div className="emp-photos">
+                              {(punchPhotos[punch.id] || []).map((url, k) => (
+                                <a key={k} href={url} target="_blank" rel="noreferrer">
+                                  <img src={url} className="emp-photo-thumb" alt={`photo ${k + 1}`} />
+                                </a>
+                              ))}
+                              <label className="emp-add-photo">
+                                <Camera size={16} /> Ajouter une photo
+                                <input type="file" accept="image/*" multiple hidden
+                                  onChange={(e) => { addPunchPhotos(punch, e.target.files); e.target.value = ""; }} />
+                              </label>
+                            </div>
+                            <p className="emp-hint"><Clock size={12} /> Punché à {punch.heure_debut?.slice(0,5)} — ajoute des photos pendant le travail, puis remplis le bon pour puncher out.</p>
+                          </>
                         )}
                       </div>
                     );
