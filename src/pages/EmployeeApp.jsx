@@ -158,6 +158,15 @@ export default function EmployeeApp({ plombierId }) {
                           <span className="emp-job-name">{proj?.name || "Projet"}</span>
                           <span className="emp-job-per">{a.periode}</span>
                         </div>
+                        {Array.isArray(proj?.photos) && proj.photos.length > 0 && (
+                          <div className="emp-ref-photos">
+                            {proj.photos.map((url, k) => (
+                              <a key={k} href={url} target="_blank" rel="noreferrer">
+                                <img src={url} className="emp-photo-thumb" alt={`aperçu ${k + 1}`} />
+                              </a>
+                            ))}
+                          </div>
+                        )}
                         {proj?.address && (
                           <button className="emp-gps" onClick={() => openGps(proj.address)}>
                             <Navigation size={14} /> {proj.address}

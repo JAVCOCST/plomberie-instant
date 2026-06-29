@@ -6,6 +6,7 @@ import {
 import {
   ChevronLeft, ChevronRight, CalendarDays, Plus, X,
   GripVertical, Loader2, FolderKanban, Users, MapPin, Navigation,
+  Pencil, Camera, Trash2, Image as ImageIcon,
 } from "lucide-react";
 
 // Lien Google Maps (itinéraire vers l'adresse) — ouvre l'app GPS sur mobile
@@ -123,22 +124,11 @@ export default function Dispatch() {
     await supabase.from("pi_projets").update({ color }).eq("id", projetId);
   };
 
-  const addProject = async () => {
-    const name = window.prompt("Nom du projet / soumission ?");
-    if (!name) return;
-    const address = window.prompt("Adresse du lieu de travail ? (pour le GPS — optionnel)") || null;
-    const color = PALETTE[projects.length % PALETTE.length];
-    const { data, error: e } = await supabase
-      .from("pi_projets").insert({ name: name.trim(), color, address }).select().single();
-    if (e) return setError("Impossible d'ajouter le projet.");
-    setProjects((p) => [...p, data]);
-  };
+  const [projectModal, setProjectModal] = useState(null); // null | "new" | project
 
-  const editProjectAddress = async (proj) => {
-    const addr = window.prompt(`Adresse du lieu de travail — ${proj.name}`, proj.address || "");
-    if (addr === null) return;
-    setProjects((prev) => prev.map((p) => (p.id === proj.id ? { ...p, address: addr } : p)));
-    await supabase.from("pi_projets").update({ address: addr || null }).eq("id", proj.id);
+  const reloadProjects = async () => {
+    const { data } = await supabase.from("pi_projets").select("*").order("created_at");
+    if (data) setProjects(data);
   };
 
   const addPlombier = async () => {
@@ -332,17 +322,20 @@ export default function Dispatch() {
                     <div className="pool-item" key={p.id}>
                       <ColorPicker value={p.color} onChange={(c) => updateProjectColor(p.id, c)} />
                       <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.color} label={p.name} />
+                      {Array.isArray(p.photos) && p.photos.length > 0 && (
+                        <img src={p.photos[0]} className="proj-thumb" alt="" onClick={() => setProjectModal(p)} />
+                      )}
                       <button
-                        className={`addr-btn ${p.address ? "set" : ""}`}
-                        onClick={() => editProjectAddress(p)}
-                        title={p.address ? `Adresse : ${p.address} (clic pour modifier)` : "Définir l'adresse du lieu de travail"}
-                        aria-label="Adresse"
+                        className={`addr-btn ${(p.address || (p.photos || []).length) ? "set" : ""}`}
+                        onClick={() => setProjectModal(p)}
+                        title="Modifier le call (adresse, couleur, photo)"
+                        aria-label="Modifier"
                       >
-                        <MapPin size={14} />
+                        <Pencil size={13} />
                       </button>
                     </div>
                   ))}
-                  <button className="mini-add" onClick={addProject} aria-label="Ajouter un projet">
+                  <button className="mini-add" onClick={() => setProjectModal("new")} aria-label="Ajouter un projet">
                     <Plus size={16} />
                   </button>
                 </div>
@@ -427,7 +420,7 @@ export default function Dispatch() {
                             <span className="row-head-name">{pr.name}</span>
                             <button
                               className={`addr-btn ${pr.address ? "set" : ""}`}
-                              onClick={() => (pr.address ? openGps(pr.address) : editProjectAddress(pr))}
+                              onClick={() => (pr.address ? openGps(pr.address) : setProjectModal(pr))}
                               title={pr.address ? `Ouvrir le GPS — ${pr.address}` : "Définir l'adresse"}
                               aria-label="GPS"
                             >
@@ -496,7 +489,123 @@ export default function Dispatch() {
           onClose={() => setJobDetail(null)}
         />
       )}
+
+      {projectModal && (
+        <ProjectModal
+          project={projectModal === "new" ? null : projectModal}
+          paletteIndex={projects.length}
+          onClose={() => setProjectModal(null)}
+          onSaved={() => { setProjectModal(null); reloadProjects(); }}
+        />
+      )}
     </DndContext>
+  );
+}
+
+/* Création / édition d'un call : nom, adresse, couleur, photo de référence */
+function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
+  const isEdit = !!project;
+  const [name, setName] = useState(project?.name || "");
+  const [address, setAddress] = useState(project?.address || "");
+  const [color, setColor] = useState(project?.color || PALETTE[(paletteIndex || 0) % PALETTE.length]);
+  const [existing, setExisting] = useState(Array.isArray(project?.photos) ? project.photos : []);
+  const [newFiles, setNewFiles] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const save = async () => {
+    setErr("");
+    if (!name.trim()) { setErr("Le nom du call est requis."); return; }
+    setSaving(true);
+    try {
+      let id = project?.id;
+      if (!isEdit) {
+        const { data, error } = await supabase
+          .from("pi_projets").insert({ name: name.trim(), address: address || null, color }).select().single();
+        if (error) throw error;
+        id = data.id;
+      }
+      const urls = [...existing];
+      for (let i = 0; i < newFiles.length; i++) {
+        const f = newFiles[i];
+        const ext = (f.name.split(".").pop() || "jpg").toLowerCase();
+        const path = `projet/${id}/${Date.now()}_${i}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("bons-photos").upload(path, f, { contentType: f.type });
+        if (upErr) throw upErr;
+        const { data } = supabase.storage.from("bons-photos").getPublicUrl(path);
+        urls.push(data.publicUrl);
+      }
+      const { error: uErr } = await supabase
+        .from("pi_projets").update({ name: name.trim(), address: address || null, color, photos: urls }).eq("id", id);
+      if (uErr) throw uErr;
+      onSaved();
+    } catch (e) {
+      setErr(e?.message || "Échec de l'enregistrement.");
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <span className="proj-dot" style={{ background: color, width: 14, height: 14 }} />
+          <h2>{isEdit ? "Modifier le call" : "Nouveau call"}</h2>
+          <button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button>
+        </div>
+
+        {err && <div className="msg error" style={{ margin: "1rem 1.25rem 0" }}>{err}</div>}
+
+        <div className="modal-section">
+          <div className="fld" style={{ marginBottom: "0.8rem" }}>
+            <label>Nom du call</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Rénovation salle de bain — Laval" />
+          </div>
+          <div className="fld" style={{ marginBottom: "0.8rem" }}>
+            <label>Adresse (GPS)</label>
+            <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 rue Exemple, Ville" />
+          </div>
+          <div className="fld">
+            <label>Couleur</label>
+            <div className="pm-swatches">
+              {PALETTE.map((c) => (
+                <button key={c} type="button" className={`cpick-swatch ${c === color ? "sel" : ""}`} style={{ background: c }} onClick={() => setColor(c)} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="modal-section">
+          <h3><Camera size={15} /> Photo de référence <span className="req">(vue par l'employé avant d'arriver)</span></h3>
+          <div className="photo-previews">
+            {existing.map((url, i) => (
+              <div className="photo-prev" key={`e${i}`}>
+                <img src={url} alt="" />
+                <button className="photo-rm" onClick={() => setExisting((a) => a.filter((_, k) => k !== i))} aria-label="Retirer"><X size={12} /></button>
+              </div>
+            ))}
+            {newFiles.map((f, i) => (
+              <div className="photo-prev" key={`n${i}`}>
+                <img src={URL.createObjectURL(f)} alt="" />
+                <button className="photo-rm" onClick={() => setNewFiles((a) => a.filter((_, k) => k !== i))} aria-label="Retirer"><X size={12} /></button>
+              </div>
+            ))}
+            <label className="emp-add-photo" style={{ height: 76 }}>
+              <ImageIcon size={18} /> Ajouter
+              <input type="file" accept="image/*" multiple hidden
+                onChange={(e) => { setNewFiles((a) => [...a, ...Array.from(e.target.files || [])]); e.target.value = ""; }} />
+            </label>
+          </div>
+        </div>
+
+        <div className="modal-foot">
+          <button className="btn-secondary" onClick={onClose} disabled={saving}>Annuler</button>
+          <button className="save-btn" onClick={save} disabled={saving}>
+            {saving ? (<><Loader2 size={16} className="spin" /> Enregistrement…</>) : (isEdit ? "Enregistrer" : "Créer le call")}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

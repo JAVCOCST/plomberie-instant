@@ -1900,3 +1900,11 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 .jd-status.done { background: #f1f5f9; color: var(--nav-text); }
 .jd-status.none { background: #fef3c7; color: #b45309; }
 .jd-times { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
+
+/* Photo de référence sur les calls */
+.proj-thumb {
+  width: 24px; height: 24px; object-fit: cover; border-radius: 5px;
+  border: 1px solid var(--side-border); cursor: pointer; flex-shrink: 0;
+}
+.pm-swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+.emp-ref-photos { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
