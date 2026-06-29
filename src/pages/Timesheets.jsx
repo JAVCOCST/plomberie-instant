@@ -20,6 +20,7 @@ export default function Timesheets() {
   const [plombiers, setPlombiers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [punches, setPunches] = useState([]);
+  const [bons, setBons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
 
@@ -33,14 +34,16 @@ export default function Timesheets() {
 
   const load = async () => {
     setLoading(true);
-    const [pl, pr, pu] = await Promise.all([
+    const [pl, pr, pu, bo] = await Promise.all([
       supabase.from("pi_plombiers").select("*").order("created_at"),
       supabase.from("pi_projets").select("*").order("created_at"),
       supabase.from("pi_punches").select("*").gte("jour", from).lte("jour", to),
+      supabase.from("pi_bons_travail").select("plombier_id,total").gte("jour", from).lte("jour", to),
     ]);
     setPlombiers(pl.data || []);
     setProjects(pr.data || []);
     setPunches(pu.data || []);
+    setBons(bo.data || []);
     setLoading(false);
   };
 
@@ -60,6 +63,14 @@ export default function Timesheets() {
     return g;
   }, [punches]);
 
+  const salesByPlombier = useMemo(() => {
+    const m = {};
+    bons.forEach((b) => {
+      m[b.plombier_id] = (m[b.plombier_id] || 0) + (Number(b.total) || 0);
+    });
+    return m;
+  }, [bons]);
+
   const rows = useMemo(() => {
     return plombiers.map((pl) => {
       const byDay = grid[pl.id] || {};
@@ -67,14 +78,18 @@ export default function Timesheets() {
       const cost = total * (Number(pl.hourly_cost) || 0);
       const target = Number(pl.weekly_target) || 0;
       const perf = target > 0 ? (total / target) * 100 : 0;
-      return { pl, byDay, total, cost, target, perf };
+      const sales = salesByPlombier[pl.id] || 0;
+      const salesTarget = Number(pl.weekly_sales_target) || 0;
+      const salesPct = salesTarget > 0 ? (sales / salesTarget) * 100 : 0;
+      return { pl, byDay, total, cost, target, perf, sales, salesTarget, salesPct };
     });
-  }, [plombiers, grid]);
+  }, [plombiers, grid, salesByPlombier]);
 
   const totals = useMemo(() => {
     const hours = rows.reduce((s, r) => s + r.total, 0);
     const cost = rows.reduce((s, r) => s + r.cost, 0);
-    return { hours, cost };
+    const sales = rows.reduce((s, r) => s + r.sales, 0);
+    return { hours, cost, sales };
   }, [rows]);
 
   const perfClass = (perf) =>
@@ -122,6 +137,7 @@ export default function Timesheets() {
                 <th className="num">Total</th>
                 <th className="num">Coût</th>
                 <th className="ts-perf-col">Perf.</th>
+                <th className="ts-sales-col">Ventes</th>
               </tr>
             </thead>
             <tbody>
@@ -149,11 +165,18 @@ export default function Timesheets() {
                     </span>
                     <span className="ts-target">/ {target} h</span>
                   </td>
+                  <td className="ts-sales">
+                    <span className="ts-sales-amt">{money(sales)}</span>
+                    <span className={`perf-pill ${perfClass(salesPct)}`}>
+                      {salesPct.toFixed(0)}%
+                    </span>
+                    <span className="ts-target">/ {money(salesTarget)}</span>
+                  </td>
                 </tr>
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="cat-empty">Aucun plombier.</td>
+                  <td colSpan={12} className="cat-empty">Aucun plombier.</td>
                 </tr>
               )}
             </tbody>
@@ -164,6 +187,7 @@ export default function Timesheets() {
                 <td className="num ts-total">{fmtHours(totals.hours)}</td>
                 <td className="num ts-total">{money(totals.cost)}</td>
                 <td></td>
+                <td className="ts-total">{money(totals.sales)}</td>
               </tr>
             </tfoot>
           </table>

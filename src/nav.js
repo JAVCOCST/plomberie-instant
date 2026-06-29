@@ -15,6 +15,7 @@ import {
   Package,
   Shield,
   Boxes,
+  ClipboardCheck,
 } from "lucide-react";
 
 // Menu de gauche — structure reprise de Toitures VB, intitulés adaptés plomberie.
@@ -38,6 +39,7 @@ export const NAV_GROUPS = [
     items: [
       { title: "Appels", url: "/app/call", icon: Phone },
       { title: "Dispatch", url: "/app/dispatch", icon: Truck },
+      { title: "Bons de travail", url: "/app/bons", icon: ClipboardCheck },
       { title: "Contacts", url: "/app/contacts", icon: UserPlus },
       { title: "Embauche plombiers", url: "/app/embauche", icon: HardHat },
     ],

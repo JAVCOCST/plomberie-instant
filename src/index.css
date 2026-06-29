@@ -1158,3 +1158,159 @@ button:disabled {
   .emp-stats { grid-template-columns: 1fr; }
   .punch-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* =========================================================
+   BONS DE TRAVAIL + VENTES
+   ========================================================= */
+.add-primary {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+.empty-state svg { color: #cbd5e1; }
+
+.bon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.bon-card {
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.bon-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.bon-pl { font-weight: 700; }
+.bon-total { font-weight: 700; color: #15803d; }
+.bon-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+.bon-meta .bon-proj {
+  background: #f1f5f9;
+  color: var(--nav-text);
+  padding: 0.1rem 0.5rem;
+  border-radius: 5px;
+}
+.bon-meta .bon-h { display: inline-flex; align-items: center; gap: 0.25rem; }
+.bon-items {
+  list-style: none;
+  font-size: 0.82rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.bon-items li { display: flex; justify-content: space-between; padding: 0.15rem 0; color: var(--nav-text); }
+.bon-photos { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.bon-photos img {
+  width: 60px; height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--side-border);
+}
+.bon-notes { font-size: 0.82rem; color: var(--muted); font-style: italic; }
+
+/* Modal large + pied */
+.modal-lg { max-width: 680px; }
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 1rem 1.25rem;
+}
+.modal-foot button { width: auto; padding: 0.65rem 1.1rem; }
+.modal-section h3 { display: flex; align-items: center; gap: 0.4rem; }
+.req { color: var(--muted); font-weight: 400; font-size: 0.8rem; }
+
+.bon-total-line { text-align: right; margin-top: 0.5rem; font-size: 0.95rem; }
+.bon-notes-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--side-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+}
+.bon-notes-input:focus { border-color: var(--accent); outline: none; }
+
+/* Upload photos */
+.photo-drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px dashed var(--side-border);
+  border-radius: 10px;
+  color: var(--nav-text);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+.photo-drop:hover { background: #f8fafc; border-color: var(--accent); }
+.photo-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.photo-prev { position: relative; }
+.photo-prev img {
+  width: 76px; height: 76px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--side-border);
+}
+.photo-rm {
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 20px; height: 20px;
+  padding: 0;
+  background: var(--error);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.photo-count { margin-top: 0.5rem; font-size: 0.8rem; color: var(--error); font-weight: 600; }
+.photo-count.ok { color: #15803d; }
+
+/* Bloc ventes dans la fiche */
+.sales-block { padding: 0.85rem 1.25rem 0.4rem; }
+.sales-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.45rem;
+}
+.sales-label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; font-weight: 600; color: var(--nav-text); }
+.sales-amt { font-weight: 700; }
+.sales-target { color: var(--muted); font-weight: 500; }
+
+/* Colonne Ventes dans les feuilles de temps */
+.ts-sales { white-space: nowrap; }
+.ts-sales-amt { font-weight: 700; margin-right: 0.4rem; }

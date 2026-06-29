@@ -8,6 +8,7 @@ import Dispatch from "./pages/Dispatch";
 import Catalogue from "./pages/Catalogue";
 import Soumission from "./pages/Soumission";
 import Timesheets from "./pages/Timesheets";
+import BonsTravail from "./pages/BonsTravail";
 import { NAV_GROUPS } from "./nav";
 
 // Pages réelles (sinon placeholder). Clé = url.
@@ -16,6 +17,7 @@ const REAL_PAGES = {
   "/app/products": <Catalogue />,
   "/app/quote": <Soumission />,
   "/app/timesheets": <Timesheets />,
+  "/app/bons": <BonsTravail />,
 };
 
 // Toutes les pages du menu, à plat, pour générer les routes.

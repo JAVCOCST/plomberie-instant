@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { X, Plus, Trash2, Phone, Mail, DollarSign, Target, Check } from "lucide-react";
+import { X, Plus, Trash2, Phone, Mail, DollarSign, Target, Check, TrendingUp } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import {
   iso,
@@ -17,8 +17,10 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
     email: plombier.email || "",
     hourly_cost: plombier.hourly_cost ?? 0,
     weekly_target: plombier.weekly_target ?? 40,
+    weekly_sales_target: plombier.weekly_sales_target ?? 0,
   });
   const [punches, setPunches] = useState([]);
+  const [bons, setBons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savedFiche, setSavedFiche] = useState(false);
   const [newPunch, setNewPunch] = useState({
@@ -43,8 +45,19 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
     setLoading(false);
   };
 
+  const loadBons = async () => {
+    const { data } = await supabase
+      .from("pi_bons_travail")
+      .select("total")
+      .eq("plombier_id", plombier.id)
+      .gte("jour", from)
+      .lte("jour", to);
+    setBons(data || []);
+  };
+
   useEffect(() => {
     loadPunches();
+    loadBons();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plombier.id, from]);
 
@@ -62,11 +75,16 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
     const cost = hours * (Number(form.hourly_cost) || 0);
     const target = Number(form.weekly_target) || 0;
     const perf = target > 0 ? (hours / target) * 100 : 0;
-    return { hours, cost, target, perf };
-  }, [punches, form.hourly_cost, form.weekly_target]);
+    const sales = bons.reduce((s, b) => s + (Number(b.total) || 0), 0);
+    const salesTarget = Number(form.weekly_sales_target) || 0;
+    const salesPct = salesTarget > 0 ? (sales / salesTarget) * 100 : 0;
+    return { hours, cost, target, perf, sales, salesTarget, salesPct };
+  }, [punches, bons, form.hourly_cost, form.weekly_target, form.weekly_sales_target]);
 
   const perfClass =
     stats.perf >= 100 ? "good" : stats.perf >= 75 ? "warn" : "bad";
+  const salesClass =
+    stats.salesPct >= 100 ? "good" : stats.salesPct >= 75 ? "warn" : "bad";
 
   const saveFiche = async () => {
     await supabase
@@ -77,6 +95,7 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
         email: form.email || null,
         hourly_cost: Number(form.hourly_cost) || 0,
         weekly_target: Number(form.weekly_target) || 0,
+        weekly_sales_target: Number(form.weekly_sales_target) || 0,
       })
       .eq("id", plombier.id);
     setSavedFiche(true);
@@ -137,6 +156,25 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
           />
         </div>
 
+        {/* Progression des ventes vs seuil de vente */}
+        <div className="sales-block">
+          <div className="sales-head">
+            <span className="sales-label">
+              <TrendingUp size={15} /> Ventes de la semaine
+            </span>
+            <span className="sales-amt">
+              {money(stats.sales)}
+              <span className="sales-target"> / {money(stats.salesTarget)}</span>
+            </span>
+          </div>
+          <div className="perf-bar">
+            <div
+              className={`perf-fill ${salesClass}`}
+              style={{ width: `${Math.min(stats.salesPct, 100)}%` }}
+            />
+          </div>
+        </div>
+
         {/* Fiche éditable */}
         <div className="modal-section">
           <h3>Fiche</h3>
@@ -178,6 +216,14 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
                 type="number" min="0" step="1"
                 value={form.weekly_target}
                 onChange={(e) => { setForm({ ...form, weekly_target: e.target.value }); setSavedFiche(false); }}
+              />
+            </div>
+            <div className="fld">
+              <label><TrendingUp size={13} /> Seuil de vente ($/sem)</label>
+              <input
+                type="number" min="0" step="50"
+                value={form.weekly_sales_target}
+                onChange={(e) => { setForm({ ...form, weekly_sales_target: e.target.value }); setSavedFiche(false); }}
               />
             </div>
           </div>
