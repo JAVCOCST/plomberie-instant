@@ -1,22 +1,13 @@
-import { useMemo, useState } from "react";
-import { Search, Package, Database } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Search, Package, Database, Loader2 } from "lucide-react";
+import { supabase } from "../supabaseClient";
 
-// Données d'exemple (plomberie). Structure alignée sur QuickBooks
-// (name, type, description, salesPrice, qtyOnHand) → remplaçables tel quel
-// par la liste produits/services QuickBooks une fois le connecteur branché.
+// Données d'exemple (repli tant que QuickBooks n'a rien synchronisé)
 const SAMPLE = [
   { name: "Main-d'œuvre plombier", type: "Service", description: "Taux horaire standard", salesPrice: 95, qtyOnHand: null },
-  { name: "Main-d'œuvre — urgence", type: "Service", description: "Appel d'urgence / soir & fin de semaine", salesPrice: 145, qtyOnHand: null },
-  { name: "Inspection caméra", type: "Service", description: "Inspection de drain par caméra", salesPrice: 250, qtyOnHand: null },
   { name: "Chauffe-eau 40 gal", type: "Inventory", description: "Réservoir électrique 40 gallons", salesPrice: 689, qtyOnHand: 8 },
-  { name: "Chauffe-eau 60 gal", type: "Inventory", description: "Réservoir électrique 60 gallons", salesPrice: 879, qtyOnHand: 5 },
   { name: "Robinet de cuisine", type: "Inventory", description: "Robinet monocommande chromé", salesPrice: 179, qtyOnHand: 23 },
-  { name: "Toilette une pièce", type: "Inventory", description: "Toilette à haute efficacité 4,8 L", salesPrice: 349, qtyOnHand: 12 },
-  { name: "Pompe submersible 1/3 HP", type: "Inventory", description: "Pompe de puisard 1/3 HP", salesPrice: 219, qtyOnHand: 6 },
-  { name: "Tuyau PEX 1/2\" (rouleau)", type: "Inventory", description: "Rouleau PEX 1/2 po — 100 pi", salesPrice: 89, qtyOnHand: 40 },
   { name: "Valve d'arrêt 1/4 tour", type: "NonInventory", description: "Valve d'arrêt laiton 1/2 po", salesPrice: 14.5, qtyOnHand: null },
-  { name: "Cartouche de scellant", type: "NonInventory", description: "Scellant silicone pour plomberie", salesPrice: 9.75, qtyOnHand: null },
-  { name: "Anode de magnésium", type: "NonInventory", description: "Anode de remplacement chauffe-eau", salesPrice: 34, qtyOnHand: null },
 ];
 
 const TYPE_LABEL = {
@@ -29,16 +20,47 @@ const TYPES = ["Tous", "Service", "Inventory", "NonInventory"];
 function money(n) {
   return n == null
     ? "—"
-    : n.toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
+    : Number(n).toLocaleString("fr-CA", { style: "currency", currency: "CAD" });
 }
 
 export default function Catalogue() {
   const [q, setQ] = useState("");
   const [type, setType] = useState("Tous");
+  const [items, setItems] = useState([]);
+  const [fromQbo, setFromQbo] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("pi_produits")
+        .select("name, type, description, unit_price, qty_on_hand")
+        .order("name");
+      if (data && data.length > 0) {
+        setItems(
+          data.map((p) => ({
+            name: p.name,
+            type: p.type || "NonInventory",
+            description: p.description || "",
+            salesPrice: p.unit_price,
+            qtyOnHand: p.qty_on_hand,
+          }))
+        );
+        setFromQbo(true);
+      } else {
+        setItems(SAMPLE);
+        setFromQbo(false);
+      }
+      setLoading(false);
+    })().catch(() => {
+      setItems(SAMPLE);
+      setLoading(false);
+    });
+  }, []);
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return SAMPLE.filter((p) => {
+    return items.filter((p) => {
       if (type !== "Tous" && p.type !== type) return false;
       if (!needle) return true;
       return (
@@ -46,7 +68,7 @@ export default function Catalogue() {
         (p.description || "").toLowerCase().includes(needle)
       );
     });
-  }, [q, type]);
+  }, [items, q, type]);
 
   return (
     <div className="page catalogue">
@@ -55,8 +77,9 @@ export default function Catalogue() {
           <h1 className="page-title">Catalogue produits</h1>
           <p className="page-sub">Produits & services de Plomberie Instant</p>
         </div>
-        <span className="qb-badge">
-          <Database size={14} /> Synchronisable avec QuickBooks
+        <span className={`qb-badge ${fromQbo ? "" : "muted"}`}>
+          <Database size={14} />
+          {fromQbo ? "Synchronisé avec QuickBooks" : "Synchronisable avec QuickBooks"}
         </span>
       </div>
 
@@ -94,33 +117,35 @@ export default function Catalogue() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((p, i) => (
-              <tr key={i}>
-                <td className="cat-name">
-                  <Package size={15} className="cat-name-icon" />
-                  {p.name}
-                </td>
-                <td>
-                  <span className={`type-tag t-${p.type}`}>{TYPE_LABEL[p.type]}</span>
-                </td>
-                <td className="cat-desc">{p.description}</td>
-                <td className="num">{money(p.salesPrice)}</td>
-                <td className="num">{p.qtyOnHand == null ? "—" : p.qtyOnHand}</td>
-              </tr>
-            ))}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={5} className="cat-empty">Aucun résultat.</td>
-              </tr>
+            {loading ? (
+              <tr><td colSpan={5} className="cat-empty"><Loader2 size={16} className="spin" /> Chargement…</td></tr>
+            ) : (
+              rows.map((p, i) => (
+                <tr key={i}>
+                  <td className="cat-name">
+                    <Package size={15} className="cat-name-icon" />
+                    {p.name}
+                  </td>
+                  <td>
+                    <span className={`type-tag t-${p.type}`}>{TYPE_LABEL[p.type] || p.type}</span>
+                  </td>
+                  <td className="cat-desc">{p.description}</td>
+                  <td className="num">{money(p.salesPrice)}</td>
+                  <td className="num">{p.qtyOnHand == null ? "—" : p.qtyOnHand}</td>
+                </tr>
+              ))
+            )}
+            {!loading && rows.length === 0 && (
+              <tr><td colSpan={5} className="cat-empty">Aucun résultat.</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
       <p className="cat-foot">
-        {rows.length} article{rows.length > 1 ? "s" : ""} affiché
-        {rows.length > 1 ? "s" : ""} · données d'exemple en attendant la
-        connexion QuickBooks.
+        {loading ? "" : `${rows.length} article${rows.length > 1 ? "s" : ""} affiché${rows.length > 1 ? "s" : ""}`}
+        {!loading && !fromQbo && " · données d'exemple — lance une synchro dans Intégration QuickBooks."}
+        {!loading && fromQbo && " · synchronisés depuis QuickBooks."}
       </p>
     </div>
   );
