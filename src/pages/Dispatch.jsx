@@ -19,6 +19,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import EmployeeDialog from "../components/EmployeeDialog";
 
 /* ---------- Dates (semaine lundi → dimanche) ---------- */
 const DAYS = ["lun", "mar", "mer", "jeu", "ven", "sam", "dim"];
@@ -107,6 +108,15 @@ export default function Dispatch() {
   const [dragged, setDragged] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selected, setSelected] = useState(null);
+
+  const reloadPlombiers = async () => {
+    const { data } = await supabase
+      .from("pi_plombiers")
+      .select("*")
+      .order("created_at");
+    if (data) setPlombiers(data);
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -298,7 +308,12 @@ export default function Dispatch() {
               <tbody>
                 {plombiers.map((pl) => (
                   <tr key={pl.id}>
-                    <td className="row-head">{pl.name}</td>
+                    <td className="row-head">
+                      <button className="emp-link" onClick={() => setSelected(pl)}>
+                        <span className="emp-avatar sm">{pl.name.charAt(0)}</span>
+                        {pl.name}
+                      </button>
+                    </td>
                     {days.map((d) =>
                       PERIODS.map((per) => {
                         const key = cellKey(pl.id, iso(d), per);
@@ -323,6 +338,16 @@ export default function Dispatch() {
           </div>
         ) : null}
       </DragOverlay>
+
+      {selected && (
+        <EmployeeDialog
+          plombier={selected}
+          projects={projects}
+          weekStart={weekStart}
+          onClose={() => setSelected(null)}
+          onChanged={reloadPlombiers}
+        />
+      )}
     </DndContext>
   );
 }
