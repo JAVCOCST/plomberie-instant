@@ -26,6 +26,7 @@ export default function EmployeeApp({ plombierId }) {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [bonFor, setBonFor] = useState(null); // { projet_id, punchId }
+  const [err, setErr] = useState("");
 
   const weekStart = useMemo(() => startOfWeek(current), [current]);
   const days = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)), [weekStart]);
@@ -59,14 +60,17 @@ export default function EmployeeApp({ plombierId }) {
     punches.find((p) => p.jour === jour && p.periode === periode && p.projet_id === projet_id);
 
   const punchIn = async (a) => {
-    await supabase.from("pi_punches").insert({
+    setErr("");
+    const { error } = await supabase.from("pi_punches").insert({
       plombier_id: plombierId, jour: a.jour, periode: a.periode,
       projet_id: a.projet_id, heure_debut: nowHHMM(),
     });
+    if (error) { setErr("Échec du punch in : " + error.message); return; }
     load();
   };
   const finishBon = async (punchId) => {
-    await supabase.from("pi_punches").update({ heure_fin: nowHHMM() }).eq("id", punchId);
+    const { error } = await supabase.from("pi_punches").update({ heure_fin: nowHHMM() }).eq("id", punchId);
+    if (error) { setErr("Échec du punch out : " + error.message); }
     setBonFor(null);
     load();
   };
@@ -98,6 +102,7 @@ export default function EmployeeApp({ plombierId }) {
       </div>
 
       <div className="emp-body">
+        {err && <div className="msg error" style={{ marginBottom: "0.8rem" }}>{err}</div>}
         {loading ? (
           <p className="emp-loading"><Loader2 size={18} className="spin" /> Chargement…</p>
         ) : assignments.length === 0 ? (
