@@ -70,13 +70,13 @@ export default function EmployeeApp({ plombierId }) {
   }, [plombierId, from]);
 
   const projById = useMemo(() => Object.fromEntries(projects.map((p) => [p.id, p])), [projects]);
-  const punchFor = (jour, periode, projet_id) =>
-    punches.find((p) => p.jour === jour && p.periode === periode && p.projet_id === projet_id);
+  const punchFor = (jour, projet_id) =>
+    punches.find((p) => p.jour === jour && p.projet_id === projet_id);
 
   const punchIn = async (a) => {
     setErr("");
     const { error } = await supabase.from("pi_punches").insert({
-      plombier_id: plombierId, jour: a.jour, periode: a.periode,
+      plombier_id: plombierId, jour: a.jour,
       projet_id: a.projet_id, heure_debut: nowHHMM(),
     });
     if (error) { setErr("Échec du punch in : " + error.message); return; }
@@ -146,17 +146,17 @@ export default function EmployeeApp({ plombierId }) {
                   {DAYS[i]} {fmtDay(d)} {isToday(d) && <span className="emp-today-tag">Aujourd'hui</span>}
                 </div>
                 {list
-                  .sort((a, b) => (a.periode > b.periode ? 1 : -1))
+                  .sort((a, b) => ((a.heure || "") < (b.heure || "") ? -1 : 1))
                   .map((a) => {
                     const proj = projById[a.projet_id];
-                    const punch = punchFor(a.jour, a.periode, a.projet_id);
+                    const punch = punchFor(a.jour, a.projet_id);
                     const done = punch && punch.heure_fin;
                     const open = punch && !punch.heure_fin;
                     return (
                       <div key={a.id} className="emp-job" style={{ borderLeftColor: proj?.color || "#94a3b8" }}>
                         <div className="emp-job-top">
                           <span className="emp-job-name">{proj?.name || "Projet"}</span>
-                          <span className="emp-job-per">{a.periode}</span>
+                          <span className="emp-job-per">{a.heure ? a.heure.slice(0, 5) : ""}</span>
                         </div>
                         {Array.isArray(proj?.photos) && proj.photos.length > 0 && (
                           <div className="emp-ref-photos">
