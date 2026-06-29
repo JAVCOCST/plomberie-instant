@@ -14,12 +14,54 @@ import {
   DAYS, PERIODS, startOfWeek, addDays, iso, fmtDay, isToday, weekLabel,
 } from "../lib/time";
 
+// Palette « terre » — teintes mates et naturelles
 const PALETTE = [
-  "#2563eb", "#16a34a", "#db2777", "#ea580c",
-  "#7c3aed", "#0891b2", "#ca8a04", "#dc2626",
+  "#8a7e72", // taupe
+  "#7d8471", // sauge
+  "#a0764f", // terracotta
+  "#6d7b8d", // ardoise
+  "#8a9a5b", // olive
+  "#b08968", // sable
+  "#9c6b4f", // brique
+  "#5f7470", // teal mat
+  "#a8895c", // ocre
+  "#7a6c5d", // champignon
 ];
 
 const ckey = (rowId, jour, periode) => `${rowId}|${jour}|${periode}`;
+
+/* Sélecteur de couleur (palette terre) en popover */
+function ColorPicker({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="cpick">
+      <button
+        type="button"
+        className="cpick-dot"
+        style={{ background: value }}
+        onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }}
+        aria-label="Changer la couleur"
+      />
+      {open && (
+        <>
+          <div className="cpick-backdrop" onClick={() => setOpen(false)} />
+          <div className="cpick-pop" onClick={(e) => e.stopPropagation()}>
+            {PALETTE.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={`cpick-swatch ${c === value ? "sel" : ""}`}
+                style={{ background: c }}
+                onClick={() => { onChange(c); setOpen(false); }}
+                aria-label={c}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </span>
+  );
+}
 
 /* Pastille déplaçable (projet ou plombier selon la vue) */
 function Chip({ id, data, color, label, initials }) {
@@ -68,6 +110,30 @@ export default function Dispatch() {
   const reloadPlombiers = async () => {
     const { data } = await supabase.from("pi_plombiers").select("*").order("created_at");
     if (data) setPlombiers(data);
+  };
+
+  const updateProjectColor = async (projetId, color) => {
+    setProjects((prev) => prev.map((p) => (p.id === projetId ? { ...p, color } : p)));
+    await supabase.from("pi_projets").update({ color }).eq("id", projetId);
+  };
+
+  const addProject = async () => {
+    const name = window.prompt("Nom du projet / soumission ?");
+    if (!name) return;
+    const color = PALETTE[projects.length % PALETTE.length];
+    const { data, error: e } = await supabase
+      .from("pi_projets").insert({ name: name.trim(), color }).select().single();
+    if (e) return setError("Impossible d'ajouter le projet.");
+    setProjects((p) => [...p, data]);
+  };
+
+  const addPlombier = async () => {
+    const name = window.prompt("Nom du plombier ?");
+    if (!name) return;
+    const { data, error: e } = await supabase
+      .from("pi_plombiers").insert({ name: name.trim() }).select().single();
+    if (e) return setError("Impossible d'ajouter le plombier.");
+    setPlombiers((p) => [...p, data]);
   };
 
   useEffect(() => {
@@ -209,18 +275,30 @@ export default function Dispatch() {
             <aside className="proj-pool">
               <div className="pool-head">
                 <span>{viewMode === "employees" ? "Projets" : "Plombiers"}</span>
+                <button
+                  className="mini-add"
+                  onClick={viewMode === "employees" ? addProject : addPlombier}
+                  aria-label="Ajouter"
+                >
+                  <Plus size={16} />
+                </button>
               </div>
               <div className="pool-list">
                 {viewMode === "employees"
                   ? projects.map((p) => (
-                      <Chip key={p.id} id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.color} label={p.name} />
+                      <div className="pool-item" key={p.id}>
+                        <ColorPicker value={p.color} onChange={(c) => updateProjectColor(p.id, c)} />
+                        <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.color} label={p.name} />
+                      </div>
                     ))
                   : plombiers.map((p) => (
-                      <Chip key={p.id} id={`plb:${p.id}`} data={{ kind: "plombier", plombier: p }} color="#334155" label={p.name} initials={p.name.charAt(0)} />
+                      <Chip key={p.id} id={`plb:${p.id}`} data={{ kind: "plombier", plombier: p }} color="#6d7b8d" label={p.name} initials={p.name.charAt(0)} />
                     ))}
               </div>
               <p className="pool-hint">
-                Glisse {viewMode === "employees" ? "un projet" : "un plombier"} sur une case.
+                {viewMode === "employees"
+                  ? "Glisse un projet sur une case. Clique la pastille pour changer sa couleur."
+                  : "Glisse un plombier sur une case."}
               </p>
             </aside>
 
@@ -274,7 +352,7 @@ export default function Dispatch() {
                     : projects.map((pr) => (
                         <tr key={pr.id}>
                           <td className="row-head">
-                            <span className="proj-dot" style={{ background: pr.color }} />
+                            <ColorPicker value={pr.color} onChange={(c) => updateProjectColor(pr.id, c)} />
                             {pr.name}
                           </td>
                           {days.map((d) => PERIODS.map((per) => {
