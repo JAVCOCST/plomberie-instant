@@ -14,6 +14,7 @@
   --field-bg: #f8fafc;
   --error: #dc2626;
   --success: #16a34a;
+  --cal-line: #c3ccd8; /* lignes du calendrier dispatch (plus foncées) */
 }
 
 html,
@@ -1926,7 +1927,7 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
   width: 100%;
   min-width: 920px;
 }
-.cal th, .cal td { border: 1px solid var(--side-border); }
+.cal th, .cal td { border: 1px solid var(--cal-line); }
 
 .cal-corner {
   position: sticky; left: 0; z-index: 3;
@@ -1956,14 +1957,14 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 .dv-wrap { overflow-x: auto; }
 .dv {
   display: flex; min-width: 520px;
-  border: 1px solid var(--side-border); border-radius: 12px;
+  border: 1px solid var(--cal-line); border-radius: 12px;
   background: #fff; overflow: hidden;
 }
-.dv-col { flex: 1 1 160px; min-width: 160px; border-left: 1px solid var(--side-border); }
+.dv-col { flex: 1 1 160px; min-width: 160px; border-left: 1px solid var(--cal-line); }
 .dv-col.dv-times { flex: 0 0 64px; min-width: 64px; border-left: 0; }
 .dv-head {
   height: 48px; display: flex; align-items: center; justify-content: center;
-  background: #f8fafc; border-bottom: 1px solid var(--side-border);
+  background: #f8fafc; border-bottom: 1px solid var(--cal-line);
   font-weight: 600; padding: 0 0.4rem;
 }
 .dv-corner {
@@ -1972,10 +1973,10 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 .dv-tlabel {
   height: var(--rowh); display: flex; align-items: flex-start; justify-content: center;
   padding-top: 3px; font-size: 0.78rem; font-weight: 700; color: var(--muted);
-  border-bottom: 1px solid #eef1f5;
+  border-bottom: 1px solid var(--cal-line);
 }
 .dv-track { position: relative; }
-.dv-slot { height: var(--rowh); border-bottom: 1px solid #eef1f5; }
+.dv-slot { height: var(--rowh); border-bottom: 1px solid var(--cal-line); }
 .dv-slot.over { background: #eef2ff; }
 .dv-now { position: absolute; left: 0; right: 0; height: 2px; background: #ef4444; z-index: 6; pointer-events: none; }
 .dv-now::before {
@@ -1983,9 +1984,14 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
   width: 8px; height: 8px; border-radius: 50%; background: #ef4444;
 }
 
-/* Poignée de déplacement + durée affichée sur un call */
-.call-grip { display: inline-flex; cursor: grab; color: var(--muted); touch-action: none; }
-.call-grip:active { cursor: grabbing; }
+/* Bulle entièrement déplaçable */
+.call-entry.draggable { cursor: grab; touch-action: none; }
+.call-entry.draggable:active { cursor: grabbing; }
+/* Les contrôles internes gardent un curseur normal */
+.call-entry .call-time, .call-entry .gps-btn, .call-entry .call-rm { cursor: pointer; }
+
+/* Poignée de déplacement (indice visuel) + durée affichée sur un call */
+.call-grip { display: inline-flex; color: var(--muted); }
 .call-dur {
   display: inline-flex; align-items: center; gap: 2px;
   font-size: 0.7rem; font-weight: 700; color: var(--muted); white-space: nowrap;

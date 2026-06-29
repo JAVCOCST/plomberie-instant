@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DndContext, DragOverlay, useDraggable, useDroppable,
   PointerSensor, TouchSensor, useSensor, useSensors,
@@ -102,16 +102,16 @@ function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, onOpen, on
   const live = st && !st.heure_fin;
   const done = st && st.heure_fin;
   const dur = durText(st, nowHM);
+  // Toute la bulle est déplaçable ; on bloque le démarrage du drag sur les contrôles.
+  const noDrag = (e) => e.stopPropagation();
   return (
-    <div ref={setNodeRef}
-      className={`call-entry ${live ? "live" : done ? "done" : ""} ${positioned ? "positioned" : ""}`}
+    <div ref={setNodeRef} {...listeners} {...attributes}
+      className={`call-entry draggable ${live ? "live" : done ? "done" : ""} ${positioned ? "positioned" : ""}`}
       style={{ borderLeftColor: proj.color, opacity: isDragging ? 0.4 : 1, ...style }}
       onClick={() => onOpen()}>
-      <span className="call-grip" {...listeners} {...attributes}
-        onClick={(e) => e.stopPropagation()} title="Déplacer">
-        <GripVertical size={12} />
-      </span>
-      <input type="time" className="call-time" value={hhmm(a.heure)} onClick={(e) => e.stopPropagation()}
+      <span className="call-grip" title="Déplacer"><GripVertical size={12} /></span>
+      <input type="time" className="call-time" value={hhmm(a.heure)}
+        onPointerDown={noDrag} onClick={noDrag}
         onChange={(e) => onTime(e.target.value)} />
       <span className="call-name">{mode === "emp" ? proj.name : pl.name}</span>
       {dur && (
@@ -121,11 +121,13 @@ function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, onOpen, on
       )}
       {live && <span className="live-dot" title="Sur place" />}
       {proj.address && (
-        <button className="gps-btn dark" onClick={(e) => { e.stopPropagation(); openGps(proj.address); }} title={`GPS — ${proj.address}`}>
+        <button className="gps-btn dark" onPointerDown={noDrag}
+          onClick={(e) => { e.stopPropagation(); openGps(proj.address); }} title={`GPS — ${proj.address}`}>
           <Navigation size={12} />
         </button>
       )}
-      <button className="call-rm" onClick={(e) => { e.stopPropagation(); onRemove(); }} aria-label="Retirer">
+      <button className="call-rm" onPointerDown={noDrag}
+        onClick={(e) => { e.stopPropagation(); onRemove(); }} aria-label="Retirer">
         <X size={12} />
       </button>
     </div>
@@ -290,9 +292,11 @@ export default function Dispatch() {
     await supabase.from("pi_assignations").delete().eq("id", id);
   };
 
-  const onDragStart = (e) => setDragged(e.active.data.current || null);
+  const justDragged = useRef(false);
+  const onDragStart = (e) => { justDragged.current = true; setDragged(e.active.data.current || null); };
   const onDragEnd = (e) => {
     setDragged(null);
+    setTimeout(() => { justDragged.current = false; }, 0); // évite d'ouvrir le détail après un déplacement
     const { active, over } = e;
     if (!over) return;
     const d = active.data.current;
@@ -320,7 +324,7 @@ export default function Dispatch() {
     return (
       <CallEntry key={a.id} a={a} proj={proj} pl={pl} st={st} mode={mode}
         nowHM={nowHM} positioned={extra?.positioned} style={extra?.style}
-        onOpen={() => setJobDetail({ punch: st, plombier: pl, projet: proj })}
+        onOpen={() => { if (!justDragged.current) setJobDetail({ punch: st, plombier: pl, projet: proj }); }}
         onTime={(h) => updateAssignmentTime(a.id, h)}
         onRemove={() => removeAssignment(a.id)} />
     );
