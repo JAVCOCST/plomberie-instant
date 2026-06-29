@@ -9,6 +9,7 @@ import Catalogue from "./pages/Catalogue";
 import Soumission from "./pages/Soumission";
 import Timesheets from "./pages/Timesheets";
 import BonsTravail from "./pages/BonsTravail";
+import QuickBooks from "./pages/QuickBooks";
 import Conditions from "./pages/Conditions";
 import Confidentialite from "./pages/Confidentialite";
 import { NAV_GROUPS } from "./nav";
@@ -20,6 +21,7 @@ const REAL_PAGES = {
   "/app/quote": <Soumission />,
   "/app/timesheets": <Timesheets />,
   "/app/bons": <BonsTravail />,
+  "/app/quickbooks": <QuickBooks />,
 };
 
 // Toutes les pages du menu, à plat, pour générer les routes.

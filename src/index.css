@@ -1679,3 +1679,29 @@ button:disabled {
   border-top: 1px solid var(--side-border);
   font-size: 0.9rem;
 }
+
+/* =========================================================
+   PAGE INTÉGRATION QUICKBOOKS
+   ========================================================= */
+.qb-box {
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 560px;
+}
+.qb-state {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid var(--side-border);
+  margin-bottom: 1.1rem;
+  color: var(--nav-text);
+}
+.qb-state.ok { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+.qb-state strong { display: block; color: var(--text); }
+.qb-state.ok strong { color: #15803d; }
+.qb-state p { font-size: 0.85rem; margin: 0.1rem 0 0; color: var(--muted); }
