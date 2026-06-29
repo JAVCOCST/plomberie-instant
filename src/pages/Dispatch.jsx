@@ -6,13 +6,13 @@ import {
 import {
   ChevronLeft, ChevronRight, CalendarDays, CalendarRange, Plus, X,
   GripVertical, Loader2, FolderKanban, Users, MapPin, Navigation,
-  Pencil, Camera, Image as ImageIcon, CheckCircle2,
+  Pencil, Camera, Image as ImageIcon, CheckCircle2, Clock,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import EmployeeDialog from "../components/EmployeeDialog";
 import WeatherStrip from "../components/WeatherStrip";
 import {
-  DAYS, startOfWeek, addDays, iso, fmtDay, isToday, weekLabel,
+  DAYS, startOfWeek, addDays, iso, fmtDay, isToday, weekLabel, hoursBetween,
 } from "../lib/time";
 
 const gpsUrl = (addr) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`;
@@ -26,7 +26,26 @@ const PALETTE = [
 const hhmm = (t) => (t ? String(t).slice(0, 5) : "");
 const dayKey = (rowId, jour) => `${rowId}|${jour}`;
 const pad2 = (n) => String(n).padStart(2, "0");
-const HOURS = Array.from({ length: 14 }, (_, i) => i + 6); // 6 h → 19 h
+const HOURS = Array.from({ length: 15 }, (_, i) => i + 6); // 6 h → 20 h
+const DAY_START_H = 6;
+const ROW_H = 56; // hauteur d'une heure (px) en vue Jour
+
+const toMin = (t) => {
+  if (!t) return DAY_START_H * 60;
+  const [h, m] = String(t).split(":").map(Number);
+  return h * 60 + (m || 0);
+};
+
+// Libellé de durée court ("3h05") à partir d'un punch (live = jusqu'à maintenant)
+function durText(st, nowHM) {
+  if (!st) return "";
+  const end = st.heure_fin || nowHM;
+  const h = hoursBetween(st.heure_debut, end);
+  if (!h || h <= 0) return "";
+  const hh = Math.floor(h);
+  const mm = Math.round((h - hh) * 60);
+  return `${hh}h${pad2(mm)}`;
+}
 
 /* Sélecteur de couleur */
 function ColorPicker({ value, onChange }) {
@@ -62,10 +81,55 @@ function Chip({ id, data, color, label, initials }) {
   );
 }
 
-/* Case-jour (zone de dépôt) */
+/* Case-jour de la vue Semaine (zone de dépôt) */
 function DayCell({ id, children }) {
   const { setNodeRef, isOver } = useDroppable({ id });
   return <td ref={setNodeRef} className={`day-cell ${isOver ? "over" : ""}`}>{children}</td>;
+}
+
+/* Créneau horaire de la vue Jour (zone de dépôt) */
+function DropSlot({ id }) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+  return <div ref={setNodeRef} className={`dv-slot ${isOver ? "over" : ""}`} />;
+}
+
+/* Un call placé : déplaçable (poignée), cliquable, avec heure ajustable.
+   `positioned` = rendu absolu dans la vue Jour (hauteur = durée). */
+function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, onOpen, onTime, onRemove }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `asg:${a.id}`, data: { kind: "assignment", assignment: a },
+  });
+  const live = st && !st.heure_fin;
+  const done = st && st.heure_fin;
+  const dur = durText(st, nowHM);
+  return (
+    <div ref={setNodeRef}
+      className={`call-entry ${live ? "live" : done ? "done" : ""} ${positioned ? "positioned" : ""}`}
+      style={{ borderLeftColor: proj.color, opacity: isDragging ? 0.4 : 1, ...style }}
+      onClick={() => onOpen()}>
+      <span className="call-grip" {...listeners} {...attributes}
+        onClick={(e) => e.stopPropagation()} title="Déplacer">
+        <GripVertical size={12} />
+      </span>
+      <input type="time" className="call-time" value={hhmm(a.heure)} onClick={(e) => e.stopPropagation()}
+        onChange={(e) => onTime(e.target.value)} />
+      <span className="call-name">{mode === "emp" ? proj.name : pl.name}</span>
+      {dur && (
+        <span className={`call-dur ${live ? "live" : ""}`}>
+          {live && <Clock size={11} />}{dur}
+        </span>
+      )}
+      {live && <span className="live-dot" title="Sur place" />}
+      {proj.address && (
+        <button className="gps-btn dark" onClick={(e) => { e.stopPropagation(); openGps(proj.address); }} title={`GPS — ${proj.address}`}>
+          <Navigation size={12} />
+        </button>
+      )}
+      <button className="call-rm" onClick={(e) => { e.stopPropagation(); onRemove(); }} aria-label="Retirer">
+        <X size={12} />
+      </button>
+    </div>
+  );
 }
 
 export default function Dispatch() {
@@ -83,10 +147,19 @@ export default function Dispatch() {
   const [projectModal, setProjectModal] = useState(null);
   const [jobDetail, setJobDetail] = useState(null);
 
+  const [now, setNow] = useState(() => new Date());
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 6 } })
   );
+
+  // Horloge live : fait grandir les calls punchés (toutes les 60 s)
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(t);
+  }, []);
+  const nowHM = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
 
   const reloadPlombiers = async () => {
     const { data } = await supabase.from("pi_plombiers").select("*").order("created_at");
@@ -174,17 +247,29 @@ export default function Dispatch() {
     return projects.filter((p) => !placed.has(p.id));
   }, [projects, assignments, days]);
 
-  // Vue Jour : assignations du jour groupées par plombier + heure
+  // Vue Jour : assignations du jour groupées par plombier (timeline)
   const dayIso = iso(current);
-  const dayGrid = useMemo(() => {
+  const isTodayView = dayIso === iso(now);
+  const dayByPl = useMemo(() => {
     const m = {};
     assignments.forEach((a) => {
       if (a.jour !== dayIso) return;
-      const h = parseInt(String(a.heure || "08:00").slice(0, 2), 10);
-      (m[`${a.plombier_id}|${h}`] = m[`${a.plombier_id}|${h}`] || []).push(a);
+      (m[a.plombier_id] = m[a.plombier_id] || []).push(a);
     });
     return m;
   }, [assignments, dayIso]);
+
+  // Géométrie d'un call dans la timeline (top + hauteur selon la durée du punch)
+  const callGeometry = (a, st) => {
+    const startT = (st && st.heure_debut) || a.heure || "08:00";
+    const top = ((toMin(startT) - DAY_START_H * 60) / 60) * ROW_H;
+    let durH = 1; // non punché : 1 h par défaut
+    if (st) {
+      const end = st.heure_fin || (isTodayView ? nowHM : startT);
+      durH = Math.max(hoursBetween(st.heure_debut, end), 0.5);
+    }
+    return { top: Math.max(top, 0), height: durH * ROW_H - 4 };
+  };
 
   const addAssignment = async (plombier_id, projet_id, jour, heure = "08:00") => {
     const { data, error: e } = await supabase.from("pi_assignations")
@@ -195,6 +280,10 @@ export default function Dispatch() {
   const updateAssignmentTime = async (id, heure) => {
     setAssignments((prev) => prev.map((a) => (a.id === id ? { ...a, heure } : a)));
     await supabase.from("pi_assignations").update({ heure }).eq("id", id);
+  };
+  const updateAssignment = async (id, fields) => {
+    setAssignments((prev) => prev.map((a) => (a.id === id ? { ...a, ...fields } : a)));
+    await supabase.from("pi_assignations").update(fields).eq("id", id);
   };
   const removeAssignment = async (id) => {
     setAssignments((prev) => prev.filter((a) => a.id !== id));
@@ -207,40 +296,33 @@ export default function Dispatch() {
     const { active, over } = e;
     if (!over) return;
     const d = active.data.current;
-    const parts = String(over.id).split("|");
-    const [type, rowId, jour, heure] = parts;
-    if (type === "e" && d?.kind === "project") addAssignment(rowId, d.project.id, jour);
-    else if (type === "p" && d?.kind === "plombier") addAssignment(d.plombier.id, rowId, jour);
-    else if (type === "d" && d?.kind === "project") addAssignment(rowId, d.project.id, jour, heure);
+    const [type, rowId, jour, heure] = String(over.id).split("|");
+    if (d?.kind === "project") {
+      if (type === "e") addAssignment(rowId, d.project.id, jour);
+      else if (type === "d") addAssignment(rowId, d.project.id, jour, heure);
+    } else if (d?.kind === "plombier") {
+      if (type === "p") addAssignment(d.plombier.id, rowId, jour);
+    } else if (d?.kind === "assignment") {
+      // Déplacer un call déjà placé (réaffectation / changement d'heure)
+      const a = d.assignment;
+      if (type === "e") updateAssignment(a.id, { plombier_id: rowId, jour });
+      else if (type === "d") updateAssignment(a.id, { plombier_id: rowId, jour, heure });
+      else if (type === "p") updateAssignment(a.id, { projet_id: rowId, jour });
+    }
   };
 
   // Rend une entrée de call (employees view: projet ; projects view: plombier)
-  const renderEntry = (a, opts) => {
+  const renderEntry = (a, mode, extra) => {
     const proj = projectById[a.projet_id];
     const pl = plombierById[a.plombier_id];
     if (!proj || !pl) return null;
     const st = punchByKey[`${a.plombier_id}|${a.jour}|${a.projet_id}`];
-    const live = st && !st.heure_fin;
-    const done = st && st.heure_fin;
     return (
-      <div key={a.id} className={`call-entry ${live ? "live" : done ? "done" : ""}`}
-        style={{ borderLeftColor: proj.color }}
-        onClick={() => setJobDetail({ punch: st, plombier: pl, projet: proj })}>
-        <input type="time" className="call-time" value={hhmm(a.heure)} onClick={(e) => e.stopPropagation()}
-          onChange={(e) => updateAssignmentTime(a.id, e.target.value)} />
-        <span className="call-name">
-          {opts === "emp" ? proj.name : pl.name}
-        </span>
-        {live && <span className="live-dot" title="Sur place" />}
-        {proj.address && (
-          <button className="gps-btn dark" onClick={(e) => { e.stopPropagation(); openGps(proj.address); }} title={`GPS — ${proj.address}`}>
-            <Navigation size={12} />
-          </button>
-        )}
-        <button className="call-rm" onClick={(e) => { e.stopPropagation(); removeAssignment(a.id); }} aria-label="Retirer">
-          <X size={12} />
-        </button>
-      </div>
+      <CallEntry key={a.id} a={a} proj={proj} pl={pl} st={st} mode={mode}
+        nowHM={nowHM} positioned={extra?.positioned} style={extra?.style}
+        onOpen={() => setJobDetail({ punch: st, plombier: pl, projet: proj })}
+        onTime={(h) => updateAssignmentTime(a.id, h)}
+        onRemove={() => removeAssignment(a.id)} />
     );
   };
 
@@ -326,39 +408,45 @@ export default function Dispatch() {
             </div>
 
             {calView === "jour" ? (
-              <div className="grid-wrap dayview-wrap">
+              <div className="grid-wrap dv-wrap">
                 {plombiers.length === 0 ? (
                   <p className="res-empty" style={{ padding: "1rem" }}>Ajoute un plombier pour commencer.</p>
                 ) : (
-                  <table className="cal dayview">
-                    <thead>
-                      <tr>
-                        <th className="dv-corner">Heure</th>
-                        {plombiers.map((pl) => (
-                          <th key={pl.id} className="dv-plombier">
+                  <div className="dv" style={{ "--rowh": `${ROW_H}px` }}>
+                    <div className="dv-col dv-times">
+                      <div className="dv-head dv-corner">Heure</div>
+                      {HOURS.map((h) => (
+                        <div key={h} className="dv-tlabel">{pad2(h)}:00</div>
+                      ))}
+                    </div>
+                    {plombiers.map((pl) => {
+                      const list = (dayByPl[pl.id] || [])
+                        .slice()
+                        .sort((x, y) => (x.heure || "") < (y.heure || "") ? -1 : 1);
+                      return (
+                        <div className="dv-col" key={pl.id}>
+                          <div className="dv-head">
                             <button className="emp-link" onClick={() => setSelected(pl)}>
                               <span className="emp-avatar sm">{pl.name.charAt(0)}</span>{pl.name}
                             </button>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {HOURS.map((h) => (
-                        <tr key={h}>
-                          <td className="dv-hour">{pad2(h)}:00</td>
-                          {plombiers.map((pl) => {
-                            const list = dayGrid[`${pl.id}|${h}`] || [];
-                            return (
-                              <DayCell key={pl.id} id={`d|${pl.id}|${dayIso}|${pad2(h)}:00`}>
-                                <div className="call-stack">{list.map((a) => renderEntry(a, "emp"))}</div>
-                              </DayCell>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </div>
+                          <div className="dv-track" style={{ height: HOURS.length * ROW_H }}>
+                            {HOURS.map((h) => (
+                              <DropSlot key={h} id={`d|${pl.id}|${dayIso}|${pad2(h)}:00`} />
+                            ))}
+                            {isTodayView && (
+                              <div className="dv-now" style={{ top: ((now.getHours() * 60 + now.getMinutes() - DAY_START_H * 60) / 60) * ROW_H }} />
+                            )}
+                            {list.map((a) => {
+                              const st = punchByKey[`${pl.id}|${a.jour}|${a.projet_id}`];
+                              const { top, height } = callGeometry(a, st);
+                              return renderEntry(a, "emp", { positioned: true, style: { top, height } });
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             ) : (
@@ -421,8 +509,16 @@ export default function Dispatch() {
 
       <DragOverlay dropAnimation={null}>
         {dragged ? (
-          <div className="disp-chip dragging" style={{ background: dragged.kind === "project" ? dragged.project.color : "#334155" }}>
-            <span className="chip-name">{dragged.kind === "project" ? dragged.project.name : dragged.plombier.name}</span>
+          <div className="disp-chip dragging" style={{
+            background: dragged.kind === "project" ? dragged.project.color
+              : dragged.kind === "assignment" ? (projectById[dragged.assignment.projet_id]?.color || "#475569")
+              : "#334155",
+          }}>
+            <span className="chip-name">
+              {dragged.kind === "project" ? dragged.project.name
+                : dragged.kind === "assignment" ? (projectById[dragged.assignment.projet_id]?.name || "Call")
+                : dragged.plombier.name}
+            </span>
           </div>
         ) : null}
       </DragOverlay>
