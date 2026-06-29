@@ -6,7 +6,7 @@ import {
 import {
   ChevronLeft, ChevronRight, CalendarDays, Plus, X,
   GripVertical, Loader2, FolderKanban, Users, MapPin, Navigation,
-  Pencil, Camera, Trash2, Image as ImageIcon,
+  Pencil, Camera, Trash2, Image as ImageIcon, CheckCircle2,
 } from "lucide-react";
 
 // Lien Google Maps (itinéraire vers l'adresse) — ouvre l'app GPS sur mobile
@@ -127,7 +127,7 @@ export default function Dispatch() {
   const [projectModal, setProjectModal] = useState(null); // null | "new" | project
 
   const reloadProjects = async () => {
-    const { data } = await supabase.from("pi_projets").select("*").order("created_at");
+    const { data } = await supabase.from("pi_projets").select("*").neq("status","termine").order("created_at");
     if (data) setProjects(data);
   };
 
@@ -145,7 +145,7 @@ export default function Dispatch() {
       setLoading(true);
       const [pl, pr, as] = await Promise.all([
         supabase.from("pi_plombiers").select("*").order("created_at"),
-        supabase.from("pi_projets").select("*").order("created_at"),
+        supabase.from("pi_projets").select("*").neq("status","termine").order("created_at"),
         supabase.from("pi_assignations").select("*"),
       ]);
       if (pl.error || pr.error || as.error) {
@@ -201,6 +201,14 @@ export default function Dispatch() {
     punches.forEach((p) => { m[`${p.plombier_id}|${p.jour}|${p.periode}`] = p; });
     return m;
   }, [punches]);
+
+  // Projets déjà placés dans la semaine affichée → retirés de la réserve
+  const availableProjects = useMemo(() => {
+    const wk = new Set(days.map((d) => iso(d)));
+    const placed = new Set();
+    assignments.forEach((a) => { if (wk.has(a.jour)) placed.add(a.projet_id); });
+    return projects.filter((p) => !placed.has(p.id));
+  }, [projects, assignments, days]);
 
   const [jobDetail, setJobDetail] = useState(null); // { punch, plombier, projet }
   const plombierById = useMemo(
@@ -318,7 +326,10 @@ export default function Dispatch() {
               <div className="res-row">
                 <span className="res-label">Projets</span>
                 <div className="res-chips">
-                  {projects.map((p) => (
+                  {availableProjects.length === 0 && (
+                    <span className="res-empty">Tous les calls sont placés cette semaine.</span>
+                  )}
+                  {availableProjects.map((p) => (
                     <div className="pool-item" key={p.id}>
                       <ColorPicker value={p.color} onChange={(c) => updateProjectColor(p.id, c)} />
                       <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.color} label={p.name} />
@@ -487,6 +498,7 @@ export default function Dispatch() {
           plombier={jobDetail.plombier}
           projet={jobDetail.projet}
           onClose={() => setJobDetail(null)}
+          onFinished={() => { reloadProjects(); setJobDetail(null); }}
         />
       )}
 
@@ -545,6 +557,17 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
     }
   };
 
+  const finish = async () => {
+    setErr("");
+    setSaving(true);
+    const { error } = await supabase
+      .from("pi_projets")
+      .update({ status: "termine", finished_at: new Date().toISOString() })
+      .eq("id", project.id);
+    if (error) { setErr(error.message); setSaving(false); return; }
+    onSaved();
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -599,6 +622,12 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
         </div>
 
         <div className="modal-foot">
+          {isEdit && (
+            <button className="btn-finish" onClick={finish} disabled={saving} title="Retirer du dispatch et archiver">
+              <CheckCircle2 size={16} /> Terminer le call
+            </button>
+          )}
+          <span style={{ flex: 1 }} />
           <button className="btn-secondary" onClick={onClose} disabled={saving}>Annuler</button>
           <button className="save-btn" onClick={save} disabled={saving}>
             {saving ? (<><Loader2 size={16} className="spin" /> Enregistrement…</>) : (isEdit ? "Enregistrer" : "Créer le call")}
@@ -610,8 +639,18 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
 }
 
 /* Détail d'un call : statut du punch + photos en temps réel */
-function JobDetail({ punch, plombier, projet, onClose }) {
+function JobDetail({ punch, plombier, projet, onClose, onFinished }) {
   const [photos, setPhotos] = useState([]);
+  const [finishing, setFinishing] = useState(false);
+
+  const finish = async () => {
+    setFinishing(true);
+    await supabase
+      .from("pi_projets")
+      .update({ status: "termine", finished_at: new Date().toISOString() })
+      .eq("id", projet.id);
+    onFinished && onFinished();
+  };
 
   useEffect(() => {
     if (!punch?.id) return;
@@ -678,6 +717,14 @@ function JobDetail({ punch, plombier, projet, onClose }) {
             </div>
           )}
         </div>
+
+        {projet && (
+          <div className="modal-foot">
+            <button className="btn-finish" onClick={finish} disabled={finishing} title="Retirer du dispatch et archiver">
+              <CheckCircle2 size={16} /> {finishing ? "…" : "Terminer le call"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

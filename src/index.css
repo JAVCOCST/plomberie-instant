@@ -1908,3 +1908,11 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 }
 .pm-swatches { display: flex; flex-wrap: wrap; gap: 6px; }
 .emp-ref-photos { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+
+/* Réserve vide + bouton terminer */
+.res-empty { font-size: 0.82rem; color: var(--muted); font-style: italic; align-self: center; }
+.btn-finish {
+  width: auto; display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.6rem 1rem; background: #16a34a; color: #fff;
+}
+.btn-finish:hover:not(:disabled) { background: #15803d; }

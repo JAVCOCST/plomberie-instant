@@ -18,6 +18,7 @@ import {
   ClipboardCheck,
   Plug,
   UserCog,
+  CheckCircle2,
 } from "lucide-react";
 
 // Menu de gauche — structure reprise de Toitures VB, intitulés adaptés plomberie.
@@ -30,6 +31,7 @@ export const NAV_GROUPS = [
       { title: "Projets & Leads", url: "/app", icon: FileText, end: true },
       { title: "Nouvelle soumission", url: "/app/quote", icon: PlusCircle },
       { title: "Suivi projet", url: "/app/projects", icon: ClipboardList },
+      { title: "Calls terminés", url: "/app/calls-termines", icon: CheckCircle2 },
       { title: "Tâches", url: "/app/tasks", icon: ListChecks },
       { title: "Feuilles de temps", url: "/app/timesheets", icon: Clock },
     ],

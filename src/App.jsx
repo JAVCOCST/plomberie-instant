@@ -10,6 +10,7 @@ import Soumission from "./pages/Soumission";
 import Timesheets from "./pages/Timesheets";
 import BonsTravail from "./pages/BonsTravail";
 import Clients from "./pages/Clients";
+import CallsTermines from "./pages/CallsTermines";
 import QuickBooks from "./pages/QuickBooks";
 import AccesEmployes from "./pages/AccesEmployes";
 import EmployeeApp from "./pages/EmployeeApp";
@@ -24,6 +25,7 @@ const REAL_PAGES = {
   "/app/timesheets": <Timesheets />,
   "/app/bons": <BonsTravail />,
   "/app/clients": <Clients />,
+  "/app/calls-termines": <CallsTermines />,
   "/app/quickbooks": <QuickBooks />,
   "/app/acces": <AccesEmployes />,
 };
