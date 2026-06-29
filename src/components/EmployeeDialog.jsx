@@ -81,11 +81,6 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
     return { hours, cost, target, perf, sales, salesTarget, salesPct };
   }, [punches, bons, form.hourly_cost, form.weekly_target, form.weekly_sales_target]);
 
-  const perfClass =
-    stats.perf >= 100 ? "good" : stats.perf >= 75 ? "warn" : "bad";
-  const salesClass =
-    stats.salesPct >= 100 ? "good" : stats.salesPct >= 75 ? "warn" : "bad";
-
   const saveFiche = async () => {
     await supabase
       .from("pi_plombiers")
@@ -132,47 +127,22 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
           </button>
         </div>
 
-        {/* Stats de la semaine */}
-        <div className="emp-stats">
-          <div className="stat">
-            <span className="stat-label">Heures ({weekLabel(weekStart)})</span>
-            <span className="stat-value">{fmtHours(stats.hours)}</span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Coût main-d'œuvre</span>
-            <span className="stat-value">{money(stats.cost)}</span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Performance / seuil</span>
-            <span className={`stat-value perf ${perfClass}`}>
-              {stats.perf.toFixed(0)}%
-            </span>
-          </div>
-        </div>
-        <div className="perf-bar">
-          <div
-            className={`perf-fill ${perfClass}`}
-            style={{ width: `${Math.min(stats.perf, 100)}%` }}
+        {/* Jauges : performance & ventes */}
+        <div className="gauges">
+          <Gauge
+            pct={stats.perf}
+            label="Performance"
+            value={`${fmtHours(stats.hours)} / ${stats.target} h`}
+          />
+          <Gauge
+            pct={stats.salesPct}
+            label="Ventes"
+            value={`${money(stats.sales)} / ${money(stats.salesTarget)}`}
           />
         </div>
-
-        {/* Progression des ventes vs seuil de vente */}
-        <div className="sales-block">
-          <div className="sales-head">
-            <span className="sales-label">
-              <TrendingUp size={15} /> Ventes de la semaine
-            </span>
-            <span className="sales-amt">
-              {money(stats.sales)}
-              <span className="sales-target"> / {money(stats.salesTarget)}</span>
-            </span>
-          </div>
-          <div className="perf-bar">
-            <div
-              className={`perf-fill ${salesClass}`}
-              style={{ width: `${Math.min(stats.salesPct, 100)}%` }}
-            />
-          </div>
+        <div className="mini-row">
+          <span>Coût main-d'œuvre · {weekLabel(weekStart)}</span>
+          <strong>{money(stats.cost)}</strong>
         </div>
 
         {/* Fiche éditable */}
@@ -290,6 +260,34 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* Jauge circulaire (SVG) — verte quand l'objectif est atteint */
+function Gauge({ pct, label, value }) {
+  const r = 38;
+  const c = 2 * Math.PI * r;
+  const capped = Math.max(0, Math.min(pct, 100));
+  const offset = c * (1 - capped / 100);
+  const cls = pct >= 100 ? "good" : pct >= 75 ? "warn" : "bad";
+  return (
+    <div className="gauge">
+      <svg viewBox="0 0 100 100" className={`gauge-svg ${cls}`}>
+        <circle className="gauge-track" cx="50" cy="50" r={r} />
+        <circle
+          className="gauge-prog"
+          cx="50"
+          cy="50"
+          r={r}
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+          transform="rotate(-90 50 50)"
+        />
+        <text x="50" y="52" className="gauge-pct">{Math.round(pct)}%</text>
+      </svg>
+      <div className="gauge-label">{label}</div>
+      <div className="gauge-value">{value}</div>
     </div>
   );
 }
