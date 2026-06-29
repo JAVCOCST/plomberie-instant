@@ -118,7 +118,7 @@ function ProjectChip({ project, from }) {
 function Cell({ id, project, onRemove }) {
   const { setNodeRef, isOver } = useDroppable({ id });
   return (
-    <div ref={setNodeRef} className={`grid-cell ${isOver ? "over" : ""}`}>
+    <td ref={setNodeRef} className={`grid-cell ${isOver ? "over" : ""}`}>
       {project ? (
         <div
           className="cell-assign"
@@ -135,7 +135,7 @@ function Cell({ id, project, onRemove }) {
           </button>
         </div>
       ) : null}
-    </div>
+    </td>
   );
 }
 
