@@ -1,0 +1,317 @@
+# Entraînement YOLOv8-OBB automatique sur les datasets Toitures VB.
+#
+# Trigger manuel (Actions tab → Run workflow) ou cron mensuel.
+# Pull les datasets depuis Supabase, train sur CPU (free runner), exporte
+# l'ONNX et le commit dans huggingface-space/models/ → le workflow
+# deploy-hf-space.yml se déclenche tout seul derrière et pousse vers la
+# HF Space → l'API a le nouveau modèle sans intervention manuelle.
+#
+# Free GitHub runner specs : 4 vCPU, 16 GB RAM, ~2000 min/mois.
+# YOLOv8n-obb à 640px sur ~17 train + 4 val = ~1.5-2h.
+#
+# Secrets requis dans le repo :
+#   SUPABASE_URL          (ex. https://eeradaaxmqzyvxvmahlf.supabase.co)
+#   SUPABASE_SERVICE_KEY  (service_role JWT, lecture seule via RLS bypass)
+
+name: Train YOLOv8-OBB
+
+on:
+  workflow_dispatch:
+    inputs:
+      epochs:
+        description: "Nombre d'epochs (défaut 150)"
+        required: false
+        default: "150"
+      imgsz:
+        description: "Image size (640 = rapide, 1280 = précis mais long)"
+        required: false
+        default: "640"
+      model:
+        description: "Base model (yolov8n-obb.pt = 12 Mo, yolov8s-obb.pt = 40 Mo)"
+        required: false
+        default: "yolov8n-obb.pt"
+  schedule:
+    # Mensuel — premier dimanche du mois à 06:00 UTC
+    - cron: "0 6 1-7 * 0"
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350  # 5h50 max (limite hard du free tier = 6h)
+
+    permissions:
+      contents: write  # nécessaire pour commit l'ONNX en sortie
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Validate Supabase secrets (fail fast)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY_PRIMARY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_KEY_ALT1: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_SERVICE_KEY_ALT2: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+        run: |
+          if [ -z "$SUPABASE_URL" ]; then
+            echo "::error::SUPABASE_URL secret is missing. Set it in repo Settings → Secrets."
+            exit 1
+          fi
+          SK="${SUPABASE_SERVICE_KEY_PRIMARY:-${SUPABASE_SERVICE_KEY_ALT1:-${SUPABASE_SERVICE_KEY_ALT2}}}"
+          if [ -z "$SK" ]; then
+            echo "::error::SUPABASE_SERVICE_KEY/ROLE_KEY/ROLE secret is missing."
+            exit 1
+          fi
+          # Décode le payload JWT (entre les 2 points) pour vérifier le role.
+          # Pas de vérif de signature ici — c'est juste pour distinguer
+          # service_role de anon (la cause #1 de 401).
+          PAYLOAD=$(echo "$SK" | cut -d. -f2)
+          # base64url → base64 standard, padding
+          PAYLOAD_PADDED=$(echo "$PAYLOAD" | tr '_-' '/+' | awk '{ l = length($0) % 4; if (l == 2) print $0 "=="; else if (l == 3) print $0 "="; else print $0 }')
+          ROLE=$(echo "$PAYLOAD_PADDED" | base64 -d 2>/dev/null | python3 -c "import sys, json; print(json.loads(sys.stdin.read()).get('role', 'unknown'))" 2>/dev/null || echo "decode_failed")
+          echo "Detected role in JWT: $ROLE"
+          if [ "$ROLE" = "anon" ]; then
+            echo "::error::Tu as configuré le secret avec la clé 'anon' au lieu de 'service_role'. La clé anon est sujette aux policies RLS et ne peut PAS lire training_roof_takeoffs. Va sur https://supabase.com/dashboard/project/eeradaaxmqzyvxvmahlf/settings/api et copie la valeur de la ligne 'service_role' (pas 'anon')."
+            exit 1
+          fi
+          if [ "$ROLE" != "service_role" ]; then
+            echo "::warning::JWT role détecté = '$ROLE' (attendu 'service_role'). On continue mais ça risque de 401."
+          fi
+          # Test live : on essaye de lire 1 ligne depuis training_batches
+          # (table dont la RLS est read pour authenticated mais service_role bypass).
+          HTTP_CODE=$(curl -s -o /tmp/sb_test.json -w "%{http_code}" \
+            "${SUPABASE_URL}/rest/v1/training_batches?select=batch_code&limit=1" \
+            -H "apikey: $SK" \
+            -H "Authorization: Bearer $SK")
+          echo "Test query HTTP status: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Test query returned $HTTP_CODE (expected 200)."
+            cat /tmp/sb_test.json | head -c 500
+            exit 1
+          fi
+          echo "✓ Supabase credentials OK"
+
+      - name: Install training deps
+        run: |
+          python -m pip install --upgrade pip
+          # Ultralytics installe torch CPU automatiquement (pas de --index-url GPU)
+          pip install -q ultralytics opencv-python-headless numpy
+          # Sanity check
+          python -c "from ultralytics import YOLO; print('ultralytics OK')"
+
+      - name: Pull datasets from Supabase + convert to YOLO format
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          # Tolère 3 variantes de naming pour le service_role key — peu importe
+          # lequel l'opérateur a utilisé en settant les secrets GitHub :
+          #   SUPABASE_SERVICE_KEY (canonique)
+          #   SUPABASE_SERVICE_ROLE_KEY (la longue forme officielle Supabase)
+          #   SUPABASE_SERVICE_ROLE (variante courte)
+          # Le premier non-vide gagne (cf. fallback ${VAR:-default} ci-dessous).
+          SUPABASE_SERVICE_KEY_PRIMARY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_KEY_ALT1: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_SERVICE_KEY_ALT2: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+        run: |
+          # Pick the first non-empty value among the 3 supported names
+          export SUPABASE_SERVICE_KEY="${SUPABASE_SERVICE_KEY_PRIMARY:-${SUPABASE_SERVICE_KEY_ALT1:-${SUPABASE_SERVICE_KEY_ALT2}}}"
+          if [ -z "$SUPABASE_SERVICE_KEY" ]; then
+            echo "::error::Aucun secret SUPABASE_SERVICE_KEY / SUPABASE_SERVICE_ROLE_KEY / SUPABASE_SERVICE_ROLE trouvé"
+            exit 1
+          fi
+          cd huggingface-space/training
+          python build_dataset_from_supabase.py --out /tmp/yolo_dataset/
+
+      - name: Train YOLOv8-OBB
+        run: |
+          cd huggingface-space/training
+          python train_yolo_obb.py \
+            --data /tmp/yolo_dataset/data.yaml \
+            --model "${{ inputs.model || 'yolov8n-obb.pt' }}" \
+            --epochs "${{ inputs.epochs || '150' }}" \
+            --imgsz "${{ inputs.imgsz || '640' }}" \
+            --batch 8 \
+            --device cpu \
+            --project /tmp/runs \
+            --name ci_run \
+            --export-onnx
+
+      - name: Move best ONNX into repo + summary
+        id: move
+        run: |
+          BEST_ONNX="/tmp/runs/ci_run/weights/best.onnx"
+          if [ ! -f "$BEST_ONNX" ]; then
+            echo "::error::best.onnx not produced — abort commit"
+            exit 1
+          fi
+          # Versioned filename : on bump le suffixe à chaque run pour éviter
+          # de toujours écraser le même fichier (utile pour rollback rapide).
+          TS=$(date -u +%Y%m%d_%H%M%S)
+          VERSIONED="huggingface-space/models/yolov8_obb_toitures_vb_${TS}.onnx"
+          LATEST="huggingface-space/models/yolov8_obb_toitures_vb_v1.onnx"
+          cp "$BEST_ONNX" "$VERSIONED"
+          cp "$BEST_ONNX" "$LATEST"
+          SIZE_KB=$(du -k "$LATEST" | cut -f1)
+          echo "size_kb=$SIZE_KB" >> "$GITHUB_OUTPUT"
+          echo "versioned=$VERSIONED" >> "$GITHUB_OUTPUT"
+          echo "ts=$TS" >> "$GITHUB_OUTPUT"
+          # Récupère les métriques finales depuis results.csv (dernière epoch)
+          RESULTS="/tmp/runs/ci_run/results.csv"
+          if [ -f "$RESULTS" ]; then
+            LAST_LINE=$(tail -1 "$RESULTS")
+            echo "last_results=$LAST_LINE" >> "$GITHUB_OUTPUT"
+            tail -1 "$RESULTS" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "## Training summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ONNX size: ${SIZE_KB} KB" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Versioned: \`$VERSIONED\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Latest:    \`$LATEST\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create model_versions row (status=trained, is_active=false)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY_PRIMARY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_KEY_ALT1: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_SERVICE_KEY_ALT2: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+        run: |
+          export SUPABASE_SERVICE_KEY="${SUPABASE_SERVICE_KEY_PRIMARY:-${SUPABASE_SERVICE_KEY_ALT1:-${SUPABASE_SERVICE_KEY_ALT2}}}"
+          python3 << 'PYEOF'
+          import json, os, csv, urllib.request
+          ts = os.environ.get('GITHUB_OUTPUT_TS', '')  # injected below if available
+          # Récupère le dernier results.csv pour les métriques
+          results_path = '/tmp/runs/ci_run/results.csv'
+          metrics = {}
+          try:
+              with open(results_path) as f:
+                  rows = list(csv.DictReader(f))
+              if rows:
+                  last = rows[-1]
+                  # YOLO conventions : 'metrics/mAP50(B)', 'metrics/mAP50-95(B)', etc.
+                  for k, v in last.items():
+                      try:
+                          metrics[k.strip()] = float(v)
+                      except (ValueError, TypeError):
+                          pass
+          except Exception as e:
+              print(f'metrics parse failed: {e}')
+
+          # Compte les datasets depuis le yolo_dataset/
+          def count_files(d):
+              try: return len(os.listdir(d))
+              except: return 0
+          train_n = count_files('/tmp/yolo_dataset/images/train')
+          val_n   = count_files('/tmp/yolo_dataset/images/val')
+          test_n  = count_files('/tmp/yolo_dataset/images/test')
+
+          # Récupère le batch_id de batch_000_initial (et plus tard les autres)
+          import urllib.parse
+          base = os.environ['SUPABASE_URL'].rstrip('/')
+          key = os.environ['SUPABASE_SERVICE_KEY']
+          headers_base = {
+              'apikey': key,
+              'Authorization': f'Bearer {key}',
+              'Accept': 'application/json',
+          }
+          req = urllib.request.Request(
+              f"{base}/rest/v1/training_batches?select=id&status=in.(training_ready,trained)",
+              headers=headers_base,
+          )
+          batch_ids = []
+          try:
+              with urllib.request.urlopen(req, timeout=15) as resp:
+                  for row in json.loads(resp.read().decode()):
+                      batch_ids.append(row['id'])
+          except Exception as e:
+              print(f'fetch batches failed: {e}')
+
+          # Génère un code de modèle versionné (roof_obb_v0_N)
+          # On compte les existants pour l'incrémenter
+          req = urllib.request.Request(
+              f"{base}/rest/v1/model_versions?select=model_code&model_code=like.roof_obb_v*",
+              headers=headers_base,
+          )
+          existing_codes = []
+          try:
+              with urllib.request.urlopen(req, timeout=15) as resp:
+                  for row in json.loads(resp.read().decode()):
+                      existing_codes.append(row['model_code'])
+          except Exception as e:
+              print(f'fetch existing codes failed: {e}')
+          # Numérotation : roof_obb_v0_1, _v0_2, ... ; après 10 → roof_obb_v1_1 etc.
+          n_next = len(existing_codes) + 1
+          model_code = f'roof_obb_v0_{n_next}'
+          version = f'0.{n_next}.0'
+
+          # INSERT model_versions row
+          payload = {
+              'model_code': model_code,
+              'name': f'YOLOv8-OBB Toitures VB v{version} (CI {os.environ.get("GITHUB_RUN_NUMBER","?")})',
+              'version': version,
+              'status': 'trained',
+              'is_active': False,
+              'trained_from_batch_ids': batch_ids,
+              'dataset_count': train_n + val_n + test_n,
+              'train_count': train_n,
+              'val_count': val_n,
+              'test_count': test_n,
+              'metrics_json': metrics,
+              'training_config_json': {
+                  'pipeline_type': 'ml_yolov8_obb',
+                  'base_model': 'yolov8n-obb.pt',
+                  'epochs': int(os.environ.get('TRAIN_EPOCHS', '150')),
+                  'imgsz': int(os.environ.get('TRAIN_IMGSZ', '640')),
+                  'github_run_id': os.environ.get('GITHUB_RUN_ID', ''),
+                  'github_sha': os.environ.get('GITHUB_SHA', ''),
+              },
+              'onnx_url': 'huggingface-space/models/yolov8_obb_toitures_vb_v1.onnx',
+              'hf_space_url': 'https://javcocst-roof-sections-v16.hf.space',
+              'notes': 'Auto-trained via GitHub Actions. Pour activer : bouton "Définir comme actif" dans /admin/training-lab/models.',
+          }
+          req = urllib.request.Request(
+              f"{base}/rest/v1/model_versions",
+              data=json.dumps(payload).encode('utf-8'),
+              headers={**headers_base, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'},
+              method='POST',
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=15) as resp:
+                  print(f'created model_version {model_code} (status {resp.status})')
+          except Exception as e:
+              print(f'create model_version failed (non-blocking): {e}')
+          PYEOF
+
+      - name: Upload training artifacts (debug)
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-artifacts
+          path: |
+            /tmp/runs/ci_run/results.csv
+            /tmp/runs/ci_run/results.png
+            /tmp/runs/ci_run/confusion_matrix.png
+            /tmp/runs/ci_run/PR_curve.png
+            /tmp/runs/ci_run/F1_curve.png
+            /tmp/runs/ci_run/weights/best.pt
+          retention-days: 14
+
+      - name: Commit ONNX → main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add huggingface-space/models/yolov8_obb_toitures_vb_v1.onnx
+          if git diff --cached --quiet; then
+            echo "No ONNX change — skipping commit"
+            exit 0
+          fi
+          git commit -m "ci(train): yolov8-obb auto-trained from N datasets (${{ steps.move.outputs.size_kb }} KB)"
+          # Retry push avec backoff au cas où race avec un autre push sur main
+          for i in 1 2 3 4; do
+            if git push origin main; then exit 0; fi
+            sleep $((i * 2))
+            git pull --rebase origin main
+          done
+          exit 1

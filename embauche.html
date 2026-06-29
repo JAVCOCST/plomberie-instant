@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://googleads.g.doubleclick.net https://www.googleadservices.com; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' https:; connect-src 'self' https: wss:; frame-src https://www.googletagmanager.com https://googleads.g.doubleclick.net; object-src 'none'; base-uri 'self';" />
+    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#080B12" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Page-specific SEO + OG tags pour le module Embauche -->
+    <link rel="canonical" href="https://soumission.toituresvb.ca/embauche" />
+    <title>On embauche des couvreurs · Granby · 42-48 $/h | Toitures VB</title>
+    <meta name="description" content="Toitures VB embauche des couvreurs à Granby et environs. Paye CCQ 42-48 $/h, temps plein à l'année, équipe solide. Postule en 30 secondes — pas de CV requis." />
+    <meta name="author" content="Toitures VB" />
+    <meta name="publisher" content="Toitures VB" />
+    <meta name="robots" content="index, follow" />
+    <meta name="keywords" content="emploi couvreur Granby, embauche couvreur, job toiture, soudeur SBS, couvreur bardeaux, recrutement Toitures VB" />
+
+    <!-- OG (Facebook / Meta Ads) — image 1200×630 dédiée au recrutement.
+         Nom de fichier versionné (embauche-og-v2.png, v3.png...) car FB
+         strip parfois les query strings et cache de façon ultra-persistante
+         sur le path seul. Renommer le fichier = nouvelle URL = fresh fetch
+         garanti. Bump le nom après chaque mise à jour visuelle. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://soumission.toituresvb.ca/embauche" />
+    <meta property="og:image" content="https://soumission.toituresvb.ca/embauche-og-v2.png" />
+    <meta property="og:image:secure_url" content="https://soumission.toituresvb.ca/embauche-og-v2.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:title" content="On embauche des couvreurs · Toitures VB" />
+    <meta property="og:description" content="Granby et environs · Paye CCQ 42-48 $/h · Temps plein à l'année · Postule en 30 secondes." />
+    <meta property="og:site_name" content="Toitures VB" />
+    <meta property="og:locale" content="fr_CA" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@ToituresVB" />
+    <meta name="twitter:image" content="https://soumission.toituresvb.ca/embauche-og-v2.png" />
+    <meta name="twitter:title" content="On embauche des couvreurs · Toitures VB" />
+    <meta name="twitter:description" content="Granby et environs · Paye CCQ 42-48 $/h · Postule en 30 secondes." />
+
+    <!-- Google tag (gtag.js) — même container que la home pour tracker la conversion -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17958279418"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-17958279418');
+    </script>
+  </head>
+
+  <body style="background:#080B12;">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

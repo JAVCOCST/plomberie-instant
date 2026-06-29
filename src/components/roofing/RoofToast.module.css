@@ -1,0 +1,27 @@
+.toast {
+  position: fixed;
+  bottom: var(--spacing--24);
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--_🎨-color--tokens---tone--strong);
+  color: var(--_🎨-color--tokens---button-primary-default--text);
+  padding: 12px var(--spacing--24);
+  border-radius: var(--_🔘-radius---ui-elements--medium);
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 14px;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  max-width: 90vw;
+}
+
+.toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.toast.error {
+  background: #c0392b;
+}

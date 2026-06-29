@@ -1,0 +1,4 @@
+ALTER TABLE public.soumissions 
+  ADD COLUMN IF NOT EXISTS roof_category TEXT DEFAULT 'residential',
+  ADD COLUMN IF NOT EXISTS building_type TEXT DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS work_type TEXT DEFAULT NULL;

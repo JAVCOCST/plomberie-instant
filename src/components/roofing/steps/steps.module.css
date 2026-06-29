@@ -1,0 +1,306 @@
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing--24);
+}
+
+.stepTitle {
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--_🎨-color--tokens---tone--strong);
+  margin: 0;
+}
+
+.stepDesc {
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 14px;
+  color: var(--_🎨-color--tokens---tone--medium);
+  margin: -12px 0 0 0;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.fieldDimmed {
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+
+.fieldActive {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fieldActive .input {
+  border-color: var(--_🎨-color--tokens---button-primary-default--background);
+  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.12);
+  background: rgba(39, 174, 96, 0.03);
+}
+
+.fieldDone {
+  opacity: 1;
+  transform: scale(1);
+  position: relative;
+  padding-left: 14px;
+}
+
+.fieldDone::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 2px;
+  background: hsl(0, 0%, 15%);
+  animation: barSlide 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes barSlide {
+  0% { transform: scaleY(0); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+.fieldDone .input {
+  background: rgba(39, 174, 96, 0.07);
+  border-color: rgba(39, 174, 96, 0.35);
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+/* Input wrapper for inline check */
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWrap .input {
+  flex: 1;
+}
+
+.inlineCheck {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #27ae60;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+  animation: checkPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes checkPop {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.label {
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--_🎨-color--tokens---tone--medium);
+}
+
+.input {
+  padding: 14px var(--spacing--16);
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--_🔘-radius---ui-elements--medium);
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 16px;
+  color: var(--_🎨-color--tokens---tone--strong);
+  background: var(--_🎨-color--tokens---background--lift);
+  outline: none;
+  transition: border-color 0.3s ease, background 0.4s ease, box-shadow 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 48px;
+  touch-action: manipulation;
+}
+
+.input:focus {
+  border-color: var(--_🎨-color--tokens---button-primary-default--background);
+  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+}
+
+.input::placeholder {
+  color: var(--_🎨-color--tokens---tone--medium);
+  opacity: 0.6;
+}
+
+.inputError {
+  border-color: #c0392b;
+}
+
+.errorText {
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 12px;
+  color: #c0392b;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing--16);
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--spacing--16);
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--spacing--16);
+}
+
+.swatchGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.swatch {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatch.swatchSelected {
+  border-color: var(--_🎨-color--tokens---button-primary-default--background);
+  box-shadow: 0 0 0 2px var(--_🎨-color--tokens---button-primary-default--background);
+}
+
+.swatchLabel {
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 12px;
+  color: var(--_🎨-color--tokens---tone--medium);
+  text-align: center;
+  margin-top: 4px;
+}
+
+.inlineGroup {
+  display: flex;
+  gap: var(--spacing--16);
+  align-items: flex-end;
+}
+
+.inlineGroup > * {
+  flex: 1;
+}
+
+.toggleGroup {
+  display: flex;
+  gap: 0;
+  border-radius: var(--_🔘-radius---ui-elements--medium);
+  overflow: hidden;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  width: fit-content;
+}
+
+.toggleBtn {
+  padding: 10px 24px;
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background: var(--_🎨-color--tokens---background--lift);
+  color: var(--_🎨-color--tokens---tone--medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggleBtn:not(:last-child) {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.toggleBtnActive {
+  background: var(--_🎨-color--tokens---button-primary-default--background);
+  color: var(--_🎨-color--tokens---button-primary-default--foreground);
+}
+
+@media (max-width: 600px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+    gap: var(--spacing--12);
+  }
+  
+  .stepContainer {
+    gap: var(--spacing--16);
+    padding: 0 4px;
+  }
+  
+  .stepTitle {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  
+  .fieldGroup {
+    gap: 8px;
+  }
+  
+  .label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .input {
+    font-size: 16px;
+    padding: 16px 14px;
+    min-height: 52px;
+    border-width: 1.5px;
+  }
+  
+  .input::placeholder {
+    font-size: 16px;
+  }
+  
+  .inlineCheck {
+    right: 14px;
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+  
+  .toggleGroup {
+    width: 100%;
+  }
+  
+  .toggleBtn {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 16px;
+    min-height: 48px;
+  }
+  
+  .fieldDone {
+    padding-left: 12px;
+  }
+  
+  .fieldDone::before {
+    width: 4px;
+    top: 6px;
+    bottom: 6px;
+  }
+}

@@ -1,0 +1,32 @@
+.group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 12px var(--spacing--16);
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--_🔘-radius---ui-elements--medium);
+  background: var(--_🎨-color--tokens---background--lift);
+  color: var(--_🎨-color--tokens---tone--strong);
+  font-family: var(--_🔠-typography---font--body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.btn:hover {
+  border-color: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.btn.active {
+  border-color: var(--_🎨-color--tokens---button-primary-default--background);
+  background: var(--_🎨-color--tokens---button-primary-default--background);
+  color: var(--_🎨-color--tokens---button-primary-default--text);
+}

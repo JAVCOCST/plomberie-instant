@@ -1,0 +1,1 @@
+ALTER TABLE public.soumissions ADD COLUMN contact_preference TEXT NOT NULL DEFAULT 'email';

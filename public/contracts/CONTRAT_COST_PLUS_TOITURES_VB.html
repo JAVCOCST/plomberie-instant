@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Contrat COST-PLUS – Toitures VB</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:9pt;color:#111;background:#888;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 2px 18px rgba(0,0,0,.4)}
+.hdr{background-color:#1a1a1a;background-image:linear-gradient(160deg,rgba(255,255,255,.03) 0%,rgba(0,0,0,.35) 55%,rgba(255,255,255,.02) 100%),repeating-linear-gradient(-48deg,transparent,transparent 3px,rgba(255,255,255,.012) 3px,rgba(255,255,255,.012) 6px);height:36mm;padding:0 20px;display:flex;justify-content:space-between;align-items:center}
+.hdr-right{text-align:right}
+.hdr-label{color:#c9a84c;font-size:6pt;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin-bottom:3px}
+.hdr-title{color:#fff;font-size:20pt;font-weight:900;text-transform:uppercase;letter-spacing:.04em;line-height:1}
+.hdr-ref{color:#666;font-size:6.5pt;margin-top:4px}
+.hdr-ref span{display:inline-block;border-bottom:1px solid #555;min-width:80px}
+.gold-bar{height:3px;background:#c9a84c}
+.body{padding:14px 20px 16px 20px}
+.parties{display:grid;grid-template-columns:1fr 1fr;border:1px solid #ccc}
+.party{padding:9px 13px}
+.party+.party{border-left:1px solid #ccc}
+.p-role{font-size:6pt;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:#888;border-bottom:1px solid #e8e8e8;padding-bottom:3px;margin-bottom:5px}
+.p-name{font-size:8.5pt;font-weight:700;text-transform:uppercase;margin-bottom:2px}
+.p-info{font-size:7.5pt;color:#444;line-height:1.65}
+.fill{display:inline-block;border-bottom:1px solid #aaa;min-width:140px}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #ccc;border-top:none;margin-bottom:14px}
+.mc{padding:6px 11px;background:#f5f5f5}
+.mc+.mc{border-left:1px solid #ccc}
+.mc-lbl{font-size:6pt;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#888;margin-bottom:3px}
+.mc-val{font-size:8pt;font-weight:600;border-bottom:1px solid #bbb;display:block;min-height:13px}
+.objet-block{font-size:8pt;line-height:1.75;margin-bottom:13px;text-align:justify}
+.art{margin-top:11px}
+.art-hd{border-bottom:1px solid #111;padding-bottom:3px;margin-bottom:6px;display:flex;align-items:baseline;gap:9px}
+.art-num{font-size:6.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#888}
+.art-title{font-size:8.5pt;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+p.t{font-size:8pt;color:#222;line-height:1.72;margin-bottom:6px;text-align:justify}
+.sub{margin:5px 0}
+.sub-t{font-size:8pt;font-weight:700;margin-bottom:1px}
+.sub-p{font-size:7.5pt;color:#333;line-height:1.65;text-align:justify}
+.infobox{border:1px solid #ccc;background:#f8f8f8;padding:8px 13px;margin:7px 0;font-size:8pt;line-height:1.65}
+.prix-box{display:flex;justify-content:space-between;align-items:center;border:1.5px solid #111;padding:8px 14px;margin:9px 0}
+.px-lbl{font-size:7.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#444}
+.px-sub{font-size:6.5pt;color:#999;margin-top:1px}
+.px-val{font-size:15pt;font-weight:900;color:#111}
+.budget-summary{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid #ccc;margin:8px 0}
+.bc{padding:9px 13px}
+.bc+.bc{border-left:1px solid #ccc}
+.bc:last-child{background:#f2f2f2}
+.bc-lbl{font-size:6pt;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#888;margin-bottom:4px}
+.bc-val{font-size:12pt;font-weight:900;color:#111}
+.bc-sub{font-size:6.5pt;color:#aaa;margin-top:1px}
+table.tbl{width:100%;border-collapse:collapse;font-size:8pt;margin:7px 0}
+table.tbl thead tr{background:#1a1a1a}
+table.tbl thead th{color:#fff;padding:5px 9px;font-weight:700;font-size:7.5pt;text-align:left}
+table.tbl thead th.r{text-align:right}
+table.tbl thead th.c{text-align:center}
+table.tbl tbody tr{border-bottom:1px solid #e8e8e8}
+table.tbl tbody tr:nth-child(even){background:#f7f7f7}
+table.tbl tbody td{padding:5px 9px;vertical-align:top}
+table.tbl tbody td.r{text-align:right;font-weight:600}
+table.tbl tbody td.c{text-align:center}
+table.tbl tfoot tr{background:#e8e8e8}
+table.tbl tfoot td{padding:5px 9px;font-weight:700}
+table.tbl tfoot td.r{text-align:right}
+.excl-block{border:1px solid #ccc;padding:9px 13px;margin:8px 0;background:#f9f9f9}
+.excl-title{font-size:6.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#666;margin-bottom:6px}
+.excl-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.excl-grid li{font-size:7.5pt;color:#333;line-height:1.75;list-style:none;padding-left:10px;position:relative}
+.excl-grid li::before{content:"–";position:absolute;left:0;color:#aaa}
+.sigs{display:grid;grid-template-columns:1fr 1fr;gap:36px;border-top:1.5px solid #111;margin-top:20px;padding-top:14px}
+.sig-lbl{font-size:6pt;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:#888;margin-bottom:24px}
+.sig-line{border-top:1px solid #555;margin-bottom:4px}
+.sig-name{font-size:8pt;font-weight:700}
+.sig-sub{font-size:7.5pt;color:#555}
+.sig-date{font-size:7.5pt;color:#555;margin-top:4px}
+.doc-note{text-align:center;font-size:7pt;color:#aaa;font-style:italic;padding:8px 0 2px}
+.ftr{background:#1a1a1a;padding:6px 20px;display:flex;justify-content:space-between}
+.ftr span{color:#666;font-size:6.5pt}
+@media print{body{background:#fff}.page{margin:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="hdr">
+  <div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 510" style="width:170px;height:auto;display:block;">
+<polygon points="869.24 319.47 484.51 319.47 575.29 248.54 717.99 248.54 663.9 179.32 606.56 105.93 333.25 319.47 210.76 319.47 290.2 257.41 560.12 46.52 606.62 10.18 619.66 0 668.69 62.76 869.24 319.47" fill="#fff"/>
+<path d="M102.13,416.51v14.77h-42.68v70.46h-16.91v-70.46H0v-14.77h102.13Z" fill="#fff"/>
+<path d="M163.65,504.69c-31.17,0-55.25-14.27-55.25-45.82v-.13c0-30.36,22.75-45.63,55.25-45.63s55.18,15.27,55.18,45.63v.13c0,31.55-24.07,45.82-55.18,45.82ZM163.65,428.58c-22.25,0-38.65,8.55-38.65,30.29s16.34,30.36,38.65,30.36,38.59-8.55,38.59-30.36-16.4-30.29-38.59-30.29Z" fill="#fff"/>
+<path d="M231.39,501.74v-85.23h16.59v85.23h-16.59Z" fill="#fff"/>
+<path d="M362.68,416.51v14.77h-42.68v70.46h-16.91v-70.46h-42.55v-14.77h102.13Z" fill="#fff"/>
+<path d="M423.26,504.56h-.25c-25.33,0-47.77-8.36-47.77-31.8v-56.25h16.59v56.88c0,8.17,9.8,15.34,31.17,15.34h.25c21.24,0,31.11-7.17,31.11-15.34v-56.88h16.59v56.25c0,23.63-22.44,31.8-47.7,31.8Z" fill="#fff"/>
+<path d="M591.24,440.46v6.54c0,7.35-2.07,12.76-6.28,16.66,4.27,3.96,6.35,9.43,6.35,16.78v21.31h-16.91v-21.31c0-9.24-10.62-9.3-18.04-9.3h-55.87v30.61h-16.84l-.13-85.23,72.4-.13c24.89,0,35.32,6.6,35.32,24.07ZM574.34,446.99v-6.54c0-9.24-10.62-9.3-18.04-9.3h-55.81v25.14h55.81c7.42,0,18.04-.06,18.04-9.3Z" fill="#fff"/>
+<path d="M603.87,501.61v-84.98l88.12-.13v14.77h-71.21v20.49l60.52.13v14.64h-60.52v20.43h71.21v14.77l-88.12-.13Z" fill="#fff"/>
+<path d="M704.73,471.07h16.72c1.19,14.39,14.33,18.54,38.46,18.54,27.28,0,39.34-3.83,39.34-11.56s-17.98-9.81-43.93-12.19c-29.92-2.7-50.78-8.17-50.78-26.27s18.98-26.65,56.25-26.65,54.74,11.57,55.12,33.63h-16.66c-1.19-14.39-14.39-18.54-38.46-18.54-27.28,0-39.34,3.77-39.34,11.57,0,6.98,15.46,9.37,37.77,11.5,32.31,2.51,56.94,7.86,56.94,26.96s-18.98,26.65-56.25,26.65-54.74-11.44-55.18-33.62Z" fill="#fff"/>
+<path d="M921,501.61h-20.18l-44.18-85.29h19.73l34.69,67.06,34.76-67.06h19.67l-44.5,85.29Z" fill="#fff"/>
+<path d="M1073.72,459.12c4.21,3.9,6.28,9.43,6.28,16.66v1.89c0,17.47-10.43,24.07-35.32,24.07l-72.4-.13v-84.98l72.4-.13c24.89,0,35.32,6.6,35.32,24.07v1.89c0,7.23-2.07,12.76-6.28,16.66ZM1063.09,442.47v-1.89c0-9.24-10.62-9.3-18.04-9.3h-55.87v20.43h55.87c7.42,0,18.04-.06,18.04-9.24ZM1063.09,477.66v-1.89c0-9.18-10.62-9.24-18.04-9.24h-55.87v20.43h55.87c7.42,0,18.04-.06,18.04-9.3Z" fill="#fff"/>
+</svg>
+</div>
+  <div class="hdr-right">
+    <div class="hdr-label">Contrat de construction</div>
+    <div class="hdr-title">COST-PLUS</div>
+    <div class="hdr-ref">N°&nbsp;<span>&nbsp;</span>&nbsp;&nbsp;|&nbsp;&nbsp;REV0</div>
+  </div>
+</div>
+<div class="gold-bar"></div>
+<div class="body">
+<div class="parties">
+  <div class="party">
+    <div class="p-role">CI-APRÈS NOMMÉE ENTREPRENEUR</div>
+    <div class="p-name">TOITURES VB INC.</div>
+    <div class="p-info">CP264, 297 Rue Principale, Granby (Québec), J2G 8E5<br>Tél. : 450-521-3227 &nbsp;|&nbsp; <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5930373f36192d36302d2c2b3c2a2f3b773a38">[email&#160;protected]</a><br>Licence R.B.Q : 5854-9353-01</div>
+  </div>
+  <div class="party">
+    <div class="p-role">CI-APRÈS NOMMÉ PROPRIÉTAIRE</div>
+    <div class="p-name"><span class="fill">&nbsp;</span></div>
+    <div class="p-info">
+      Adresse : <span class="fill">&nbsp;</span><br>
+      Téléphone : <span class="fill">&nbsp;</span><br>
+      Courriel : <span class="fill">&nbsp;</span>
+    </div>
+  </div>
+</div>
+<div class="meta">
+  <div class="mc"><div class="mc-lbl">No. de dossier</div><span class="mc-val">&nbsp;</span></div>
+  <div class="mc"><div class="mc-lbl">Date du contrat</div><span class="mc-val">&nbsp;</span></div>
+  <div class="mc"><div class="mc-lbl">Adresse des travaux</div><span class="mc-val">&nbsp;</span></div>
+  <div class="mc"><div class="mc-lbl">No. de devis</div><span class="mc-val">&nbsp;</span></div>
+</div>
+<p class="objet-block">Les travaux de construction seront exécutés à l'adresse indiquée ci-dessus, conformément aux spécifications du devis annexé, selon la formule <strong>COST-PLUS</strong>. L'entrepreneur est rémunéré pour les coûts réels engagés, plus un honoraire de gestion convenu. Les travaux seront exécutés sous la supervision de <strong>Jasmin Valcourt, Président de Toitures VB Inc.</strong></p>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 1</span><span class="art-title">Nature du contrat et rémunération</span></div>
+  <p class="t">Le présent contrat est conclu selon la formule <strong>COST-PLUS</strong>. L'entrepreneur est rémunéré pour l'ensemble des coûts directs réels engagés — matériaux, main-d'œuvre et sous-traitants — auxquels s'ajoute un honoraire de gestion et de profit fixé entre les parties.</p>
+  <div class="infobox">Pourcentage d'honoraire convenu : <strong><span class="fill" style="min-width:40px">&nbsp;</span>&nbsp;%</strong> sur les coûts directs totaux. Ce taux est fixe et non révisable sans avenant écrit signé par les deux parties.</div>
+  <div class="sub" style="margin-top:6px"><div class="sub-t">1.1 — Estimation initiale</div><p class="sub-p">Une estimation de <strong>$&nbsp;<span class="fill" style="min-width:80px">&nbsp;</span></strong> est fournie à titre indicatif uniquement. Le montant final sera établi selon les coûts réels documentés. L'estimation ne constitue pas un plafond contractuel, sauf disposition contraire à l'article 3.</p></div>
+  <div class="sub" style="margin-top:5px"><div class="sub-t">1.2 — Taux de main-d'œuvre de référence</div><p class="sub-p">Gérant de projet : 85,00 $/h &nbsp;|&nbsp; Contremaître : 73,00 $/h &nbsp;|&nbsp; Couvreur : 65,00 $/h<br><em style="font-size:7pt;color:#999">Sujets à changement selon les hausses salariales prévues à la convention collective.</em></p></div>
+</div>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 2</span><span class="art-title">Portée des travaux</span></div>
+  <table class="tbl">
+    <thead><tr><th style="width:78%">Description</th><th class="c">Inclus</th></tr></thead>
+    <tbody>
+      <tr><td>Dépose et mise aux rebuts de la couverture existante</td><td class="c">☐ Oui &nbsp;☐ Non</td></tr>
+      <tr><td>Pose de la membrane pare-eau et protections de rive</td><td class="c">☐ Oui &nbsp;☐ Non</td></tr>
+      <tr><td>Installation du revêtement de toiture — type : <span class="fill" style="min-width:90px">&nbsp;</span></td><td class="c">☐ Oui &nbsp;☐ Non</td></tr>
+      <tr><td>Solins multicouches, faîtages, noues et ouvrages de tôlerie</td><td class="c">☐ Oui &nbsp;☐ Non</td></tr>
+      <tr><td>Ventilation de comble</td><td class="c">☐ Oui &nbsp;☐ Non</td></tr>
+      <tr><td>Protection au sol et nettoyage complet du chantier</td><td class="c">☐ Oui &nbsp;☐ Non</td></tr>
+      <tr><td>Autres : <span class="fill" style="min-width:200px">&nbsp;</span></td><td class="c">☐ Oui &nbsp;☐ Non</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 3</span><span class="art-title">Budget maximal</span></div>
+  <p class="t">☐ &nbsp;<strong>Sans plafond</strong> — Le propriétaire autorise l'entrepreneur à engager les coûts nécessaires à la bonne réalisation des travaux.</p>
+  <p class="t">☐ &nbsp;<strong>Avec plafond</strong> — Les coûts totaux (matériaux + main-d'œuvre + honoraires, avant taxes) ne dépasseront pas <strong>$&nbsp;<span class="fill" style="min-width:100px">&nbsp;</span></strong> sans autorisation écrite préalable du propriétaire.</p>
+</div>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 4</span><span class="art-title">Exclusions</span></div>
+  <p class="t">Les éléments suivants ne sont <strong>pas inclus</strong> et feront l'objet d'une facturation distincte s'ils s'avèrent nécessaires :</p>
+<div class="excl-block">
+    <div class="excl-title">Travaux et éléments exclus de la présente entente</div>
+    <ul class="excl-grid">
+      <li>Travaux hors de la zone décrite au devis</li>
+      <li>Remplacement de contreplaqué ou d'OSB endommagé</li>
+      <li>Travaux de charpente ou renforcement structural</li>
+      <li>Correction de la pente ou courbure de la toiture existante</li>
+      <li>Remplacement ou modification des solins existants (sauf à la jonction des travaux)</li>
+      <li>Réparation ou remplacement des gouttières, fascia ou soffites</li>
+      <li>Travaux liés à la ventilation de toiture ou à l'entretoit</li>
+      <li>Retrait ou remplacement d'isolant mouillé ou contaminé</li>
+      <li>Réparations liées à la découverte de dommages cachés après ouverture</li>
+      <li>Correction d'installations antérieures non conformes</li>
+      <li>Permis municipaux, inspections ou frais réglementaires</li>
+      <li>Tout autre élément non expressément inclus à l'article 2</li>
+    </ul>
+  </div>
+</div>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 5</span><span class="art-title">Modalités de paiement</span></div>
+  <table class="tbl">
+    <thead><tr><th>Versement</th><th>Déclencheur</th><th class="r">Montant</th></tr></thead>
+    <tbody>
+      <tr><td>Acompte</td><td>5 jours avant le début des travaux</td><td class="r">25 %</td></tr>
+      <tr><td>Facturations intermédiaires</td><td>Par relevé détaillé aux deux (2) semaines</td><td class="r">Coûts réels</td></tr>
+      <tr><td>Solde final</td><td>Dans les 10 jours suivant la complétion des travaux</td><td class="r">Solde dû</td></tr>
+    </tbody>
+  </table>
+  <p class="t">Si le propriétaire manque à ses obligations de paiement, un intérêt sera calculé : (1)&nbsp;taux préférentiel + 2 % de la 31<sup>e</sup> à la 60<sup>e</sup> journée; (2)&nbsp;taux préférentiel + 4 % après la 60<sup>e</sup> journée. L'entrepreneur se réserve le droit de <strong>cesser les travaux</strong> si les délais prescrits ne sont pas respectés.</p>
+</div>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 6</span><span class="art-title">Transparence et justificatifs</span></div>
+  <p class="t">L'entrepreneur fournit, sur demande, l'ensemble des factures fournisseurs, bons de livraison et feuilles de temps justifiant les coûts facturés. Le propriétaire dispose de sept (7) jours suivant la réception d'une facture pour en contester le contenu par écrit.</p>
+</div>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 7</span><span class="art-title">Délais d'exécution</span></div>
+  <div class="sub"><div class="sub-t">7.1 — Calendrier</div><p class="sub-p">Date de début prévue : <span class="fill" style="min-width:80px">&nbsp;</span> &nbsp;|&nbsp; Durée estimée : <span class="fill" style="min-width:50px">&nbsp;</span> jours ouvrables, sous réserve des conditions météorologiques et de la disponibilité des matériaux.</p></div>
+  <div class="sub" style="margin-top:5px"><div class="sub-t">7.2 — Arrêt de chantier</div><p class="sub-p">Le propriétaire peut suspendre les travaux moyennant un préavis écrit de 48 heures. Les coûts déjà engagés et les frais de remobilisation demeurent à sa charge.</p></div>
+</div>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 8</span><span class="art-title">Garantie</span></div>
+  <p class="t">À la complétion des travaux, l'entrepreneur remettra un <strong>Certificat de Garantie de main-d'œuvre (5 ans)</strong>, émis séparément, dont les conditions, exclusions et obligations y sont intégralement définies. La garantie est conditionnelle au paiement complet des travaux.</p>
+</div>
+
+<div class="art">
+  <div class="art-hd"><span class="art-num">Article 9</span><span class="art-title">Conformité, obligations et dispositions générales</span></div>
+  <div class="sub"><div class="sub-t">9.1 — Normes</div><p class="sub-p">Les travaux seront conformes aux lois et règlements en vigueur dans la province de Québec (R.B.Q : 5854-9353-01).</p></div>
+  <div class="sub" style="margin-top:5px"><div class="sub-t">9.2 — Obligation du propriétaire</div><p class="sub-p">Le propriétaire est tenu de remettre sans délai copie de tout document, lettre ou avis reçu de la part d'un sous-traitant. Advenant défaut, le propriétaire sera entièrement responsable des dommages causés à l'entrepreneur.</p></div>
+  <div class="sub" style="margin-top:5px"><div class="sub-t">9.3 — Loi applicable</div><p class="sub-p">Le présent contrat est régi par les lois de la province de Québec. Le tribunal compétent sera celui du district judiciaire de Shefford. Le présent contrat et le devis annexé constituent l'intégralité de l'entente entre les parties.</p></div>
+</div>
+  <div class="sigs">
+    <div>
+      <div class="sig-lbl">Toitures VB Inc. — Entrepreneur</div>
+      <div class="sig-line"></div>
+      <div class="sig-name">Jasmin Valcourt</div>
+      <div class="sig-sub">Président</div>
+      <div class="sig-date">Signé à Granby, ce ___________________________</div>
+    </div>
+    <div>
+      <div class="sig-lbl">Propriétaire</div>
+      <div class="sig-line"></div>
+      <div class="sig-name">&nbsp;</div>
+      <div class="sig-sub">Nom imprimé : ___________________________</div>
+      <div class="sig-date">Signé à _____________, ce ___________________________</div>
+    </div>
+  </div>
+  <div class="doc-note">Document invalide si non signé par les deux parties</div>
+</div>
+<div class="ftr">
+  <span>R.B.Q : 5854-9353-01 &nbsp;|&nbsp; CP264, 297 Rue Principale, Gra

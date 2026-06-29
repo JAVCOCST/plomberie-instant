@@ -1,0 +1,280 @@
+/* ── Progress FAB (floating action button) ── */
+.progress-fab {
+  position: fixed;
+  bottom: calc(90px + env(safe-area-inset-bottom));
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 900;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: hsla(230, 22%, 11%, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsla(260, 70%, 62%, 0.35);
+  box-shadow: 0 4px 20px hsla(260, 70%, 62%, 0.2), 0 0 0 1px hsla(0,0%,0%,0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--imm-font);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ── Overlay ── */
+.progress-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  background: hsla(0, 0%, 0%, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Drawer ── */
+.progress-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 960;
+  max-height: 80vh;
+  max-height: 80dvh;
+  background: hsl(230, 25%, 9%);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border: 1px solid hsla(260, 70%, 62%, 0.15);
+  border-bottom: none;
+  box-shadow: 0 -8px 40px hsla(0, 0%, 0%, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--imm-font);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.progress-drawer-handle {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 4px;
+}
+.progress-drawer-pill {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: transparent;
+}
+
+.progress-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px 12px;
+}
+.progress-drawer-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: hsl(220, 20%, 94%);
+}
+.progress-drawer-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: hsla(220, 15%, 75%, 0.7);
+}
+.progress-drawer-close {
+  background: hsla(0, 0%, 100%, 0.06);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsla(220, 15%, 75%, 0.8);
+  cursor: pointer;
+  font-family: var(--imm-font);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Progress bar ── */
+.progress-drawer-bar-wrap {
+  margin: 0 20px 14px;
+  height: 4px;
+  border-radius: 2px;
+  background: hsla(260, 70%, 62%, 0.12);
+  overflow: hidden;
+}
+.progress-drawer-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, hsl(260, 70%, 62%), hsl(185, 70%, 50%));
+  box-shadow: 0 0 8px hsla(260, 70%, 62%, 0.4);
+}
+
+/* ── Steps list ── */
+.progress-drawer-steps {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.progress-step-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: default;
+  transition: all 0.2s ease;
+  font-family: var(--imm-font);
+  text-align: left;
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.progress-step-row.completed {
+  cursor: pointer;
+}
+.progress-step-row.completed:hover {
+  background: hsla(260, 70%, 62%, 0.06);
+  border-color: hsla(260, 70%, 62%, 0.12);
+}
+.progress-step-row.active {
+  background: hsla(260, 70%, 62%, 0.08);
+  border-color: hsla(260, 70%, 62%, 0.2);
+}
+
+.progress-step-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.progress-step-row.completed .progress-step-icon {
+  color: hsl(145, 65%, 48%);
+}
+.progress-step-row:not(.completed) .progress-step-icon {
+  color: hsla(220, 15%, 75%, 0.3);
+}
+
+.progress-step-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.progress-step-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: hsl(220, 20%, 94%);
+  transition: all 0.3s ease;
+}
+.progress-step-label.done {
+  color: hsla(220, 15%, 75%, 0.6);
+  text-decoration: line-through;
+  text-decoration-color: hsla(145, 65%, 48%, 0.5);
+  text-decoration-thickness: 1.5px;
+}
+
+.progress-step-value {
+  font-size: 12px;
+  color: hsl(260, 70%, 72%);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.progress-step-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: hsla(220, 15%, 75%, 0.4);
+  background: hsla(0, 0%, 100%, 0.04);
+}
+.progress-step-row.completed .progress-step-num {
+  color: hsl(145, 65%, 48%);
+  background: hsla(145, 65%, 48%, 0.1);
+}
+
+/* ── Desktop: larger bottom offset ── */
+@media (min-width: 768px) {
+  .progress-fab {
+    bottom: 100px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+  }
+  .progress-fab svg {
+    width: 56px;
+    height: 56px;
+  }
+  .progress-fab svg circle {
+    cx: 28;
+    cy: 28;
+    r: 24;
+  }
+  .progress-drawer {
+    max-width: 420px;
+    right: 24px;
+    left: auto;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    bottom: auto;
+    top: auto;
+    border: 1px solid hsla(260, 70%, 62%, 0.15);
+    border-radius: 20px;
+    position: fixed;
+    bottom: 0;
+    max-height: 75vh;
+  }
+}
+
+/* ── Building type dropdown ── */
+.progress-building-dropdown {
+  overflow: hidden;
+  padding: 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.progress-building-option {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid hsla(260, 50%, 50%, 0.25);
+  background: hsla(230, 22%, 14%, 0.8);
+  color: hsla(0, 0%, 100%, 0.75);
+  font-size: 13px;
+  font-family: var(--imm-font);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.progress-building-option:active {
+  transform: scale(0.96);
+}
+
+.progress-building-option.selected {
+  background: hsla(260, 70%, 62%, 0.3);
+  border-color: hsl(260, 70%, 62%);
+  color: #fff;
+  font-weight: 600;
+}

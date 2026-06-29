@@ -1,0 +1,353 @@
+{
+  "$schema_version": "1.0.0",
+  "$schema_id": "product_spec.roof_accessory.v1",
+  "$generated_at": "2026-05-26",
+  "$source": "Fiche technique Ventilation Maximum + viewer V5 (frozen visual reference)",
+
+  "product_id": "ventilation-maximum.max-301",
+  "product_family": "max-301",
+  "category": "roof_accessory",
+  "subcategory": "static_exhaust_vent",
+
+  "manufacturer": {
+    "name": "Ventilation Maximum",
+    "country": "CA",
+    "region": "QC",
+    "city": "Terrebonne, Québec",
+    "website": "https://www.ventilationmaximum.com",
+    "confidence": "A"
+  },
+
+  "common": {
+    "ventilation_type": "passive_static",
+    "primary_use": [
+      "attic_exhaust",
+      "low_to_steep_slope_residential",
+      "qc_residential_construction"
+    ],
+    "compliance_targets": [
+      { "code": "CNB", "section": "9.19", "topic": "ventilation des combles", "confidence": "B" },
+      { "code": "CCQ", "topic": "construction Québec", "confidence": "B" }
+    ],
+    "warranty": {
+      "duration_years": null,
+      "scope": null,
+      "requires_manufacturer_confirmation": true
+    },
+    "supported_slope": {
+      "min_ratio": "2/12",
+      "max_ratio": "16/12",
+      "min_degrees": 9.46,
+      "max_degrees": 53.13,
+      "confidence": "C",
+      "requires_manufacturer_confirmation": true,
+      "note": "Plage typique des ventilateurs statiques résidentiels — non confirmée par fiche officielle"
+    }
+  },
+
+  "units": {
+    "length": "mm",
+    "length_alt": "in",
+    "area": "mm2",
+    "area_alt": "sqin",
+    "weight": "kg",
+    "weight_alt": "lb",
+    "angle": "deg"
+  },
+
+  "variants": {
+    "301-12": {
+      "label": "Maximum 301-12",
+      "size_in": 12,
+      "is_default": true,
+      "is_standard_stock": true,
+      "dimensions_official": {
+        "A_col_mm": 305,
+        "A_col_in": 12,
+        "B_deflector_mm": 495,
+        "B_deflector_in": 19.5,
+        "C_total_height_mm": 279,
+        "C_total_height_in": 11,
+        "D_flashing_downslope_mm": 219,
+        "D_flashing_downslope_in": 8.625,
+        "confidence": "A",
+        "source": "fiche technique officielle"
+      },
+      "ventilation_official": {
+        "nfa_sqin": 144,
+        "nfa_m2": 0.093,
+        "nfa_sqft": 1.000,
+        "confidence": "A"
+      },
+      "construction_official": {
+        "deflector_count": 4,
+        "steel_gauge": "24 & 26",
+        "confidence": "A"
+      },
+      "special_order": false
+    },
+
+    "301-14": {
+      "label": "Maximum 301-14",
+      "size_in": 14,
+      "is_standard_stock": false,
+      "dimensions_official": {
+        "A_col_mm": 356, "A_col_in": 14,
+        "B_deflector_mm": 546, "B_deflector_in": 21.5,
+        "C_total_height_mm": 279, "C_total_height_in": 11,
+        "D_flashing_downslope_mm": 413, "D_flashing_downslope_in": 16.25,
+        "confidence": "A"
+      },
+      "ventilation_official": {
+        "nfa_sqin": 196, "nfa_m2": 0.126, "nfa_sqft": 1.361,
+        "confidence": "A"
+      },
+      "construction_official": {
+        "deflector_count": 4, "steel_gauge": "22 & 24", "confidence": "A"
+      },
+      "special_order": true
+    },
+
+    "301-16": {
+      "label": "Maximum 301-16",
+      "size_in": 16,
+      "is_standard_stock": false,
+      "dimensions_official": {
+        "A_col_mm": 406, "A_col_in": 16,
+        "B_deflector_mm": 597, "B_deflector_in": 23.5,
+        "C_total_height_mm": 337, "C_total_height_in": 13.25,
+        "D_flashing_downslope_mm": 413, "D_flashing_downslope_in": 16.25,
+        "confidence": "A"
+      },
+      "ventilation_official": {
+        "nfa_sqin": 256, "nfa_m2": 0.165, "nfa_sqft": 1.778,
+        "confidence": "A"
+      },
+      "construction_official": {
+        "deflector_count": 5, "steel_gauge": "22 & 24", "confidence": "A"
+      },
+      "special_order": true
+    },
+
+    "301-18": {
+      "label": "Maximum 301-18",
+      "size_in": 18,
+      "is_standard_stock": false,
+      "dimensions_official": {
+        "A_col_mm": 457, "A_col_in": 18,
+        "B_deflector_mm": 648, "B_deflector_in": 25.5,
+        "C_total_height_mm": 337, "C_total_height_in": 13.25,
+        "D_flashing_downslope_mm": 413, "D_flashing_downslope_in": 16.25,
+        "confidence": "A"
+      },
+      "ventilation_official": {
+        "nfa_sqin": 324, "nfa_m2": 0.209, "nfa_sqft": 2.250,
+        "confidence": "A"
+      },
+      "construction_official": {
+        "deflector_count": 5, "steel_gauge": "24", "confidence": "A"
+      },
+      "special_order": true
+    },
+
+    "301-20": {
+      "label": "Maximum 301-20",
+      "size_in": 20,
+      "is_standard_stock": false,
+      "dimensions_official": {
+        "A_col_mm": 508, "A_col_in": 20,
+        "B_deflector_mm": 699, "B_deflector_in": 27.5,
+        "C_total_height_mm": 400, "C_total_height_in": 15.75,
+        "D_flashing_downslope_mm": 413, "D_flashing_downslope_in": 16.25,
+        "confidence": "A"
+      },
+      "ventilation_official": {
+        "nfa_sqin": 400, "nfa_m2": 0.258, "nfa_sqft": 2.778,
+        "confidence": "A"
+      },
+      "construction_official": {
+        "deflector_count": 6, "steel_gauge": "22 & 24", "confidence": "A"
+      },
+      "special_order": true
+    },
+
+    "301-22": {
+      "label": "Maximum 301-22",
+      "size_in": 22,
+      "is_standard_stock": false,
+      "dimensions_official": {
+        "A_col_mm": 559, "A_col_in": 22,
+        "B_deflector_mm": 749, "B_deflector_in": 29.5,
+        "C_total_height_mm": 400, "C_total_height_in": 15.75,
+        "D_flashing_downslope_mm": 413, "D_flashing_downslope_in": 16.25,
+        "confidence": "A"
+      },
+      "ventilation_official": {
+        "nfa_sqin": 484, "nfa_m2": 0.312, "nfa_sqft": 3.361,
+        "confidence": "A"
+      },
+      "construction_official": {
+        "deflector_count": 6, "steel_gauge": "22 & 24", "confidence": "A"
+      },
+      "special_order": true
+    },
+
+    "301-24": {
+      "label": "Maximum 301-24",
+      "size_in": 24,
+      "is_standard_stock": false,
+      "dimensions_official": {
+        "A_col_mm": 610, "A_col_in": 24,
+        "B_deflector_mm": 800, "B_deflector_in": 31.5,
+        "C_total_height_mm": 470, "C_total_height_in": 18.5,
+        "D_flashing_downslope_mm": 413, "D_flashing_downslope_in": 16.25,
+        "confidence": "A"
+      },
+      "ventilation_official": {
+        "nfa_sqin": 576, "nfa_m2": 0.372, "nfa_sqft": 4.000,
+        "confidence": "A"
+      },
+      "construction_official": {
+        "deflector_count": 7, "steel_gauge": "22 & 24", "confidence": "A"
+      },
+      "special_order": true
+    }
+  },
+
+  "color_options": [
+    { "id": "galv",  "label": "Galvanisé naturel", "hex": "#9CA3A8", "is_default": true,  "confidence": "B" },
+    { "id": "black", "label": "Noir",              "hex": "#1F1F22", "is_default": false, "confidence": "B" },
+    { "id": "brown", "label": "Brun",              "hex": "#3B2A1E", "is_default": false, "confidence": "B" }
+  ],
+
+  "geometry_rules": {
+    "$comment": "Paramètres dérivés (level B) — utilisés par le builder pour générer les meshes runtime/author/debug à partir des dimensions officielles A/B/C/D",
+    "derived_parameters": {
+      "flange_margin_mm": 90,
+      "anti_z_fighting_mm": 1.5,
+      "stack_curb_gap_mm": 8,
+      "cap_stack_gap_mm": 4,
+      "deflector_min_gap_ratio": 1.5,
+      "confidence": "B"
+    },
+    "lod_recommendations": {
+      "LOD0_high_polycount": 8000,
+      "LOD1_mid_polycount":  2500,
+      "LOD2_low_polycount":   600,
+      "LOD3_billboard":         2,
+      "format": "glb",
+      "alternate_formats": ["gltf"],
+      "cast_shadow": true,
+      "receive_shadow": true,
+      "confidence": "B"
+    }
+  },
+
+  "placement_rules": {
+    "ridge": {
+      "min_distance_from_ridge_mm": 305,
+      "min_distance_from_ridge_in": 12,
+      "max_distance_from_ridge_mm": 1219,
+      "max_distance_from_ridge_in": 48,
+      "preferred_distance_from_ridge_mm": 610,
+      "preferred_distance_from_ridge_in": 24,
+      "auto_compute_min_from_flange": true,
+      "auto_compute_formula": "max(min_distance_from_ridge_mm, (A + flange_margin_mm) / 2 + 30)",
+      "confidence": "B",
+      "rationale": "Placer dans le tiers supérieur du versant pour effet de cheminée"
+    },
+    "avoid": {
+      "valleys":         { "min_distance_mm": 600,  "severity": "error",   "confidence": "B" },
+      "hips":            { "min_distance_mm": 600,  "severity": "error",   "confidence": "B" },
+      "gable_edges":     { "min_distance_mm": 600,  "severity": "error",   "confidence": "B" },
+      "eave_edges":      { "min_distance_mm": 900,  "severity": "error",   "confidence": "B" },
+      "plane_intersections": { "severity": "error", "confidence": "A" },
+      "plane_change":    { "severity": "error",     "confidence": "A" },
+      "chimneys":        { "min_distance_mm": 900,  "severity": "warning", "confidence": "C" },
+      "skylights":       { "min_distance_mm": 900,  "severity": "warning", "confidence": "C" },
+      "other_accessories": { "min_distance_mm": 1200, "severity": "error", "confidence": "B" }
+    },
+    "must_stay_on_single_plane": true,
+    "must_stay_within_section_polygon": true,
+    "orientation": {
+      "align_to_slope": true,
+      "rotation_around_plane_normal_deg": 0,
+      "allow_user_rotation": false,
+      "rationale": "Ventilateur symétrique 4 faces — rotation sans impact aérodynamique"
+    },
+    "ridge_relationship": {
+      "prefer_upper_third_of_slope": true,
+      "min_percent_from_eave": 66,
+      "severity_if_below": "warning",
+      "confidence": "B"
+    }
+  },
+
+  "ventilation_rules": {
+    "nfa_per_unit_source": "variants.{variant_id}.ventilation_official.nfa_sqft",
+    "soffit_ventilation": {
+      "computation_method": "perimeter_based",
+      "formula_area": "soffit_area_sqft = (perimeter_lf * soffit_width_in) / 12",
+      "default_soffit_width_in": 12,
+      "soffit_width_range_in": { "min": 6, "max": 24 },
+      "panel_types": {
+        "perforated_aluminum": { "nfa_ratio": 0.10, "label": "Soffite aluminium perforé", "confidence": "C", "requires_manufacturer_confirmation": true },
+        "vented_vinyl": { "nfa_ratio": 0.05, "label": "Soffite vinyle ventilé", "confidence": "C", "requires_manufacturer_confirmation": true },
+        "solid_no_vent": { "nfa_ratio": 0.00, "label": "Soffite plein (non ventilé)", "confidence": "A" }
+      }
+    },
+    "intake_exhaust_balance": {
+      "target_ratio": { "intake": 0.5, "exhaust": 0.5 },
+      "acceptable_range_intake": { "min": 0.40, "max": 0.60 },
+      "rule": "total_intake_NFA >= total_exhaust_NFA",
+      "imbalance_warning_threshold_percent": 15,
+      "confidence": "A"
+    },
+    "applicable_rule_sets": [
+      { "id": "cnb-9.19-quebec-balanced", "name": "CNB 9.19 — ventilation équilibrée (1:300)", "applies_when": "intake_balance in [0.4, 0.6]", "formula": "total_NFA_sqft >= attic_floor_sqft / 300", "severity_if_fail": "error", "confidence": "A" },
+      { "id": "cnb-9.19-quebec-unbalanced", "name": "CNB 9.19 — ventilation non équilibrée (1:150)", "applies_when": "intake_balance not in [0.4, 0.6]", "formula": "total_NFA_sqft >= attic_floor_sqft / 150", "severity_if_fail": "error", "confidence": "A" },
+      { "id": "toitures-vb-simplified", "name": "Toitures VB — règle simplifiée terrain", "formula": "n_max301 >= ceil(roof_area_sqft / 600)", "severity_if_fail": "warning", "confidence": "C", "is_company_internal": true }
+    ],
+    "ventilation_summary": {
+      "exposed_fields": [
+        "attic_floor_area_sqft",
+        "total_exhaust_nfa_sqft",
+        "total_intake_nfa_sqft",
+        "intake_exhaust_balance_ratio",
+        "applied_rule_set_id",
+        "required_total_nfa_sqft",
+        "current_compliance_status",
+        "recommended_max301_count",
+        "recommended_soffit_nfa_sqft",
+        "delta_to_compliance_sqft",
+        "global_confidence_level"
+      ]
+    }
+  },
+
+  "ui_hints": {
+    "validation_colors": {
+      "invalid": "#E11D48",
+      "warning": "#F59E0B",
+      "valid":   "#16A34A",
+      "neutral": "#94A3B8",
+      "orphan":  "#64748B"
+    },
+    "preview_mode": { "follows_cursor": true, "snaps_to_ridge": true, "snap_radius_mm": 600, "live_validation": true, "update_rate_hz": 60 },
+    "handles": { "ridge_axis_arrow_color": "#FACC15", "slope_axis_arrow_color": "#22D3EE", "constrained_to_axis": true },
+    "snap_distances_mm": [305, 610, 1219],
+    "buttons": { "add_label": "Ajouter Maximum 301", "shortcut": "M" }
+  },
+
+  "open_questions": [
+    { "id": "Q1_upstand_orientation", "question": "L'upstand du solin est-il vertical monde ou normal au toit ?", "current_assumption": "vertical_monde", "decided_by": "Jasmin", "confidence": "C", "requires_manufacturer_confirmation": true },
+    { "id": "Q2_internal_support_structure", "question": "Comment les déflecteurs sont-ils supportés mécaniquement ?", "current_assumption": "4 supports génériques aux coins", "decided_by": "Jasmin", "confidence": "C", "requires_manufacturer_confirmation": true },
+    { "id": "Q3_curb_embed_depth", "question": "Le curb descend-il dans l'ouverture et de combien ?", "current_assumption": "60mm", "decided_by": "Jasmin", "confidence": "C", "requires_manufacturer_confirmation": true }
+  ],
+
+  "_meta": {
+    "frozen_visual_reference": "viewer V5 — maximum-301-viewer.jsx (gelé en Phase 0)",
+    "do_not_modify_without_versioning": true,
+    "schema_migration_required_if_changed": true
+  }
+}

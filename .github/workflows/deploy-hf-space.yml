@@ -1,0 +1,86 @@
+name: Deploy to Hugging Face Space
+
+# Pousse le contenu de `huggingface-space/` vers
+# https://huggingface.co/spaces/JAVCOCST/roof-sections-v16
+# à chaque fois que ce dossier (ou ce workflow) change sur main.
+# Aussi déclenchable à la main depuis l'onglet Actions de GitHub.
+#
+# Utilise `huggingface_hub.upload_folder()` (API officielle HF) plutôt que
+# git clone/push, qui se faisait jeter par "Repository not found" même avec
+# un token valide — gotcha connu avec les tokens fine-grained + org repos
+# private. L'API HfApi gère l'auth proprement via le token.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'huggingface-space/**'
+      - '.github/workflows/deploy-hf-space.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout webflow-quote-builder
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install huggingface_hub
+        run: pip install -U "huggingface_hub>=0.25"
+
+      - name: Sanity check token + repo access
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "${HF_TOKEN}" ]; then
+            echo "::error::Missing HF_TOKEN secret. Add it under Settings → Secrets → Actions."
+            exit 1
+          fi
+          python - <<'PY'
+          import os, sys
+          from huggingface_hub import HfApi
+          api = HfApi(token=os.environ["HF_TOKEN"])
+          try:
+              me = api.whoami()
+              print(f"[ok] Token belongs to: {me.get('name')} ({me.get('type')})")
+              orgs = [o.get("name") for o in me.get("orgs", [])]
+              print(f"[ok] Orgs reachable: {orgs}")
+          except Exception as e:
+              print(f"[error] whoami() failed: {e}", file=sys.stderr)
+              sys.exit(1)
+          try:
+              info = api.space_info("JAVCOCST/roof-sections-v16")
+              print(f"[ok] Space found: {info.id} (private={info.private})")
+          except Exception as e:
+              print(f"[error] cannot reach JAVCOCST/roof-sections-v16: {e}", file=sys.stderr)
+              print("[hint] either the token lacks access to the org/space, or the path is wrong.", file=sys.stderr)
+              sys.exit(1)
+          PY
+
+      - name: Upload huggingface-space/ to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import os, sys
+          from huggingface_hub import HfApi
+          sha = os.environ.get("GITHUB_SHA", "unknown")[:7]
+          api = HfApi(token=os.environ["HF_TOKEN"])
+          # delete_patterns="*" wipes orphan files so the Space tree mirrors
+          # huggingface-space/ exactly.
+          out = api.upload_folder(
+              folder_path="huggingface-space",
+              repo_id="JAVCOCST/roof-sections-v16",
+              repo_type="space",
+              commit_message=f"Sync from webflow-quote-builder@{sha}",
+              delete_patterns="*",
+          )
+          print(f"[ok] uploaded. commit url: {out}")
+          PY
+          echo "::notice::HF Space updated — rebuild starts automatically (~3-5 min)."

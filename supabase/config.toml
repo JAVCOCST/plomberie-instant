@@ -1,0 +1,73 @@
+project_id = "eeradaaxmqzyvxvmahlf"
+
+[functions.advisor-chat]
+verify_jwt = false
+
+[functions.roof-classify]
+verify_jwt = false
+
+[functions.roof-slope]
+verify_jwt = false
+
+[functions.send-quote-email]
+verify_jwt = false
+
+[functions.quickbooks-auth]
+verify_jwt = false
+
+[functions.quickbooks-sync]
+verify_jwt = false
+
+[functions.quickbooks-push-invoice]
+verify_jwt = false
+
+[functions.google-calendar-auth]
+verify_jwt = false
+
+[functions.google-calendar-sync]
+verify_jwt = false
+
+[functions.owner-progress]
+verify_jwt = false
+
+[functions.admin-copilot]
+verify_jwt = false
+
+[functions.quote-assistant]
+verify_jwt = false
+
+[functions.repair-chat]
+verify_jwt = false
+
+[functions.sms-handoff]
+verify_jwt = false
+
+[functions.quickbooks-create-customer]
+verify_jwt = false
+
+[functions.quote-respond]
+verify_jwt = false
+
+[functions.roof-polygon-enhance]
+verify_jwt = false
+
+[functions.roof-polygon-segment]
+verify_jwt = false
+
+[functions.review-send-batch]
+verify_jwt = false
+
+[functions.review-sms-webhook]
+verify_jwt = false
+
+[functions.contract-signature-send]
+verify_jwt = false
+
+[functions.contract-signature-public]
+verify_jwt = false
+
+[functions.contract-signature-remind]
+verify_jwt = false
+
+[functions.contract-signature-void]
+verify_jwt = false

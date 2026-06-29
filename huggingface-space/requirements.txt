@@ -1,0 +1,10 @@
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.2
+numpy==1.26.4
+opencv-python-headless==4.10.0.84
+shapely==2.0.6
+# ML backend (YOLOv8-OBB ONNX inference). Si le modèle ONNX manque, le wrapper
+# se charge en mode disabled et l'API tombe en fallback algo automatiquement
+# (cf. yolo_obb_inference.is_available() dans app.py).
+onnxruntime==1.19.2

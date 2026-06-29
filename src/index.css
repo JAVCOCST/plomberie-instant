@@ -1,0 +1,243 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prevent native pull-to-refresh on mobile + stabilise iOS gesture pipeline */
+html, body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+/* When the admin shell is mounted, lock the document so the shell becomes
+   the single viewport. Internal scroll containers own all vertical scroll —
+   no body scroll, no rubber-band, no competing physics. */
+html:has(.admin-shell),
+body:has(.admin-shell) {
+  overflow: hidden;
+  height: 100dvh;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+}
+
+/* Kill iOS tap highlight globally for native-app feel */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Admin portal themed scrollbars (dark charcoal + indigo accent) */
+.admin-shell *::-webkit-scrollbar,
+.admin-shell::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.admin-shell *::-webkit-scrollbar-track,
+.admin-shell::-webkit-scrollbar-track {
+  background: rgba(15, 15, 30, 0.6);
+  border-radius: 8px;
+}
+.admin-shell *::-webkit-scrollbar-thumb,
+.admin-shell::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.55), rgba(99, 102, 241, 0.35));
+  border-radius: 8px;
+  border: 2px solid rgba(15, 15, 30, 0.6);
+}
+.admin-shell *::-webkit-scrollbar-thumb:hover,
+.admin-shell::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(129, 140, 248, 0.85), rgba(99, 102, 241, 0.6));
+}
+.admin-shell *::-webkit-scrollbar-corner,
+.admin-shell::-webkit-scrollbar-corner {
+  background: rgba(15, 15, 30, 0.6);
+}
+.admin-shell, .admin-shell * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.55) rgba(15, 15, 30, 0.6);
+}
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Dark select option backgrounds */
+select option {
+  background: #1a1a2e;
+  color: #e5e7eb;
+}
+
+/* Global spin animation for loaders */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Phone vCard glow pulse */
+@keyframes phone-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 0.18rem hsl(234 89% 74% / 0.38));
+  }
+  50% {
+    filter: drop-shadow(0 0 0.42rem hsl(234 89% 74% / 0.95)) drop-shadow(0 0 0.85rem hsl(242 84% 67% / 0.45));
+  }
+}
+@keyframes phone-halo-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.78);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.12);
+  }
+}
+.phone-vcf-glow {
+  position: relative;
+  isolation: isolate;
+  animation: phone-glow-pulse 1.9s ease-in-out infinite;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.phone-vcf-glow::after {
+  content: "";
+  position: absolute;
+  inset: -0.45rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, hsl(234 89% 74% / 0.26) 0%, hsl(234 89% 74% / 0) 72%);
+  z-index: -1;
+  pointer-events: none;
+  animation: phone-halo-pulse 1.9s ease-in-out infinite;
+}
+.phone-vcf-glow:hover {
+  transform: scale(1.14);
+  filter: drop-shadow(0 0 0.58rem hsl(234 89% 74% / 0.98));
+}
+
+/* Logo shine sweep — used once on admin app open for a "whoosh" reveal */
+@keyframes logo-shine-sweep {
+  0%   { transform: translateX(-120%) skewX(-20deg); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translateX(220%) skewX(-20deg); opacity: 0; }
+}
+.logo-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    hsla(0, 0%, 100%, 0.85) 45%,
+    hsla(220, 90%, 80%, 0.95) 50%,
+    hsla(0, 0%, 100%, 0.85) 55%,
+    transparent 80%
+  );
+  mix-blend-mode: screen;
+  filter: blur(2px);
+  animation: logo-shine-sweep 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}

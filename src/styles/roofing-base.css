@@ -1,0 +1,16 @@
+/* Fallback values for dev (Webflow provides these in prod) */
+:root {
+  --_🎨-color--tokens---background--base: #f7f7f5;
+  --_🎨-color--tokens---background--lift: #ffffff;
+  --_🎨-color--tokens---tone--strong: #1a1a1a;
+  --_🎨-color--tokens---tone--medium: #6b6b6b;
+  --_🎨-color--tokens---button-primary-default--background: #1a1a1a;
+  --_🎨-color--tokens---button-primary-default--text: #ffffff;
+  --_🔘-radius---general--default: 12px;
+  --_🔘-radius---ui-elements--medium: 8px;
+  --spacing--16: 16px;
+  --spacing--24: 24px;
+  --spacing--32: 32px;
+  --spacing--48: 48px;
+  --_🔠-typography---font--body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}

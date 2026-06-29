@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Liste de matériaux Toitures VB — gabarit de style (sans texte)</title>
+<style>
+  /* ───────────────────────────────────────────────────────────────
+     Gabarit de STYLE de la « Liste de matériaux » Toitures VB.
+     Reproduit fidèlement le PDF (jsPDF : addHeader + drawTable) :
+       barre de marque   rgb(30,30,50)   #1e1e32 (en-tête sombre, logo + date)
+       titre             #1e1e32  16pt bold
+       réf.              rgb(100,100,120)#646478  9pt bold
+       infos client      rgb(60,60,60)   #3c3c3c  10pt
+       infos bâtiment    rgb(100,100,100)#646464  9pt
+       en-tête tableau   fond rgb(235,235,245)#ebebf5 / texte rgb(40,40,40)#282828 8pt bold
+       lignes            rgb(50,50,50)#323232 8pt / filets rgb(220,220,220)#dcdcdc
+       surlignage total  rgb(240,238,255)#f0eeff
+       pied de page      rgb(150,150,150)#969696 7pt
+     Police Helvetica. AUCUN texte de contenu : style + structure uniquement.
+     ─────────────────────────────────────────────────────────────── */
+
+  :root{
+    --brand:#1e1e32;
+    --ref:#646478;
+    --info:#3c3c3c;
+    --info2:#646464;
+    --thbg:#ebebf5;
+    --thfg:#282828;
+    --row:#323232;
+    --rule:#dcdcdc;
+    --hl:#f0eeff;
+    --foot:#969696;
+  }
+
+  @page { size: A4; margin: 0; }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; background:#e9e9ee;
+    font-family: Helvetica, Arial, "Liberation Sans", sans-serif;
+    color:var(--info);
+  }
+
+  .page{
+    width:210mm; min-height:297mm; margin:10mm auto; background:#fff;
+    box-shadow:0 2px 14px rgba(0,0,0,.18); position:relative;
+  }
+
+  /* champ vide (montre la place du contenu, sans texte) */
+  .v{ display:inline-block; min-width:55mm; height:.95em;
+      border-bottom:1px dotted #c7c7cf; vertical-align:baseline; }
+  .v.sm{ min-width:26mm; } .v.lg{ min-width:80mm; }
+
+  /* ── BARRE DE MARQUE (en-tête sombre) ── */
+  .brandbar{
+    height:30mm; background:var(--brand);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 14mm;
+  }
+  .brandbar .logo{
+    width:48mm; height:20mm; border:1px dashed rgba(255,255,255,.35); border-radius:3px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:8pt; letter-spacing:2px; opacity:.85;
+  }
+  .brandbar .date{ color:#fff; font-size:8pt; font-weight:400; }
+  .brandbar .date .v{ border-color:rgba(255,255,255,.5); min-width:30mm; }
+
+  /* ── CORPS ── */
+  .body{ padding:10mm 14mm 16mm; }
+
+  .titlerow{ display:flex; justify-content:space-between; align-items:baseline; }
+  .title{ color:var(--brand); font-size:16pt; font-weight:700; }
+  .ref{ color:var(--ref); font-size:9pt; font-weight:700; }
+
+  .client{ margin-top:6mm; color:var(--info); font-size:10pt; line-height:1.9; }
+  .client .lab{ color:#777; }
+  .building{ margin-top:5mm; color:var(--info2); font-size:9pt; }
+  .building .sep{ color:#bdbdc6; margin:0 2mm; }
+
+  /* ── TABLEAU ── */
+  table{ width:100%; border-collapse:collapse; margin-top:9mm; }
+  thead th{
+    background:var(--thbg); color:var(--thfg); font-size:8pt; font-weight:700;
+    text-align:right; padding:2mm 3mm;
+  }
+  thead th:first-child{ text-align:left; }
+  /* largeurs ~ colWidths [90,40,40] */
+  col.cmat{ width:53%; } col.cqte{ width:23.5%; } col.cuni{ width:23.5%; }
+
+  tbody td{
+    color:var(--row); font-size:8pt; text-align:right; padding:2.4mm 3mm;
+    border-bottom:.5px solid var(--rule);
+  }
+  tbody td:first-child{ text-align:left; }
+  tbody tr.total td{ font-weight:700; background:var(--hl); }
+
+  /* ── LONGUEURS ESTIMÉES ── */
+  .lengths{ margin-top:9mm; }
+  .lengths h4{ color:var(--info); font-size:9pt; font-weight:700; margin:0 0 4mm; }
+  .lengths .row{ color:var(--info); font-size:8pt; }
+  .lengths .k{ font-weight:400; } .lengths .sep{ color:#bdbdc6; margin:0 2.5mm; }
+
+  /* ── PIED DE PAGE ── */
+  .foot{ color:var(--foot); font-size:7pt; margin-top:14mm; }
+
+  @media print{
+    html,body{ background:#fff; }
+    .page{ margin:0; box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- BARRE DE MARQUE -->
+    <header class="brandbar">
+      <div class="logo">LOGO</div>
+      <div class="date"><span class="v"></span></div>
+    </header>
+
+    <div class="body">
+
+      <!-- TITRE + RÉF -->
+      <div class="titlerow">
+        <div class="title">Liste de matériaux</div>
+        <div class="ref">Réf.&nbsp;<span class="v sm" style="border-color:#c7c7cf"></span></div>
+      </div>
+
+      <!-- INFOS CLIENT -->
+      <div class="client">
+        <div><span class="lab">Client :</span> <span class="v lg"></span></div>
+        <div><span class="lab">Adresse :</span> <span class="v lg"></span></div>
+        <div><span class="lab">Produit :</span> <span class="v"></span></div>
+        <div><span class="lab">Date souhaitée :</span> <span class="v sm"></span></div>
+      </div>
+
+      <!-- INFOS BÂTIMENT -->
+      <div class="building">
+        Superficie : <span class="v sm" style="min-width:18mm"></span> pi²
+        <span class="sep">|</span> Périmètre : <span class="v sm" style="min-width:16mm"></span> pi
+        <span class="sep">|</span> Pente : <span class="v sm" style="min-width:16mm"></span>
+        <span class="sep">|</span> Type : <span class="v sm" style="min-width:16mm"></span>
+      </div>
+
+      <!-- TABLEAU MATÉRIAUX -->
+      <table>
+        <colgroup><col class="cmat"/><col class="cqte"/><col class="cuni"/></colgroup>
+        <thead>
+          <tr><th>Matériau</th><th>Quantité</th><th>Unité</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="v lg"></span></td><td><span class="v sm" style="min-width:16mm"></span></td><td><span class="v sm" style="min-width:16mm"></span></td></tr>
+          <tr><td><span class="v lg"></span></td><td><span class="v sm" style="min-width:16mm"></span></td><td><span class="v sm" style="min-width:16mm"></span></td></tr>
+          <tr><td><span class="v lg"></span></td><td><span class="v sm" style="min-width:16mm"></span></td><td><span class="v sm" style="min-width:16mm"></span></td></tr>
+          <tr><td><span class="v lg"></span></td><td><span class="v sm" style="min-width:16mm"></span></td><td><span class="v sm" style="min-width:16mm"></span></td></tr>
+          <tr><td><span class="v lg"></span></td><td><span class="v sm" style="min-width:16mm"></span></td><td><span class="v sm" style="min-width:16mm"></span></td></tr>
+          <tr><td><span class="v lg"></span></td><td><span class="v sm" style="min-width:16mm"></span></td><td><span class="v sm" style="min-width:16mm"></span></td></tr>
+        </tbody>
+      </table>
+
+      <!-- LONGUEURS ESTIMÉES -->
+      <section class="lengths">
+        <h4>Longueurs estimées</h4>
+        <div class="row">
+          <span class="k">Faîtière :</span> <span class="v sm" style="min-width:18mm"></span> pi
+          <span class="sep">|</span> <span class="k">Hanches :</span> <span class="v sm" style="min-width:18mm"></span> pi
+          <span class="sep">|</span> <span class="k">Noues :</span> <span class="v sm" style="min-width:18mm"></span> pi
+        </div>
+      </section>
+
+      <!-- PIED DE PAGE -->
+      <div class="foot">Document généré automatiquement — les quantités incluent les marges de sécurité.</div>
+
+    </div>
+  </div>
+</body>
+</html>

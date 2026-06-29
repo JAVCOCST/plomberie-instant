@@ -1,0 +1,416 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  align-items: center;
+}
+
+/* ── Advisor row ── */
+.msgRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--imm-accent);
+  box-shadow: 0 0 8px var(--imm-accent-glow);
+}
+
+.onlineDot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--imm-check);
+  border: 2px solid var(--imm-bg);
+}
+
+.bubble {
+  background: var(--imm-surface);
+  border: 1px solid var(--imm-border);
+  border-radius: 0 var(--imm-radius-sm) var(--imm-radius-sm) var(--imm-radius-sm);
+  padding: 10px 14px;
+  flex: 1;
+  max-width: 420px;
+}
+
+.name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--imm-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.text {
+  font-size: 13px;
+  color: var(--imm-text);
+  line-height: 1.45;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.textDim {
+  font-size: 12px;
+  color: var(--imm-text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ── Spinner ── */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--imm-border);
+  border-top-color: var(--imm-accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Satellite view ── */
+.satelliteWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--imm-radius);
+  overflow: hidden;
+  border: 2px solid var(--imm-accent);
+  box-shadow: 0 8px 40px hsla(260, 70%, 55%, 0.2), 0 0 0 1px hsla(260, 60%, 55%, 0.1);
+}
+
+.satelliteImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.addressBadge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  max-width: calc(100% - 20px);
+  width: fit-content;
+  background: hsla(230, 22%, 8%, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--imm-text);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.areaBadge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: hsla(35, 100%, 55%, 0.9);
+  color: hsla(230, 22%, 8%, 1);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.3px;
+}
+
+.dimsBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: hsla(230, 22%, 8%, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--imm-text);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.2px;
+}
+
+.lotBadge {
+  position: absolute;
+  top: 44px;
+  left: 10px;
+  background: hsla(200, 80%, 55%, 0.85);
+  color: hsla(0, 0%, 100%, 1);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* ── Confirm button ── */
+.confirmBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 40px;
+  background: linear-gradient(135deg, var(--imm-cta), hsl(35, 95%, 55%));
+  color: var(--imm-cta-text);
+  border: none;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--imm-font);
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.confirmBtn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 24px hsla(35, 100%, 50%, 0.3);
+}
+
+/* ── Reject / re-select button ── */
+.rejectBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--imm-text-muted);
+  border: 1px solid var(--imm-border);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--imm-font);
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.rejectBtn:hover {
+  background: hsla(230, 20%, 20%, 0.5);
+  color: var(--imm-text);
+  border-color: var(--imm-text-muted);
+}
+
+/* ── Map picker ── */
+.mapPickerWrap {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-radius: var(--imm-radius);
+  overflow: hidden;
+  border: 2px solid var(--imm-accent);
+  box-shadow: 0 8px 40px hsla(260, 70%, 55%, 0.2);
+}
+
+.mapPickerHint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: hsla(230, 22%, 12%, 0.95);
+  color: var(--imm-accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.mapPickerMap {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.satelliteBlock {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.offsetToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--imm-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--imm-font);
+  cursor: pointer;
+  padding: 6px 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: color 0.15s ease;
+}
+
+.offsetToggle:hover {
+  color: var(--imm-accent);
+}
+
+.offsetControls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--imm-surface);
+  border: 1px solid var(--imm-border);
+  border-radius: var(--imm-radius-sm);
+  padding: 12px 14px;
+  overflow: hidden;
+}
+
+.offsetRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.offsetPad {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(3, 44px);
+  gap: 3px;
+  align-items: center;
+  justify-items: center;
+}
+
+.offsetBtn,
+.offsetBtnGhost {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--imm-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--imm-font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  transition: transform 0.1s ease, border-color 0.1s ease, background 0.1s ease;
+}
+
+.offsetBtn {
+  background: hsla(230, 22%, 14%, 0.95);
+  color: var(--imm-text);
+}
+
+.offsetBtnGhost {
+  background: transparent;
+  color: var(--imm-text-muted);
+}
+
+.offsetBtn:hover {
+  border-color: var(--imm-accent);
+  background: hsla(230, 22%, 20%, 1);
+}
+
+.offsetBtnGhost:hover {
+  border-color: hsla(0, 70%, 55%, 0.6);
+  color: hsla(0, 70%, 65%, 1);
+}
+
+.offsetBtn:active,
+.offsetBtnGhost:active {
+  transform: scale(0.9);
+  background: hsla(230, 22%, 22%, 1);
+}
+
+.offsetBtnRound {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--imm-border);
+  background: hsla(230, 22%, 14%, 0.95);
+  color: var(--imm-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  transition: transform 0.1s ease, border-color 0.1s ease, background 0.1s ease;
+}
+
+.offsetBtnRound:hover {
+  border-color: var(--imm-accent);
+  background: hsla(230, 22%, 20%, 1);
+}
+
+.offsetBtnRound:active {
+  transform: scale(0.9);
+  background: hsla(230, 22%, 22%, 1);
+}
+
+.offsetValue {
+  color: var(--imm-accent);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+  .avatarImg { width: 30px; height: 30px; }
+  .bubble { padding: 8px 12px; }
+  .text { font-size: 12px; }
+  .satelliteWrap { max-width: 100%; }
+
+  .offsetPad {
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(3, 48px);
+  }
+
+  .offsetBtn,
+  .offsetBtnGhost {
+    width: 48px;
+    height: 48px;
+  }
+
+  .offsetBtnRound {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Disable hover effects on touch */
+  .offsetBtn:hover,
+  .offsetBtnGhost:hover,
+  .offsetBtnRound:hover {
+    transform: none;
+  }
+}

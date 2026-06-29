@@ -1,0 +1,102 @@
+/* ── Immersive Dark Theme for Roofing Wizard ── */
+:root {
+  --imm-bg: hsl(230, 25%, 7%);
+  --imm-surface: hsl(230, 22%, 11%);
+  --imm-surface-hover: hsl(230, 22%, 15%);
+  --imm-surface-selected: hsl(230, 22%, 13%);
+  --imm-border: hsla(230, 30%, 40%, 0.15);
+  --imm-border-active: hsl(260, 70%, 60%);
+  --imm-text: hsl(220, 20%, 94%);
+  --imm-text-dim: hsl(220, 15%, 75%);
+  --imm-text-muted: hsl(230, 15%, 65%);
+
+  /* Radar: violet → cyan gradient */
+  --imm-accent: hsl(260, 70%, 62%);
+  --imm-accent-glow: hsla(260, 70%, 62%, 0.3);
+  --imm-accent-dim: hsla(260, 70%, 62%, 0.1);
+  --imm-accent2: hsl(185, 70%, 50%);
+  --imm-accent2-glow: hsla(185, 70%, 50%, 0.25);
+
+  /* CTA: orange lumineux */
+  --imm-cta: hsl(28, 95%, 55%);
+  --imm-cta-glow: hsla(28, 95%, 55%, 0.3);
+  --imm-cta-text: hsl(0, 0%, 100%);
+
+  /* Checkmarks: vert rassurant */
+  --imm-check: hsl(145, 65%, 48%);
+  --imm-check-glow: hsla(145, 65%, 48%, 0.25);
+
+  --imm-danger: hsl(0, 65%, 55%);
+  --imm-radius: 14px;
+  --imm-radius-sm: 10px;
+  --imm-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ── Google Places Autocomplete dropdown styling ── */
+.pac-container {
+  background: hsla(230, 22%, 11%, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid hsla(260, 70%, 62%, 0.25) !important;
+  border-radius: 12px !important;
+  border-top: none !important;
+  box-shadow: 0 12px 40px hsla(0, 0%, 0%, 0.5) !important;
+  margin-top: 4px !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  z-index: 99999 !important;
+  padding: 6px 0 !important;
+  pointer-events: auto !important;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: auto !important;
+}
+.pac-container::after {
+  display: none !important;
+}
+.pac-item {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid hsla(230, 30%, 40%, 0.12) !important;
+  color: hsl(220, 20%, 88%) !important;
+  padding: 12px 16px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  transition: background 0.15s !important;
+  touch-action: manipulation;
+}
+.pac-item:last-child {
+  border-bottom: none !important;
+}
+.pac-item:hover {
+  background: hsla(260, 70%, 62%, 0.1) !important;
+}
+.pac-item-query {
+  color: hsl(220, 20%, 94%) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+.pac-item span {
+  color: hsla(220, 15%, 70%, 0.7) !important;
+}
+.pac-icon {
+  display: none !important;
+}
+.pac-matched {
+  color: hsl(260, 70%, 72%) !important;
+  font-weight: 700 !important;
+}
+
+/* SMS Glow Pulse animation */
+@keyframes smsGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 8px hsla(260, 70%, 62%, 0.3), 0 0 20px hsla(260, 70%, 62%, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 16px hsla(260, 70%, 62%, 0.6), 0 0 40px hsla(260, 70%, 62%, 0.3), 0 0 60px hsla(185, 70%, 50%, 0.15);
+    transform: scale(1.08);
+  }
+}
+.sms-glow-pulse {
+  animation: smsGlowPulse 1.5s ease-in-out infinite !important;
+}
