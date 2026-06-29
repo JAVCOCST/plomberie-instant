@@ -68,8 +68,8 @@ export default function App() {
     return (
       <div className="wrapper">
         <div className="auth">
-          <img src="/logo.png" alt="Plomberie Instant" className="logo-img" />
           <div className="card portal">
+            <img src="/logo.png" alt="Plomberie Instant" className="logo-img" />
             <h2>Bienvenue</h2>
             <p>
               Connecté en tant que{" "}
@@ -89,8 +89,8 @@ export default function App() {
   return (
     <div className="wrapper">
       <div className="auth">
-        <img src="/logo.png" alt="Plomberie Instant" className="logo-img" />
         <div className="card">
+          <img src="/logo.png" alt="Plomberie Instant" className="logo-img" />
           <p className="subtitle">
             {mode === "login" ? "Connexion au portail" : "Créer un compte"}
           </p>
