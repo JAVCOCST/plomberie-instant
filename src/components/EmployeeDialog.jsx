@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { X, Plus, Trash2, Phone, Mail, DollarSign, Target, Check, TrendingUp } from "lucide-react";
+import { X, Plus, Trash2, Phone, Mail, DollarSign, Target, Check, TrendingUp, Navigation } from "lucide-react";
+
+const openGps = (addr) =>
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`, "_blank", "noopener");
 import { supabase } from "../supabaseClient";
 import {
   iso,
@@ -219,7 +222,19 @@ export default function EmployeeDialog({ plombier, projects, weekStart, onClose,
                     {p.heure_debut?.slice(0, 5)} → {p.heure_fin ? p.heure_fin.slice(0, 5) : "…"}
                   </span>
                   <span className="punch-h">{fmtHours(hoursBetween(p.heure_debut, p.heure_fin))}</span>
-                  <span className="punch-proj">{p.projet_id ? projName[p.projet_id]?.name : ""}</span>
+                  <span className="punch-proj">
+                    {p.projet_id ? projName[p.projet_id]?.name : ""}
+                    {p.projet_id && projName[p.projet_id]?.address && (
+                      <button
+                        className="gps-mini"
+                        onClick={() => openGps(projName[p.projet_id].address)}
+                        title={`Ouvrir le GPS — ${projName[p.projet_id].address}`}
+                        aria-label="GPS"
+                      >
+                        <Navigation size={12} />
+                      </button>
+                    )}
+                  </span>
                   <button className="icon-del" onClick={() => deletePunch(p.id)} aria-label="Supprimer">
                     <Trash2 size={14} />
                   </button>

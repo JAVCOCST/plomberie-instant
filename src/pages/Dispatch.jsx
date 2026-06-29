@@ -5,8 +5,13 @@ import {
 } from "@dnd-kit/core";
 import {
   ChevronLeft, ChevronRight, CalendarDays, Plus, X,
-  GripVertical, Loader2, FolderKanban, Users,
+  GripVertical, Loader2, FolderKanban, Users, MapPin, Navigation,
 } from "lucide-react";
+
+// Lien Google Maps (itinéraire vers l'adresse) — ouvre l'app GPS sur mobile
+const gpsUrl = (addr) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`;
+const openGps = (addr) => window.open(gpsUrl(addr), "_blank", "noopener");
 import { supabase } from "../supabaseClient";
 import EmployeeDialog from "../components/EmployeeDialog";
 import WeatherStrip from "../components/WeatherStrip";
@@ -120,11 +125,19 @@ export default function Dispatch() {
   const addProject = async () => {
     const name = window.prompt("Nom du projet / soumission ?");
     if (!name) return;
+    const address = window.prompt("Adresse du lieu de travail ? (pour le GPS — optionnel)") || null;
     const color = PALETTE[projects.length % PALETTE.length];
     const { data, error: e } = await supabase
-      .from("pi_projets").insert({ name: name.trim(), color }).select().single();
+      .from("pi_projets").insert({ name: name.trim(), color, address }).select().single();
     if (e) return setError("Impossible d'ajouter le projet.");
     setProjects((p) => [...p, data]);
+  };
+
+  const editProjectAddress = async (proj) => {
+    const addr = window.prompt(`Adresse du lieu de travail — ${proj.name}`, proj.address || "");
+    if (addr === null) return;
+    setProjects((prev) => prev.map((p) => (p.id === proj.id ? { ...p, address: addr } : p)));
+    await supabase.from("pi_projets").update({ address: addr || null }).eq("id", proj.id);
   };
 
   const addPlombier = async () => {
@@ -280,6 +293,14 @@ export default function Dispatch() {
                     <div className="pool-item" key={p.id}>
                       <ColorPicker value={p.color} onChange={(c) => updateProjectColor(p.id, c)} />
                       <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.color} label={p.name} />
+                      <button
+                        className={`addr-btn ${p.address ? "set" : ""}`}
+                        onClick={() => editProjectAddress(p)}
+                        title={p.address ? `Adresse : ${p.address} (clic pour modifier)` : "Définir l'adresse du lieu de travail"}
+                        aria-label="Adresse"
+                      >
+                        <MapPin size={14} />
+                      </button>
                     </div>
                   ))}
                   <button className="mini-add" onClick={addProject} aria-label="Ajouter un projet">
@@ -337,6 +358,11 @@ export default function Dispatch() {
                                 {proj && (
                                   <div className="cell-assign" style={{ background: proj.color }} title={proj.name}>
                                     <span className="cell-assign-name">{proj.name}</span>
+                                    {proj.address && (
+                                      <button className="gps-btn" onClick={() => openGps(proj.address)} title={`GPS — ${proj.address}`} aria-label="Ouvrir le GPS">
+                                        <Navigation size={11} />
+                                      </button>
+                                    )}
                                     <button className="cell-remove" onClick={() => removeByPlombierCell(pl.id, iso(d), per)} aria-label="Retirer">
                                       <X size={12} />
                                     </button>
@@ -351,7 +377,15 @@ export default function Dispatch() {
                         <tr key={pr.id}>
                           <td className="row-head">
                             <ColorPicker value={pr.color} onChange={(c) => updateProjectColor(pr.id, c)} />
-                            {pr.name}
+                            <span className="row-head-name">{pr.name}</span>
+                            <button
+                              className={`addr-btn ${pr.address ? "set" : ""}`}
+                              onClick={() => (pr.address ? openGps(pr.address) : editProjectAddress(pr))}
+                              title={pr.address ? `Ouvrir le GPS — ${pr.address}` : "Définir l'adresse"}
+                              aria-label="GPS"
+                            >
+                              {pr.address ? <Navigation size={14} /> : <MapPin size={14} />}
+                            </button>
                           </td>
                           {days.map((d) => PERIODS.map((per) => {
                             const key = ckey(pr.id, iso(d), per);
