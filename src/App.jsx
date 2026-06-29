@@ -9,6 +9,8 @@ import Catalogue from "./pages/Catalogue";
 import Soumission from "./pages/Soumission";
 import Timesheets from "./pages/Timesheets";
 import BonsTravail from "./pages/BonsTravail";
+import Conditions from "./pages/Conditions";
+import Confidentialite from "./pages/Confidentialite";
 import { NAV_GROUPS } from "./nav";
 
 // Pages réelles (sinon placeholder). Clé = url.
@@ -52,6 +54,10 @@ export default function App() {
 
   return (
     <Routes>
+      {/* Pages légales publiques (requises par Intuit / QuickBooks) */}
+      <Route path="/conditions" element={<Conditions />} />
+      <Route path="/confidentialite" element={<Confidentialite />} />
+
       <Route
         path="/login"
         element={session ? <Navigate to="/app" replace /> : <Login />}

@@ -1643,3 +1643,39 @@ button:disabled {
 
 /* Calendrier pleine largeur */
 .dispatch-stack .grid-wrap { width: 100%; }
+
+/* =========================================================
+   PAGES LÉGALES (publiques)
+   ========================================================= */
+.legal {
+  min-height: 100vh;
+  background: #f7f8fa;
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 1.25rem;
+}
+.legal-card {
+  width: 100%;
+  max-width: 760px;
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 16px;
+  padding: 2.5rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.legal-logo { width: 120px; height: auto; margin-bottom: 1.25rem; }
+.legal-card h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.25rem; }
+.legal-date { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+.legal-card h2 { font-size: 1.05rem; font-weight: 700; margin: 1.5rem 0 0.5rem; }
+.legal-card p { margin-bottom: 0.75rem; color: #334155; }
+.legal-card ul { margin: 0 0 0.75rem 1.25rem; color: #334155; }
+.legal-card li { margin-bottom: 0.35rem; }
+.legal-card a { color: #2563eb; text-decoration: none; }
+.legal-card a:hover { text-decoration: underline; }
+.legal-foot {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--side-border);
+  font-size: 0.9rem;
+}
