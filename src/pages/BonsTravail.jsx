@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Plus, Trash2, X, Camera, Loader2, ClipboardCheck, Clock, Image as ImageIcon,
+  Plus, Trash2, X, Camera, Loader2, ClipboardCheck, Clock, Image as ImageIcon, User,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { money, fmtHours } from "../lib/time";
@@ -19,19 +19,22 @@ export default function BonsTravail() {
   const [bons, setBons] = useState([]);
   const [plombiers, setPlombiers] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
-    const [b, pl, pr] = await Promise.all([
+    const [b, pl, pr, cl] = await Promise.all([
       supabase.from("pi_bons_travail").select("*").order("created_at", { ascending: false }),
       supabase.from("pi_plombiers").select("id,name").order("created_at"),
       supabase.from("pi_projets").select("id,name,color").order("created_at"),
+      supabase.from("pi_clients").select("qbo_id,display_name").order("display_name"),
     ]);
     setBons(b.data || []);
     setPlombiers(pl.data || []);
     setProjects(pr.data || []);
+    setClients(cl.data || []);
     setLoading(false);
   };
 
@@ -69,6 +72,9 @@ export default function BonsTravail() {
                 <span className="bon-pl">{plName[b.plombier_id] || "—"}</span>
                 <span className="bon-total">{money(b.total)}</span>
               </div>
+              {b.client_name && (
+                <div className="bon-client"><User size={13} /> {b.client_name}</div>
+              )}
               <div className="bon-meta">
                 <span>{b.jour}</span>
                 {b.projet_id && <span className="bon-proj">{prName[b.projet_id]}</span>}
@@ -103,6 +109,7 @@ export default function BonsTravail() {
         <BonForm
           plombiers={plombiers}
           projects={projects}
+          clients={clients}
           onClose={() => setFormOpen(false)}
           onSaved={() => { setFormOpen(false); load(); }}
         />
@@ -112,9 +119,10 @@ export default function BonsTravail() {
 }
 
 /* ---------------- Formulaire de bon de travail ---------------- */
-function BonForm({ plombiers, projects, onClose, onSaved }) {
+function BonForm({ plombiers, projects, clients, onClose, onSaved }) {
   const [plombierId, setPlombierId] = useState("");
   const [projetId, setProjetId] = useState("");
+  const [clientInput, setClientInput] = useState("");
   const [jour, setJour] = useState(todayIso());
   const [heures, setHeures] = useState(0);
   const [items, setItems] = useState([newItem()]);
@@ -151,6 +159,11 @@ function BonForm({ plombiers, projects, onClose, onSaved }) {
     );
   };
 
+  const selectedClient = useMemo(
+    () => (clients || []).find((c) => c.display_name === clientInput) || null,
+    [clients, clientInput]
+  );
+
   const total = useMemo(
     () => items.reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.price) || 0), 0),
     [items]
@@ -172,6 +185,7 @@ function BonForm({ plombiers, projects, onClose, onSaved }) {
   const save = async () => {
     setError("");
     if (!plombierId) return setError("Sélectionne le plombier.");
+    if (!selectedClient) return setError("Sélectionne un client (obligatoire).");
     if (photos.length < 2) return setError("Au moins 2 photos du travail sont requises.");
     setSaving(true);
     try {
@@ -191,6 +205,8 @@ function BonForm({ plombiers, projects, onClose, onSaved }) {
       const { error: insErr } = await supabase.from("pi_bons_travail").insert({
         plombier_id: plombierId,
         projet_id: projetId || null,
+        client_id: selectedClient.qbo_id,
+        client_name: selectedClient.display_name,
         jour,
         heures: Number(heures) || 0,
         items: items.map(({ desc, qty, price }) => ({ desc, qty: Number(qty) || 0, price: Number(price) || 0 })),
@@ -225,6 +241,22 @@ function BonForm({ plombiers, projects, onClose, onSaved }) {
                 <option value="">— Choisir —</option>
                 {plombiers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
+            </div>
+            <div className="fld fld-wide">
+              <label>Client <span className="req-star">*</span></label>
+              <input
+                list="pi-clients-list"
+                value={clientInput}
+                onChange={(e) => setClientInput(e.target.value)}
+                placeholder="Rechercher un client QuickBooks…"
+                className={selectedClient ? "client-ok" : ""}
+              />
+              <datalist id="pi-clients-list">
+                {(clients || []).map((c) => <option key={c.qbo_id} value={c.display_name} />)}
+              </datalist>
+              {!selectedClient && clientInput && (
+                <span className="field-hint">Choisis un client de la liste.</span>
+              )}
             </div>
             <div className="fld">
               <label>Projet (job punché)</label>
