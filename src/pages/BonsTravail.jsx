@@ -122,6 +122,34 @@ function BonForm({ plombiers, projects, onClose, onSaved }) {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [produits, setProduits] = useState([]);
+
+  useEffect(() => {
+    supabase
+      .from("pi_produits")
+      .select("name, unit_price")
+      .order("name")
+      .then(({ data }) => setProduits(data || []));
+  }, []);
+
+  const priceByName = useMemo(() => {
+    const m = {};
+    produits.forEach((p) => { m[p.name] = p.unit_price; });
+    return m;
+  }, [produits]);
+
+  // Sélection d'un produit du catalogue → remplit le prix automatiquement
+  const onDescChange = (id, value) => {
+    setItems((arr) =>
+      arr.map((it) => {
+        if (it.id !== id) return it;
+        const matched = priceByName[value];
+        return matched != null
+          ? { ...it, desc: value, price: matched }
+          : { ...it, desc: value };
+      })
+    );
+  };
 
   const total = useMemo(
     () => items.reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.price) || 0), 0),
@@ -228,7 +256,7 @@ function BonForm({ plombiers, projects, onClose, onSaved }) {
             <tbody>
               {items.map((it) => (
                 <tr key={it.id}>
-                  <td><input className="cell-input" value={it.desc} onChange={(e) => updateItem(it.id, "desc", e.target.value)} placeholder="Ex: Chauffe-eau 40 gal" /></td>
+                  <td><input className="cell-input" list="pi-produits-list" value={it.desc} onChange={(e) => onDescChange(it.id, e.target.value)} placeholder="Choisir un produit / service…" /></td>
                   <td className="num qcol"><input className="cell-input num" type="number" min="0" value={it.qty} onChange={(e) => updateItem(it.id, "qty", e.target.value)} /></td>
                   <td className="num pcol"><input className="cell-input num" type="number" min="0" step="0.01" value={it.price} onChange={(e) => updateItem(it.id, "price", e.target.value)} /></td>
                   <td className="num line-amount">{money((Number(it.qty) || 0) * (Number(it.price) || 0))}</td>
@@ -237,6 +265,11 @@ function BonForm({ plombiers, projects, onClose, onSaved }) {
               ))}
             </tbody>
           </table>
+          <datalist id="pi-produits-list">
+            {produits.map((p, i) => (
+              <option key={i} value={p.name} />
+            ))}
+          </datalist>
           <div className="bon-total-line">Total : <strong>{money(total)}</strong></div>
         </div>
 
