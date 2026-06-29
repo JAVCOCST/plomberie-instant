@@ -4,7 +4,13 @@ import { supabase } from "./supabaseClient";
 import Login from "./Login";
 import Layout from "./Layout";
 import Placeholder from "./pages/Placeholder";
+import Dispatch from "./pages/Dispatch";
 import { NAV_GROUPS } from "./nav";
+
+// Pages réelles (sinon placeholder). Clé = url.
+const REAL_PAGES = {
+  "/app/dispatch": <Dispatch />,
+};
 
 // Toutes les pages du menu, à plat, pour générer les routes.
 const ALL_ITEMS = NAV_GROUPS.flatMap((g) => g.items);
@@ -47,17 +53,18 @@ export default function App() {
         path="/app"
         element={session ? <Layout /> : <Navigate to="/login" replace />}
       >
-        {ALL_ITEMS.map((item) =>
-          item.end ? (
-            <Route key={item.url} index element={<Placeholder title={item.title} />} />
+        {ALL_ITEMS.map((item) => {
+          const element = REAL_PAGES[item.url] || <Placeholder title={item.title} />;
+          return item.end ? (
+            <Route key={item.url} index element={element} />
           ) : (
             <Route
               key={item.url}
               path={item.url.replace("/app/", "")}
-              element={<Placeholder title={item.title} />}
+              element={element}
             />
-          )
-        )}
+          );
+        })}
       </Route>
 
       <Route path="*" element={<Navigate to={session ? "/app" : "/login"} replace />} />

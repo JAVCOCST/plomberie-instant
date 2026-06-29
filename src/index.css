@@ -471,3 +471,229 @@ button:disabled {
     display: none;
   }
 }
+
+/* =========================================================
+   PAGE DISPATCH
+   ========================================================= */
+.dispatch { max-width: 100%; }
+
+.dispatch-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.week-nav button {
+  width: auto;
+  background: #fff;
+  color: var(--nav-text);
+  border: 1px solid var(--side-border);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.week-nav button:hover { background: #f8fafc; }
+
+.week-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  min-width: 210px;
+  justify-content: center;
+}
+
+.btn-today {
+  font-size: 0.82rem;
+  padding: 0.45rem 0.8rem !important;
+  font-weight: 600 !important;
+}
+
+.dispatch-body {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+/* ---- Panneau projets ---- */
+.proj-pool {
+  width: 230px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+  padding: 0.85rem;
+}
+
+.pool-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.mini-add {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #f1f5f9;
+  color: var(--nav-active-text);
+  border: 1px solid var(--side-border);
+  border-radius: 7px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.mini-add:hover { background: #e2e8f0; }
+
+.pool-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.proj-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  user-select: none;
+}
+.proj-chip:active { cursor: grabbing; }
+.proj-chip.dragging { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
+.chip-grip { opacity: 0.7; flex-shrink: 0; }
+.chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pool-hint {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ---- Grille planning ---- */
+.grid-wrap {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+}
+
+.grid {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.82rem;
+}
+
+.grid th,
+.grid td {
+  border: 1px solid var(--side-border);
+  text-align: center;
+}
+
+.grid .corner {
+  position: sticky;
+  left: 0;
+  background: #f8fafc;
+  z-index: 2;
+  padding: 0.4rem;
+}
+
+.day-col {
+  padding: 0.4rem;
+  background: #f8fafc;
+}
+.day-col .day-name {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-right: 0.3rem;
+}
+.day-col .day-num { font-weight: 700; }
+.day-col.today { background: #eef2ff; }
+.day-col.today .day-num { color: #2563eb; }
+
+.period-row .period-th {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 0.2rem;
+  background: #fcfdfe;
+}
+
+.row-head {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 1;
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.grid-cell {
+  min-width: 64px;
+  height: 44px;
+  padding: 3px;
+  vertical-align: middle;
+  transition: background 0.1s;
+}
+.grid-cell.over { background: #eef2ff; }
+
+.cell-assign {
+  height: 100%;
+  border-radius: 6px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.3rem;
+  gap: 0.2rem;
+}
+.cell-assign-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cell-remove {
+  width: auto;
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.cell-remove:hover { background: rgba(0, 0, 0, 0.4); }
+
+@media (max-width: 700px) {
+  .dispatch-body { flex-direction: column; }
+  .proj-pool { width: 100%; }
+}
