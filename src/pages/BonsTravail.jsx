@@ -314,7 +314,7 @@ export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedPr
           <label className="photo-drop">
             <ImageIcon size={20} />
             <span>Ajouter des photos</span>
-            <input type="file" accept="image/*" capture="environment" multiple onChange={onPickPhotos} hidden />
+            <input type="file" accept="image/*" multiple onChange={onPickPhotos} hidden />
           </label>
           {photos.length > 0 && (
             <div className="photo-previews">

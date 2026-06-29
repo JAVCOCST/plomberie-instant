@@ -55,10 +55,13 @@ export default function App() {
       setSession(data.session);
       loadProfile(data.session);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
-      setReady(false);
-      loadProfile(s);
+      // Ne recharger le profil QUE sur une vraie connexion/déconnexion.
+      // (Évite de remonter l'app au retour de la caméra → TOKEN_REFRESHED, etc.)
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+        loadProfile(s);
+      }
     });
     return () => { active = false; sub.subscription.unsubscribe(); };
   }, []);
