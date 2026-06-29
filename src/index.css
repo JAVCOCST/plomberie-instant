@@ -1594,3 +1594,52 @@ button:disabled {
 }
 .cpick-swatch:hover { transform: scale(1.12); }
 .cpick-swatch.sel { border-color: var(--text); box-shadow: 0 0 0 2px #fff inset; }
+
+/* =========================================================
+   DISPATCH — réserves au-dessus, calendrier pleine largeur
+   ========================================================= */
+.dispatch-res {
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.res-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+.res-row + .res-row {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.65rem;
+}
+.res-label {
+  flex-shrink: 0;
+  min-width: 78px;
+  padding-top: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.res-chips {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.res-chips .pool-item { width: auto; }
+.res-chips .disp-chip {
+  flex: 0 0 auto;
+  max-width: 230px;
+}
+
+/* Calendrier pleine largeur */
+.dispatch-stack .grid-wrap { width: 100%; }

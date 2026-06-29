@@ -270,37 +270,35 @@ export default function Dispatch() {
             <Loader2 size={16} className="spin" /> Chargement du planning…
           </p>
         ) : (
-          <div className="dispatch-body">
-            {/* Réserve : projets (vue employés) ou plombiers (vue projets) */}
-            <aside className="proj-pool">
-              <div className="pool-head">
-                <span>{viewMode === "employees" ? "Projets" : "Plombiers"}</span>
-                <button
-                  className="mini-add"
-                  onClick={viewMode === "employees" ? addProject : addPlombier}
-                  aria-label="Ajouter"
-                >
-                  <Plus size={16} />
-                </button>
+          <div className="dispatch-stack">
+            {/* Réserves au-dessus du calendrier → grille pleine largeur */}
+            <div className="dispatch-res">
+              <div className="res-row">
+                <span className="res-label">Projets</span>
+                <div className="res-chips">
+                  {projects.map((p) => (
+                    <div className="pool-item" key={p.id}>
+                      <ColorPicker value={p.color} onChange={(c) => updateProjectColor(p.id, c)} />
+                      <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.color} label={p.name} />
+                    </div>
+                  ))}
+                  <button className="mini-add" onClick={addProject} aria-label="Ajouter un projet">
+                    <Plus size={16} />
+                  </button>
+                </div>
               </div>
-              <div className="pool-list">
-                {viewMode === "employees"
-                  ? projects.map((p) => (
-                      <div className="pool-item" key={p.id}>
-                        <ColorPicker value={p.color} onChange={(c) => updateProjectColor(p.id, c)} />
-                        <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.color} label={p.name} />
-                      </div>
-                    ))
-                  : plombiers.map((p) => (
-                      <Chip key={p.id} id={`plb:${p.id}`} data={{ kind: "plombier", plombier: p }} color="#6d7b8d" label={p.name} initials={p.name.charAt(0)} />
-                    ))}
+              <div className="res-row">
+                <span className="res-label">Plombiers</span>
+                <div className="res-chips">
+                  {plombiers.map((p) => (
+                    <Chip key={p.id} id={`plb:${p.id}`} data={{ kind: "plombier", plombier: p }} color="#6d7b8d" label={p.name} initials={p.name.charAt(0)} />
+                  ))}
+                  <button className="mini-add" onClick={addPlombier} aria-label="Ajouter un plombier">
+                    <Plus size={16} />
+                  </button>
+                </div>
               </div>
-              <p className="pool-hint">
-                {viewMode === "employees"
-                  ? "Glisse un projet sur une case. Clique la pastille pour changer sa couleur."
-                  : "Glisse un plombier sur une case."}
-              </p>
-            </aside>
+            </div>
 
             <div className="grid-wrap">
               <table className="grid">
