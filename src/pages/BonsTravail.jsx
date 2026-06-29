@@ -119,9 +119,9 @@ export default function BonsTravail() {
 }
 
 /* ---------------- Formulaire de bon de travail ---------------- */
-function BonForm({ plombiers, projects, clients, onClose, onSaved }) {
-  const [plombierId, setPlombierId] = useState("");
-  const [projetId, setProjetId] = useState("");
+export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedProjetId, onClose, onSaved }) {
+  const [plombierId, setPlombierId] = useState(fixedPlombierId || "");
+  const [projetId, setProjetId] = useState(fixedProjetId || "");
   const [clientInput, setClientInput] = useState("");
   const [jour, setJour] = useState(todayIso());
   const [heures, setHeures] = useState(0);
@@ -235,13 +235,15 @@ function BonForm({ plombiers, projects, clients, onClose, onSaved }) {
 
         <div className="modal-section">
           <div className="fiche-grid">
-            <div className="fld">
-              <label>Plombier</label>
-              <select value={plombierId} onChange={(e) => setPlombierId(e.target.value)}>
-                <option value="">— Choisir —</option>
-                {plombiers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-            </div>
+            {!fixedPlombierId && (
+              <div className="fld">
+                <label>Plombier</label>
+                <select value={plombierId} onChange={(e) => setPlombierId(e.target.value)}>
+                  <option value="">— Choisir —</option>
+                  {plombiers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+            )}
             <div className="fld fld-wide">
               <label>Client <span className="req-star">*</span></label>
               <input
@@ -258,13 +260,15 @@ function BonForm({ plombiers, projects, clients, onClose, onSaved }) {
                 <span className="field-hint">Choisis un client de la liste.</span>
               )}
             </div>
-            <div className="fld">
-              <label>Projet (job punché)</label>
-              <select value={projetId} onChange={(e) => setProjetId(e.target.value)}>
-                <option value="">— Aucun —</option>
-                {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-            </div>
+            {!fixedProjetId && (
+              <div className="fld">
+                <label>Projet (job punché)</label>
+                <select value={projetId} onChange={(e) => setProjetId(e.target.value)}>
+                  <option value="">— Aucun —</option>
+                  {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+            )}
             <div className="fld">
               <label>Date</label>
               <input type="date" value={jour} onChange={(e) => setJour(e.target.value)} />

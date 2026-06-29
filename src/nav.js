@@ -17,6 +17,7 @@ import {
   Boxes,
   ClipboardCheck,
   Plug,
+  UserCog,
 } from "lucide-react";
 
 // Menu de gauche — structure reprise de Toitures VB, intitulés adaptés plomberie.
@@ -53,6 +54,7 @@ export const NAV_GROUPS = [
       { title: "Calculateur de financement", url: "/app/financing", icon: Calculator },
       { title: "Assistant IA", url: "/app/assistant", icon: Bot },
       { title: "Intégration QuickBooks", url: "/app/quickbooks", icon: Plug },
+      { title: "Accès employés", url: "/app/acces", icon: UserCog },
     ],
   },
   {

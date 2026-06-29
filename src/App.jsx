@@ -11,11 +11,12 @@ import Timesheets from "./pages/Timesheets";
 import BonsTravail from "./pages/BonsTravail";
 import Clients from "./pages/Clients";
 import QuickBooks from "./pages/QuickBooks";
+import AccesEmployes from "./pages/AccesEmployes";
+import EmployeeApp from "./pages/EmployeeApp";
 import Conditions from "./pages/Conditions";
 import Confidentialite from "./pages/Confidentialite";
 import { NAV_GROUPS } from "./nav";
 
-// Pages réelles (sinon placeholder). Clé = url.
 const REAL_PAGES = {
   "/app/dispatch": <Dispatch />,
   "/app/products": <Catalogue />,
@@ -24,63 +25,84 @@ const REAL_PAGES = {
   "/app/bons": <BonsTravail />,
   "/app/clients": <Clients />,
   "/app/quickbooks": <QuickBooks />,
+  "/app/acces": <AccesEmployes />,
 };
 
-// Toutes les pages du menu, à plat, pour générer les routes.
 const ALL_ITEMS = NAV_GROUPS.flatMap((g) => g.items);
 
 export default function App() {
   const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    let active = true;
+    const loadProfile = async (sess) => {
+      if (sess) {
+        const { data } = await supabase
+          .from("pi_profiles")
+          .select("role, plombier_id")
+          .eq("user_id", sess.user.id)
+          .maybeSingle();
+        if (active) setProfile(data || { role: "employee", plombier_id: null });
+      } else if (active) {
+        setProfile(null);
+      }
+      if (active) setReady(true);
+    };
+
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
-      setReady(true);
+      loadProfile(data.session);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
+      setReady(false);
+      loadProfile(s);
     });
-    return () => sub.subscription.unsubscribe();
+    return () => { active = false; sub.subscription.unsubscribe(); };
   }, []);
 
   if (!ready) {
     return (
       <div className="wrapper">
-        <div className="auth">
-          <div className="card">
-            <p className="loading">Chargement…</p>
-          </div>
-        </div>
+        <div className="auth"><div className="card"><p className="loading">Chargement…</p></div></div>
       </div>
     );
   }
 
+  const isAdmin = profile?.role === "admin";
+
+  // Employé connecté : accès uniquement à son dispatch
+  if (session && !isAdmin) {
+    if (!profile?.plombier_id) {
+      return (
+        <div className="wrapper">
+          <div className="auth"><div className="card portal">
+            <h2>Compte non configuré</h2>
+            <p>Ton compte n'est pas encore lié à un plombier. Contacte ton administrateur.</p>
+            <button onClick={() => supabase.auth.signOut()}>Se déconnecter</button>
+          </div></div>
+        </div>
+      );
+    }
+    return <EmployeeApp plombierId={profile.plombier_id} />;
+  }
+
   return (
     <Routes>
-      {/* Pages légales publiques (requises par Intuit / QuickBooks) */}
       <Route path="/conditions" element={<Conditions />} />
       <Route path="/confidentialite" element={<Confidentialite />} />
 
-      <Route
-        path="/login"
-        element={session ? <Navigate to="/app" replace /> : <Login />}
-      />
+      <Route path="/login" element={session ? <Navigate to="/app" replace /> : <Login />} />
 
-      <Route
-        path="/app"
-        element={session ? <Layout /> : <Navigate to="/login" replace />}
-      >
+      <Route path="/app" element={session ? <Layout /> : <Navigate to="/login" replace />}>
         {ALL_ITEMS.map((item) => {
           const element = REAL_PAGES[item.url] || <Placeholder title={item.title} />;
           return item.end ? (
             <Route key={item.url} index element={element} />
           ) : (
-            <Route
-              key={item.url}
-              path={item.url.replace("/app/", "")}
-              element={element}
-            />
+            <Route key={item.url} path={item.url.replace("/app/", "")} element={element} />
           );
         })}
       </Route>

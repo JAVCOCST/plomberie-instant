@@ -1770,3 +1770,83 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 }
 .gps-mini:hover { color: #1d4ed8; }
 .punch-proj { display: inline-flex; align-items: center; gap: 2px; }
+
+/* =========================================================
+   APP EMPLOYÉ (vue restreinte — son dispatch)
+   ========================================================= */
+.emp-app {
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--text);
+}
+.emp-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.9rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid var(--side-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.emp-logo { width: 30px; height: 30px; object-fit: contain; }
+.emp-id { flex: 1; display: flex; flex-direction: column; line-height: 1.15; }
+.emp-id strong { font-size: 0.95rem; }
+.emp-id span { font-size: 0.72rem; color: var(--muted); }
+.emp-logout {
+  width: auto; background: none; border: 1px solid var(--side-border);
+  border-radius: 8px; padding: 0.45rem; color: var(--nav-text); cursor: pointer;
+}
+.emp-logout:hover { background: #f8fafc; }
+
+.emp-weeknav {
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  padding: 0.7rem; background: #fff; border-bottom: 1px solid var(--side-border);
+  font-weight: 600; font-size: 0.9rem;
+}
+.emp-weeknav span { display: inline-flex; align-items: center; gap: 0.35rem; text-transform: capitalize; }
+.emp-weeknav button {
+  width: auto; background: #fff; border: 1px solid var(--side-border);
+  border-radius: 8px; padding: 0.4rem 0.5rem; color: var(--nav-text); display: inline-flex;
+}
+
+.emp-body { max-width: 600px; margin: 0 auto; padding: 1rem; }
+.emp-loading, .emp-empty { text-align: center; color: var(--muted); padding: 2.5rem 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+.emp-day { margin-bottom: 1.25rem; }
+.emp-day-head {
+  font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+  color: var(--muted); letter-spacing: 0.04em; margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.emp-day.today .emp-day-head { color: #2563eb; }
+.emp-today-tag {
+  background: #eef2ff; color: #2563eb; font-size: 0.66rem; padding: 0.1rem 0.45rem;
+  border-radius: 999px; text-transform: none; letter-spacing: 0;
+}
+
+.emp-job {
+  background: #fff; border: 1px solid var(--side-border); border-left: 4px solid #94a3b8;
+  border-radius: 12px; padding: 0.9rem; margin-bottom: 0.7rem;
+}
+.emp-job-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.emp-job-name { font-weight: 700; font-size: 1rem; }
+.emp-job-per { font-size: 0.7rem; font-weight: 700; color: var(--muted); background: #f1f5f9; padding: 0.1rem 0.5rem; border-radius: 6px; }
+.emp-gps {
+  width: auto; margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;
+  background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 8px;
+  padding: 0.45rem 0.7rem; font-size: 0.82rem; font-weight: 600;
+}
+.emp-gps:hover { background: #dbeafe; }
+.emp-job-action { margin-top: 0.8rem; }
+.emp-btn { width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; }
+.emp-btn.in { background: #16a34a; }
+.emp-btn.in:hover { background: #15803d; }
+.emp-btn.out { background: #ea580c; }
+.emp-btn.out:hover { background: #c2410c; }
+.emp-done {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  color: #15803d; font-weight: 600; font-size: 0.88rem;
+}
+.emp-hint { margin-top: 0.5rem; font-size: 0.74rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
