@@ -141,7 +141,7 @@ export default function Timesheets() {
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ pl, byDay, total, cost, target, perf }) => (
+              {rows.map(({ pl, byDay, total, cost, target, perf, sales, salesTarget, salesPct }) => (
                 <tr key={pl.id}>
                   <td className="ts-name">
                     <button className="emp-link" onClick={() => setSelected(pl)}>
