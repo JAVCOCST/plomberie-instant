@@ -6,7 +6,7 @@ import {
   ListChecks,
   Clock,
   Truck,
-  Phone,
+  Users,
   UserPlus,
   HardHat,
   Wrench,
@@ -38,7 +38,7 @@ export const NAV_GROUPS = [
     label: "Opérations",
     icon: Truck,
     items: [
-      { title: "Appels", url: "/app/call", icon: Phone },
+      { title: "Clients", url: "/app/clients", icon: Users },
       { title: "Dispatch", url: "/app/dispatch", icon: Truck },
       { title: "Bons de travail", url: "/app/bons", icon: ClipboardCheck },
       { title: "Contacts", url: "/app/contacts", icon: UserPlus },

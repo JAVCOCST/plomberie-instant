@@ -1710,3 +1710,7 @@ button:disabled {
 .qb-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 .qb-reconnect { width: auto; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1rem; }
 .qb-badge.muted { background: #f1f5f9; color: var(--muted); border-color: var(--side-border); }
+
+/* Clients — liens compacts */
+.cl-link { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--nav-text); text-decoration: none; }
+a.cl-link:hover { color: var(--accent); text-decoration: underline; }

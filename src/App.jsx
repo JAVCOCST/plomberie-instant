@@ -9,6 +9,7 @@ import Catalogue from "./pages/Catalogue";
 import Soumission from "./pages/Soumission";
 import Timesheets from "./pages/Timesheets";
 import BonsTravail from "./pages/BonsTravail";
+import Clients from "./pages/Clients";
 import QuickBooks from "./pages/QuickBooks";
 import Conditions from "./pages/Conditions";
 import Confidentialite from "./pages/Confidentialite";
@@ -21,6 +22,7 @@ const REAL_PAGES = {
   "/app/quote": <Soumission />,
   "/app/timesheets": <Timesheets />,
   "/app/bons": <BonsTravail />,
+  "/app/clients": <Clients />,
   "/app/quickbooks": <QuickBooks />,
 };
 
