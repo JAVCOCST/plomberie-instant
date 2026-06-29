@@ -194,3 +194,280 @@ button:disabled {
   color: var(--muted);
   margin: 0.5rem 0 1.5rem;
 }
+
+/* =========================================================
+   PLATEFORME — thème clair, menu de gauche
+   ========================================================= */
+
+:root {
+  --app-bg: #f7f8fa;
+  --side-bg: #ffffff;
+  --side-border: #e7ebf0;
+  --side-width: 264px;
+  --nav-muted: #64748b;
+  --nav-text: #475569;
+  --nav-active-bg: #f1f5f9;
+  --nav-active-text: #0f172a;
+  --accent: #111827;
+}
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--text);
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: var(--side-width);
+  background: var(--side-bg);
+  border-right: 1px solid var(--side-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: fixed;
+  inset: 0 auto 0 0;
+  transform: translateX(-100%);
+  transition: transform 0.22s ease;
+  z-index: 60;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+  z-index: 55;
+}
+
+.sidebar-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.1rem 1rem;
+  border-bottom: 1px solid var(--side-border);
+}
+
+.sidebar-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.sidebar-brand {
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  flex: 1;
+}
+
+.sidebar-close {
+  width: auto;
+  background: none;
+  border: none;
+  color: var(--nav-muted);
+  padding: 0.25rem;
+  cursor: pointer;
+}
+
+.sidebar-close:hover {
+  background: none;
+  color: var(--nav-active-text);
+}
+
+/* ---------- Navigation ---------- */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem 0.6rem;
+}
+
+.nav-group {
+  margin-bottom: 0.25rem;
+}
+
+.group-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: none;
+  border: none;
+  color: var(--nav-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.group-header:hover {
+  background: none;
+  color: var(--nav-active-text);
+}
+
+.group-icon {
+  flex-shrink: 0;
+}
+
+.group-label {
+  flex: 1;
+  text-align: left;
+}
+
+.group-chevron {
+  transition: transform 0.18s ease;
+}
+
+.group-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
+.group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0.15rem 0 0.4rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  color: var(--nav-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, color 0.12s;
+}
+
+.nav-item:hover {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-text);
+}
+
+.nav-item.active {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-text);
+  font-weight: 600;
+  border-left-color: var(--accent);
+}
+
+.nav-item-icon {
+  flex-shrink: 0;
+}
+
+/* ---------- Pied : déconnexion ---------- */
+.sidebar-foot {
+  padding: 0.75rem;
+  border-top: 1px solid var(--side-border);
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  justify-content: flex-start;
+  padding: 0.6rem 0.7rem;
+  background: none;
+  color: var(--nav-text);
+  border: 1px solid var(--side-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background: #f8fafc;
+  color: var(--nav-active-text);
+}
+
+/* ---------- Colonne principale ---------- */
+.main-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 56px;
+  padding: 0 1rem;
+  background: #fff;
+  border-bottom: 1px solid var(--side-border);
+}
+
+.menu-toggle {
+  width: auto;
+  background: none;
+  border: 1px solid var(--side-border);
+  border-radius: 8px;
+  padding: 0.45rem;
+  color: var(--nav-text);
+  cursor: pointer;
+  display: inline-flex;
+}
+
+.menu-toggle:hover {
+  background: #f8fafc;
+}
+
+.topbar-logo {
+  height: 26px;
+  width: auto;
+}
+
+.content {
+  flex: 1;
+  padding: 1.75rem;
+  overflow-y: auto;
+}
+
+/* ---------- Pages placeholder ---------- */
+.page {
+  max-width: 900px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.page-sub {
+  color: var(--muted);
+}
+
+/* ---------- Desktop : sidebar fixe et visible ---------- */
+@media (min-width: 900px) {
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    transform: none;
+  }
+  .sidebar-overlay,
+  .sidebar-close,
+  .topbar {
+    display: none;
+  }
+}
