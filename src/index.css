@@ -697,3 +697,242 @@ button:disabled {
   .dispatch-body { flex-direction: column; }
   .proj-pool { width: 100%; }
 }
+
+/* =========================================================
+   SPINNER
+   ========================================================= */
+.spin { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* =========================================================
+   CATALOGUE PRODUITS
+   ========================================================= */
+.catalogue { max-width: 1100px; }
+
+.cat-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.qb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.cat-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+}
+.search-box svg {
+  position: absolute;
+  left: 0.7rem;
+  color: var(--muted);
+}
+.search-box input {
+  width: 100%;
+  padding: 0.6rem 0.8rem 0.6rem 2.3rem;
+  border: 1px solid var(--side-border);
+  border-radius: 9px;
+  font-size: 0.9rem;
+  background: #fff;
+  margin: 0;
+}
+.search-box input:focus { border-color: var(--accent); outline: none; }
+
+.type-filters { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.type-pill {
+  width: auto;
+  background: #fff;
+  color: var(--nav-text);
+  border: 1px solid var(--side-border);
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.type-pill:hover { background: #f8fafc; }
+.type-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.cat-table-wrap {
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+.cat-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.cat-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--side-border);
+}
+.cat-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+.cat-table tr:last-child td { border-bottom: none; }
+.cat-table .num { text-align: right; }
+.cat-name { font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+.cat-name-icon { color: var(--muted); flex-shrink: 0; }
+.cat-desc { color: var(--muted); }
+.cat-empty { text-align: center; color: var(--muted); padding: 1.5rem; }
+
+.type-tag {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+.type-tag.t-Service { background: #eff6ff; color: #1d4ed8; }
+.type-tag.t-Inventory { background: #f0fdf4; color: #15803d; }
+.type-tag.t-NonInventory { background: #fef3c7; color: #b45309; }
+
+.cat-foot { margin-top: 0.8rem; font-size: 0.78rem; color: var(--muted); }
+
+/* =========================================================
+   NOUVELLE SOUMISSION
+   ========================================================= */
+.soumission { max-width: 900px; }
+
+.card-block {
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-top: 1.25rem;
+}
+.block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+.block-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.9rem; }
+.block-head .block-title { margin-bottom: 0; }
+
+.client-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+.fld-wide { grid-column: 1 / -1; }
+.fld label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+.fld input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--side-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin: 0;
+}
+.fld input:focus { border-color: var(--accent); outline: none; }
+
+.quote-table { width: 100%; border-collapse: collapse; }
+.quote-table th {
+  text-align: left;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  padding: 0.4rem 0.5rem;
+}
+.quote-table th.num { text-align: right; }
+.quote-table td { padding: 0.3rem 0.5rem; vertical-align: middle; }
+.quote-table .qcol { width: 80px; }
+.quote-table .pcol { width: 120px; }
+.quote-table .acol { width: 42px; }
+
+.cell-input {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--side-border);
+  border-radius: 7px;
+  font-size: 0.88rem;
+  margin: 0;
+}
+.cell-input:focus { border-color: var(--accent); outline: none; }
+.cell-input.num { text-align: right; }
+.line-amount { font-weight: 600; white-space: nowrap; }
+
+.icon-del {
+  width: auto;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  padding: 0.35rem;
+  display: inline-flex;
+}
+.icon-del:hover { background: #fef2f2; color: var(--error); border-radius: 6px; }
+
+.totals-row { display: flex; justify-content: flex-end; margin-top: 1.25rem; }
+.totals-box {
+  width: 320px;
+  max-width: 100%;
+  background: #fff;
+  border: 1px solid var(--side-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+.t-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding: 0.35rem 0;
+  color: var(--nav-text);
+}
+.t-total {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  border-top: 1px solid var(--side-border);
+  margin-top: 0.4rem;
+  padding-top: 0.7rem;
+}
+.save-btn {
+  width: 100%;
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .content { padding: 1.1rem; }
+  .client-grid { grid-template-columns: 1fr; }
+  .totals-box { width: 100%; }
+  .cat-head, .dispatch-head { gap: 0.75rem; }
+}
