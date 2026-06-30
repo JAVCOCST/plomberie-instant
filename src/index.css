@@ -2187,3 +2187,27 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 @media (max-width: 640px) {
   .proj-stats { grid-template-columns: 1fr 1fr; }
 }
+
+/* Actions sur une carte projet */
+.proj-actions {
+  display: flex; align-items: center; gap: 0.4rem;
+  margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px solid var(--border);
+}
+.pa-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 6px 10px; border-radius: 8px; font-size: 0.76rem; font-weight: 700;
+  border: 1px solid var(--border); background: #fff; color: #334155; cursor: pointer;
+  width: auto;
+}
+.pa-btn:hover { background: #f8fafc; }
+.pa-btn.dispatch { flex: 1; background: #0f172a; color: #fff; border-color: #0f172a; }
+.pa-btn.dispatch:hover { background: #1e293b; }
+.pa-btn.done { color: #16a34a; border-color: #bbe6c7; background: #f0fbf3; }
+.pa-btn.done:hover { background: #e3f6e9; }
+.pa-btn.del { color: #dc2626; border-color: #f3c2c2; background: #fdf3f3; padding: 6px 8px; }
+.pa-btn.del:hover { background: #fbe5e5; }
+.pa-btn:disabled { opacity: 0.6; cursor: default; }
+
+.proj-disp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+.proj-disp-row .fld label,
+.projets-page .modal .fld label { display: inline-flex; align-items: center; gap: 4px; }

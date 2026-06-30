@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Search, Loader2, MapPin, Navigation, Plus, X, Camera, Image as ImageIcon,
-  Inbox, Wrench, CheckCircle2, FolderKanban, Calendar,
+  Inbox, Wrench, CheckCircle2, FolderKanban, Calendar, Truck, Trash2, Clock,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 
@@ -19,24 +19,43 @@ const ORDER = ["adispatcher", "encours", "termine"];
 export default function Projets() {
   const [projets, setProjets] = useState([]);
   const [counts, setCounts] = useState({});
+  const [plombiers, setPlombiers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("tous");
   const [modal, setModal] = useState(null); // "new" | project
+  const [dispatchFor, setDispatchFor] = useState(null);
+  const [busy, setBusy] = useState("");
 
   const load = async () => {
     setLoading(true);
-    const [pr, as] = await Promise.all([
+    const [pr, as, pl] = await Promise.all([
       supabase.from("pi_projets").select("*").order("created_at", { ascending: false }),
       supabase.from("pi_assignations").select("projet_id"),
+      supabase.from("pi_plombiers").select("id,name").order("created_at"),
     ]);
     const c = {};
     (as.data || []).forEach((a) => { c[a.projet_id] = (c[a.projet_id] || 0) + 1; });
     setCounts(c);
     setProjets(pr.data || []);
+    setPlombiers(pl.data || []);
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
+
+  const terminer = async (p) => {
+    setBusy(p.id);
+    await supabase.from("pi_projets").update({ status: "termine", finished_at: new Date().toISOString() }).eq("id", p.id);
+    setBusy(""); load();
+  };
+  const supprimer = async (p) => {
+    if (!window.confirm(`Supprimer définitivement « ${p.name} » ? Les affectations au dispatch seront retirées. Cette action est irréversible.`)) return;
+    setBusy(p.id);
+    const { error } = await supabase.from("pi_projets").delete().eq("id", p.id);
+    setBusy("");
+    if (error) { window.alert("Échec de la suppression : " + error.message); return; }
+    load();
+  };
 
   const statusOf = (p) =>
     p.status === "termine" ? "termine" : counts[p.id] ? "encours" : "adispatcher";
@@ -135,11 +154,35 @@ export default function Projets() {
                       ? <span><Calendar size={12} /> Terminé le {new Date(p.finished_at).toLocaleDateString("fr-CA")}</span>
                       : <span><Calendar size={12} /> {counts[p.id] || 0} intervention{(counts[p.id] || 0) > 1 ? "s" : ""} planifiée{(counts[p.id] || 0) > 1 ? "s" : ""}</span>}
                   </div>
+                  <div className="proj-actions" onClick={(e) => e.stopPropagation()}>
+                    {p._status !== "termine" && (
+                      <button className="pa-btn dispatch" onClick={() => setDispatchFor(p)} disabled={busy === p.id}>
+                        <Truck size={14} /> Dispatcher
+                      </button>
+                    )}
+                    {p._status !== "termine" && (
+                      <button className="pa-btn done" onClick={() => terminer(p)} disabled={busy === p.id}>
+                        <CheckCircle2 size={14} /> Terminer
+                      </button>
+                    )}
+                    <button className="pa-btn del" onClick={() => supprimer(p)} disabled={busy === p.id} title="Supprimer" aria-label="Supprimer">
+                      {busy === p.id ? <Loader2 size={14} className="spin" /> : <Trash2 size={14} />}
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
+      )}
+
+      {dispatchFor && (
+        <DispatchModal
+          project={dispatchFor}
+          plombiers={plombiers}
+          onClose={() => setDispatchFor(null)}
+          onDone={() => { setDispatchFor(null); load(); }}
+        />
       )}
 
       {modal && (
@@ -149,6 +192,82 @@ export default function Projets() {
           onSaved={() => { setModal(null); load(); }}
         />
       )}
+    </div>
+  );
+}
+
+/* Modal : envoyer le projet au dispatch (plombier + jour + heure + durée) */
+const DUREES = [
+  { v: 30, l: "30 min" }, { v: 60, l: "1 h" }, { v: 90, l: "1 h 30" },
+  { v: 120, l: "2 h" }, { v: 180, l: "3 h" }, { v: 240, l: "4 h" },
+];
+
+function DispatchModal({ project, plombiers, onClose, onDone }) {
+  const [plombierId, setPlombierId] = useState(plombiers[0]?.id || "");
+  const [jour, setJour] = useState(() => new Date().toLocaleDateString("en-CA")); // YYYY-MM-DD local
+  const [heure, setHeure] = useState("08:00");
+  const [duree, setDuree] = useState(60);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const save = async () => {
+    setErr("");
+    if (!plombierId) { setErr("Choisis un plombier."); return; }
+    setSaving(true);
+    const { error } = await supabase.from("pi_assignations")
+      .insert({ plombier_id: plombierId, projet_id: project.id, jour, heure, duree_min: duree });
+    if (error) { setErr(error.message); setSaving(false); return; }
+    onDone();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+        <div className="modal-head">
+          <Truck size={18} />
+          <h2>Dispatcher le projet</h2>
+          <button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button>
+        </div>
+        <div className="modal-section">
+          <p className="page-sub" style={{ marginTop: 0 }}><strong>{project.name}</strong></p>
+          {plombiers.length === 0 ? (
+            <div className="msg error">Aucun plombier. Ajoute un plombier dans le Dispatch d'abord.</div>
+          ) : (
+            <>
+              {err && <div className="msg error" style={{ marginBottom: "0.8rem" }}>{err}</div>}
+              <div className="fld" style={{ marginBottom: "0.8rem" }}>
+                <label>Plombier</label>
+                <select value={plombierId} onChange={(e) => setPlombierId(e.target.value)}>
+                  {plombiers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+              <div className="proj-disp-row">
+                <div className="fld">
+                  <label><Calendar size={13} /> Jour</label>
+                  <input type="date" value={jour} onChange={(e) => setJour(e.target.value)} />
+                </div>
+                <div className="fld">
+                  <label><Clock size={13} /> Heure</label>
+                  <input type="time" value={heure} onChange={(e) => setHeure(e.target.value)} />
+                </div>
+              </div>
+              <div className="fld" style={{ marginTop: "0.8rem" }}>
+                <label>Durée</label>
+                <select value={duree} onChange={(e) => setDuree(Number(e.target.value))}>
+                  {DUREES.map((d) => <option key={d.v} value={d.v}>{d.l}</option>)}
+                </select>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="modal-foot">
+          <span style={{ flex: 1 }} />
+          <button className="btn-secondary" onClick={onClose} disabled={saving}>Annuler</button>
+          <button className="save-btn" onClick={save} disabled={saving || plombiers.length === 0}>
+            {saving ? (<><Loader2 size={16} className="spin" /> …</>) : "Placer au dispatch"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
