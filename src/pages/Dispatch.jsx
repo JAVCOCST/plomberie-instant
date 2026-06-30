@@ -277,6 +277,8 @@ export default function Dispatch() {
 
   // Aperçu de redimensionnement en cours (id -> durée en minutes)
   const [resizing, setResizing] = useState(null); // { id, dureeMin }
+  // Aperçu de la zone de dépôt pendant un glisser (vue Jour, multi-cases)
+  const [dropPreview, setDropPreview] = useState(null); // { plombierId, jour, startMin, durMin }
 
   // Géométrie d'un call dans la timeline (top + hauteur)
   // - punché : hauteur = durée réelle du punch (live/terminé)
@@ -337,10 +339,32 @@ export default function Dispatch() {
     await supabase.from("pi_assignations").delete().eq("id", id);
   };
 
+  // Durée (min) de l'élément en cours de glissement — pour l'aperçu de la zone de dépôt
+  const draggedDurMin = (data) => {
+    if (data?.kind === "assignment") {
+      const a = data.assignment;
+      const st = punchByKey[`${a.plombier_id}|${a.jour}|${a.projet_id}`];
+      if (st) {
+        const end = st.heure_fin || (isTodayView ? nowHM : st.heure_debut);
+        return Math.max(hoursBetween(st.heure_debut, end) * 60, 30);
+      }
+      return a.duree_min || 60;
+    }
+    return 60; // nouveau call depuis la réserve
+  };
+
   const justDragged = useRef(false);
   const onDragStart = (e) => { justDragged.current = true; setDragged(e.active.data.current || null); };
+  const onDragOver = (e) => {
+    const { active, over } = e;
+    if (!over) { setDropPreview(null); return; }
+    const [type, rowId, jour, heure] = String(over.id).split("|");
+    if (type !== "d") { setDropPreview(null); return; } // surlignage multi-cases : vue Jour
+    setDropPreview({ plombierId: rowId, jour, startMin: toMin(heure), durMin: draggedDurMin(active.data.current) });
+  };
   const onDragEnd = (e) => {
     setDragged(null);
+    setDropPreview(null);
     setTimeout(() => { justDragged.current = false; }, 0); // évite d'ouvrir le détail après un déplacement
     const { active, over } = e;
     if (!over) return;
@@ -378,7 +402,7 @@ export default function Dispatch() {
   };
 
   return (
-    <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+    <DndContext sensors={sensors} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDragCancel={() => { setDragged(null); setDropPreview(null); }}>
       <div className="dispatch">
         <div className="dispatch-head">
           <div>
@@ -485,6 +509,12 @@ export default function Dispatch() {
                             {HOURS.map((h) => (
                               <DropSlot key={h} id={`d|${pl.id}|${dayIso}|${pad2(h)}:00`} />
                             ))}
+                            {dropPreview && dropPreview.plombierId === pl.id && dropPreview.jour === dayIso && (
+                              <div className="dv-drop-preview" style={{
+                                top: ((dropPreview.startMin - DAY_START_H * 60) / 60) * ROW_H,
+                                height: (dropPreview.durMin / 60) * ROW_H - 2,
+                              }} />
+                            )}
                             {isTodayView && (
                               <div className="dv-now" style={{ top: ((now.getHours() * 60 + now.getMinutes() - DAY_START_H * 60) / 60) * ROW_H }} />
                             )}
