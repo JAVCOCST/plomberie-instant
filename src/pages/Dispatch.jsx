@@ -102,20 +102,19 @@ function fmtMin(m) {
   return `${mm}min`;
 }
 
-function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, onResizeStart, onOpen, onTime, onRemove }) {
+function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, state, onResizeStart, onOpen, onTime, onRemove }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `asg:${a.id}`, data: { kind: "assignment", assignment: a },
   });
   const live = st && !st.heure_fin;
-  const done = st && st.heure_fin;
   const dur = durText(st, nowHM);
   const showResize = positioned && !punched; // bloc planifié : étirable
   // Toute la bulle est déplaçable ; on bloque le démarrage du drag sur les contrôles.
   const noDrag = (e) => e.stopPropagation();
   return (
     <div ref={setNodeRef} {...listeners} {...attributes}
-      className={`call-entry draggable ${live ? "live" : done ? "done" : ""} ${positioned ? "positioned" : ""}`}
-      style={{ "--cc": proj.color, opacity: isDragging ? 0.4 : 1, ...style }}
+      className={`call-entry draggable ${state || "todo"} ${positioned ? "positioned" : ""}`}
+      style={{ opacity: isDragging ? 0.4 : 1, ...style }}
       onClick={() => onOpen()}>
       <span className="call-grip" title="Déplacer"><GripVertical size={12} /></span>
       <input type="time" className="call-time" value={hhmm(a.heure)}
@@ -385,6 +384,15 @@ export default function Dispatch() {
   };
 
   // Rend une entrée de call (employees view: projet ; projects view: plombier)
+  const todayIso = iso(now);
+  // Statut → couleur : jaune (à faire), vert (terminé), rouge (non fait/en retard)
+  const callState = (a, st) => {
+    if (st && st.heure_fin) return "done";          // punché out → vert
+    if (a.jour < todayIso) return "overdue";        // jour passé, pas terminé → rouge
+    if (st) return "live";                           // en cours (sur place)
+    return "todo";                                   // à faire → jaune
+  };
+
   const renderEntry = (a, mode, extra) => {
     const proj = projectById[a.projet_id];
     const pl = plombierById[a.plombier_id];
@@ -393,7 +401,7 @@ export default function Dispatch() {
     return (
       <CallEntry key={a.id} a={a} proj={proj} pl={pl} st={st} mode={mode}
         nowHM={nowHM} positioned={extra?.positioned} style={extra?.style}
-        durMin={extra?.durMin} punched={extra?.punched}
+        durMin={extra?.durMin} punched={extra?.punched} state={callState(a, st)}
         onResizeStart={(e) => startResize(e, a)}
         onOpen={() => { if (!justDragged.current) setJobDetail({ punch: st, plombier: pl, projet: proj }); }}
         onTime={(h) => updateAssignmentTime(a.id, h)}
@@ -595,7 +603,7 @@ export default function Dispatch() {
           const st = punchByKey[`${a.plombier_id}|${a.jour}|${a.projet_id}`];
           const geo = callGeometry(a, st);
           return (
-            <div className="call-entry dragging" style={{ "--cc": proj?.color || "#6d7b8d", height: geo.height, width: 230, alignItems: "flex-start" }}>
+            <div className={`call-entry dragging ${callState(a, st)}`} style={{ height: geo.height, width: 230, alignItems: "flex-start" }}>
               <span className="call-grip"><GripVertical size={12} /></span>
               <span className="call-name" style={{ whiteSpace: "normal" }}>{proj?.name || "Call"}</span>
             </div>
