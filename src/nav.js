@@ -2,7 +2,6 @@ import {
   Briefcase,
   FileText,
   PlusCircle,
-  ClipboardList,
   ListChecks,
   Clock,
   Truck,
@@ -30,7 +29,6 @@ export const NAV_GROUPS = [
     items: [
       { title: "Projets", url: "/app", icon: FileText, end: true },
       { title: "Nouvelle soumission", url: "/app/quote", icon: PlusCircle },
-      { title: "Suivi projet", url: "/app/projects", icon: ClipboardList },
       { title: "Calls terminés", url: "/app/calls-termines", icon: CheckCircle2 },
       { title: "Tâches", url: "/app/tasks", icon: ListChecks },
       { title: "Feuilles de temps", url: "/app/timesheets", icon: Clock },
