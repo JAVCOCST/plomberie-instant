@@ -2007,6 +2007,19 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 }
 .call-entry.positioned.live { z-index: 7; }
 .call-entry.positioned .call-name { width: 100%; white-space: normal; line-height: 1.15; }
+.call-dur.planned { color: #475569; }
+
+/* Poignée de redimensionnement (bord bas) — comme Google Agenda */
+.call-resize {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 9px;
+  cursor: ns-resize; touch-action: none;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.call-resize::after {
+  content: ""; width: 26px; height: 3px; margin-bottom: 2px;
+  border-radius: 3px; background: rgba(15, 23, 42, 0.25);
+}
+.call-entry.positioned:hover .call-resize::after { background: rgba(15, 23, 42, 0.45); }
 
 .call-entry {
   display: flex; align-items: center; gap: 5px;

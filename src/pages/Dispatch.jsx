@@ -95,13 +95,21 @@ function DropSlot({ id }) {
 
 /* Un call placé : déplaçable (poignée), cliquable, avec heure ajustable.
    `positioned` = rendu absolu dans la vue Jour (hauteur = durée). */
-function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, onOpen, onTime, onRemove }) {
+function fmtMin(m) {
+  const h = Math.floor(m / 60), mm = m % 60;
+  if (h && mm) return `${h}h${pad2(mm)}`;
+  if (h) return `${h}h`;
+  return `${mm}min`;
+}
+
+function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, onResizeStart, onOpen, onTime, onRemove }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `asg:${a.id}`, data: { kind: "assignment", assignment: a },
   });
   const live = st && !st.heure_fin;
   const done = st && st.heure_fin;
   const dur = durText(st, nowHM);
+  const showResize = positioned && !punched; // bloc planifié : étirable
   // Toute la bulle est déplaçable ; on bloque le démarrage du drag sur les contrôles.
   const noDrag = (e) => e.stopPropagation();
   return (
@@ -114,11 +122,13 @@ function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, onOpen, on
         onPointerDown={noDrag} onClick={noDrag}
         onChange={(e) => onTime(e.target.value)} />
       <span className="call-name">{mode === "emp" ? proj.name : pl.name}</span>
-      {dur && (
+      {dur ? (
         <span className={`call-dur ${live ? "live" : ""}`}>
           {live && <Clock size={11} />}{dur}
         </span>
-      )}
+      ) : showResize && durMin ? (
+        <span className="call-dur planned">{fmtMin(durMin)}</span>
+      ) : null}
       {live && <span className="live-dot" title="Sur place" />}
       {proj.address && (
         <button className="gps-btn dark" onPointerDown={noDrag}
@@ -130,6 +140,10 @@ function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, onOpen, on
         onClick={(e) => { e.stopPropagation(); onRemove(); }} aria-label="Retirer">
         <X size={12} />
       </button>
+      {showResize && (
+        <span className="call-resize" onPointerDown={onResizeStart} onClick={noDrag}
+          title="Étirer pour ajuster la durée" />
+      )}
     </div>
   );
 }
@@ -189,7 +203,7 @@ export default function Dispatch() {
       const [pl, pr, as] = await Promise.all([
         supabase.from("pi_plombiers").select("*").order("created_at"),
         supabase.from("pi_projets").select("*").neq("status", "termine").order("created_at"),
-        supabase.from("pi_assignations").select("id,plombier_id,projet_id,jour,heure"),
+        supabase.from("pi_assignations").select("id,plombier_id,projet_id,jour,heure,duree_min"),
       ]);
       if (pl.error || pr.error || as.error) { setError("Impossible de charger le dispatch."); setLoading(false); return; }
       setPlombiers(pl.data || []);
@@ -261,21 +275,52 @@ export default function Dispatch() {
     return m;
   }, [assignments, dayIso]);
 
-  // Géométrie d'un call dans la timeline (top + hauteur selon la durée du punch)
+  // Aperçu de redimensionnement en cours (id -> durée en minutes)
+  const [resizing, setResizing] = useState(null); // { id, dureeMin }
+
+  // Géométrie d'un call dans la timeline (top + hauteur)
+  // - punché : hauteur = durée réelle du punch (live/terminé)
+  // - non punché : hauteur = durée planifiée (duree_min), ajustable au glisser
   const callGeometry = (a, st) => {
     const startT = (st && st.heure_debut) || a.heure || "08:00";
     const top = ((toMin(startT) - DAY_START_H * 60) / 60) * ROW_H;
-    let durH = 1; // non punché : 1 h par défaut
+    let durMin;
     if (st) {
       const end = st.heure_fin || (isTodayView ? nowHM : startT);
-      durH = Math.max(hoursBetween(st.heure_debut, end), 0.5);
+      durMin = Math.max(hoursBetween(st.heure_debut, end) * 60, 30);
+    } else {
+      durMin = resizing && resizing.id === a.id ? resizing.dureeMin : (a.duree_min || 60);
     }
-    return { top: Math.max(top, 0), height: durH * ROW_H - 4 };
+    return { top: Math.max(top, 0), height: (durMin / 60) * ROW_H - 4, durMin, punched: !!st };
+  };
+
+  // Redimensionnement type Google Agenda : on tire le bord bas → durée
+  const startResize = (e, a) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const startY = e.clientY;
+    const startDuree = a.duree_min || 60;
+    const STEP = 15; // minutes
+    const pxPerMin = ROW_H / 60;
+    let latest = startDuree;
+    const onMove = (ev) => {
+      const deltaMin = Math.round((ev.clientY - startY) / pxPerMin / STEP) * STEP;
+      latest = Math.max(STEP, startDuree + deltaMin);
+      setResizing({ id: a.id, dureeMin: latest });
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      setResizing(null);
+      if (latest !== startDuree) updateAssignment(a.id, { duree_min: latest });
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
   };
 
   const addAssignment = async (plombier_id, projet_id, jour, heure = "08:00") => {
     const { data, error: e } = await supabase.from("pi_assignations")
-      .insert({ plombier_id, projet_id, jour, heure }).select("id,plombier_id,projet_id,jour,heure").single();
+      .insert({ plombier_id, projet_id, jour, heure }).select("id,plombier_id,projet_id,jour,heure,duree_min").single();
     if (e) { setError("Échec de l'ajout du call."); return; }
     setAssignments((prev) => [...prev, data]);
   };
@@ -324,6 +369,8 @@ export default function Dispatch() {
     return (
       <CallEntry key={a.id} a={a} proj={proj} pl={pl} st={st} mode={mode}
         nowHM={nowHM} positioned={extra?.positioned} style={extra?.style}
+        durMin={extra?.durMin} punched={extra?.punched}
+        onResizeStart={(e) => startResize(e, a)}
         onOpen={() => { if (!justDragged.current) setJobDetail({ punch: st, plombier: pl, projet: proj }); }}
         onTime={(h) => updateAssignmentTime(a.id, h)}
         onRemove={() => removeAssignment(a.id)} />
@@ -443,8 +490,8 @@ export default function Dispatch() {
                             )}
                             {list.map((a) => {
                               const st = punchByKey[`${pl.id}|${a.jour}|${a.projet_id}`];
-                              const { top, height } = callGeometry(a, st);
-                              return renderEntry(a, "emp", { positioned: true, style: { top, height } });
+                              const geo = callGeometry(a, st);
+                              return renderEntry(a, "emp", { positioned: true, style: { top: geo.top, height: geo.height }, durMin: geo.durMin, punched: geo.punched });
                             })}
                           </div>
                         </div>
