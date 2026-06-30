@@ -2022,18 +2022,35 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 .call-entry.positioned:hover .call-resize::after { background: rgba(15, 23, 42, 0.45); }
 
 .call-entry {
+  --cc: #6d7b8d;
   display: flex; align-items: center; gap: 5px;
-  background: #fff; border: 1px solid var(--side-border);
-  border-left: 4px solid #94a3b8; border-radius: 8px;
-  padding: 4px 6px; cursor: pointer;
+  /* Remplissage doux teinté de la couleur du projet → contraste clair sur l'agenda blanc */
+  background: #eef1f5; /* repli si color-mix non supporté */
+  background: color-mix(in srgb, var(--cc) 16%, #fff);
+  border: 1px solid #d9dee6;
+  border: 1px solid color-mix(in srgb, var(--cc) 34%, #fff);
+  border-left: 5px solid var(--cc);
+  border-radius: 9px;
+  padding: 5px 7px; cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  transition: background 0.12s ease, box-shadow 0.12s ease;
 }
-.call-entry:hover { background: #f8fafc; }
-.call-entry.live { box-shadow: 0 0 0 2px #22c55e; }
+.call-entry:hover {
+  background: color-mix(in srgb, var(--cc) 24%, #fff);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.12);
+}
+/* En cours (punché in) : accent vert net */
+.call-entry.live {
+  background: color-mix(in srgb, var(--cc) 18%, #fff);
+  border-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.45);
+}
 /* Call punché out : reste au calendrier mais en pâle (terminé) */
 .call-entry.done {
-  background: #f8fafc;
+  background: #f5f7fa;
   border-color: #e8edf3;
   border-left-color: #cbd5e1 !important;
+  box-shadow: none;
 }
 .call-entry.done .call-name,
 .call-entry.done .call-time,
@@ -2041,13 +2058,18 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 .call-entry.done .call-grip,
 .call-entry.done .gps-btn,
 .call-entry.done .call-rm { color: #aab4c2; }
-.call-entry.done .call-time { opacity: 0.7; }
+.call-entry.done .call-time { opacity: 0.7; background: #eef2f6; }
 .call-time {
-  width: 74px; flex-shrink: 0; border: none; background: #f1f5f9;
-  border-radius: 6px; padding: 3px 4px; font-size: 0.76rem; font-weight: 700; color: var(--text);
+  width: 70px; flex-shrink: 0; border: none;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 6px; padding: 3px 4px; font-size: 0.76rem; font-weight: 700;
+  color: #1e293b;
+  color: color-mix(in srgb, var(--cc) 55%, #0f172a);
 }
 .call-name {
-  flex: 1; font-size: 0.8rem; font-weight: 600;
+  flex: 1; font-size: 0.82rem; font-weight: 700;
+  color: #1e293b;
+  color: color-mix(in srgb, var(--cc) 45%, #0f172a);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .gps-btn.dark {

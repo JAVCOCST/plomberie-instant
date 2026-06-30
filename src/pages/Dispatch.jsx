@@ -115,7 +115,7 @@ function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, pu
   return (
     <div ref={setNodeRef} {...listeners} {...attributes}
       className={`call-entry draggable ${live ? "live" : done ? "done" : ""} ${positioned ? "positioned" : ""}`}
-      style={{ borderLeftColor: proj.color, opacity: isDragging ? 0.4 : 1, ...style }}
+      style={{ "--cc": proj.color, opacity: isDragging ? 0.4 : 1, ...style }}
       onClick={() => onOpen()}>
       <span className="call-grip" title="Déplacer"><GripVertical size={12} /></span>
       <input type="time" className="call-time" value={hhmm(a.heure)}
