@@ -4,6 +4,7 @@ import { supabase } from "./supabaseClient";
 import Login from "./Login";
 import Layout from "./Layout";
 import Placeholder from "./pages/Placeholder";
+import Projets from "./pages/Projets";
 import Dispatch from "./pages/Dispatch";
 import Catalogue from "./pages/Catalogue";
 import Soumission from "./pages/Soumission";
@@ -19,6 +20,7 @@ import Confidentialite from "./pages/Confidentialite";
 import { NAV_GROUPS } from "./nav";
 
 const REAL_PAGES = {
+  "/app": <Projets />,
   "/app/dispatch": <Dispatch />,
   "/app/products": <Catalogue />,
   "/app/quote": <Soumission />,

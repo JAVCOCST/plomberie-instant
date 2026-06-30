@@ -28,7 +28,7 @@ export const NAV_GROUPS = [
     label: "Soumissions & Projets",
     icon: Briefcase,
     items: [
-      { title: "Projets & Leads", url: "/app", icon: FileText, end: true },
+      { title: "Projets", url: "/app", icon: FileText, end: true },
       { title: "Nouvelle soumission", url: "/app/quote", icon: PlusCircle },
       { title: "Suivi projet", url: "/app/projects", icon: ClipboardList },
       { title: "Calls terminés", url: "/app/calls-termines", icon: CheckCircle2 },
