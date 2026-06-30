@@ -559,7 +559,18 @@ export default function Dispatch() {
       </div>
 
       <DragOverlay dropAnimation={null}>
-        {dragged ? (
+        {!dragged ? null : dragged.kind === "assignment" && calView === "jour" ? (() => {
+          const a = dragged.assignment;
+          const proj = projectById[a.projet_id];
+          const st = punchByKey[`${a.plombier_id}|${a.jour}|${a.projet_id}`];
+          const geo = callGeometry(a, st);
+          return (
+            <div className="call-entry dragging" style={{ "--cc": proj?.color || "#6d7b8d", height: geo.height, width: 230, alignItems: "flex-start" }}>
+              <span className="call-grip"><GripVertical size={12} /></span>
+              <span className="call-name" style={{ whiteSpace: "normal" }}>{proj?.name || "Call"}</span>
+            </div>
+          );
+        })() : (
           <div className="disp-chip dragging" style={{
             background: dragged.kind === "project" ? dragged.project.color
               : dragged.kind === "assignment" ? (projectById[dragged.assignment.projet_id]?.color || "#475569")
@@ -571,7 +582,7 @@ export default function Dispatch() {
                 : dragged.plombier.name}
             </span>
           </div>
-        ) : null}
+        )}
       </DragOverlay>
 
       {selected && (

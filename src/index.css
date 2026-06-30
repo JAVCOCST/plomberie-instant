@@ -2006,6 +2006,11 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
   overflow: hidden; min-height: 24px;
 }
 .call-entry.positioned.live { z-index: 7; }
+/* Aperçu de déplacement : bloc à la taille réelle du call */
+.call-entry.dragging {
+  cursor: grabbing; overflow: hidden;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22);
+}
 .call-entry.positioned .call-name { width: 100%; white-space: normal; line-height: 1.15; }
 .call-dur.planned { color: #475569; }
 
