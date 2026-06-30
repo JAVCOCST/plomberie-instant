@@ -2229,3 +2229,15 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
 }
 /* Case du calendrier survolée pendant le drag maison */
 .ext-drop-over { background: rgba(71, 85, 105, 0.18) !important; box-shadow: inset 0 0 0 2px #6366f1; }
+
+/* Bouton « Convertir en facture QuickBooks » sur un bon de travail */
+.bon-actions { margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--border); }
+.qbo-btn {
+  width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 9px 12px; border-radius: 9px; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+  background: #2ca01c; color: #fff; border: 1px solid #2ca01c; /* vert QuickBooks */
+}
+.qbo-btn:hover { background: #258318; border-color: #258318; }
+.qbo-btn.done { background: #fff; color: #2ca01c; }
+.qbo-btn.done:hover { background: #f0faee; }
+.qbo-btn:disabled { opacity: 0.65; cursor: default; }

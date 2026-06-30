@@ -1,9 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Plus, Trash2, X, Camera, Loader2, ClipboardCheck, Clock, Image as ImageIcon, User,
+  FileText, ExternalLink,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { money, fmtHours } from "../lib/time";
+
+const QBO_ERRORS = {
+  not_connected: "QuickBooks n'est pas connecté. Va dans Intégration QuickBooks pour te connecter.",
+  missing_config: "Configuration QuickBooks manquante.",
+  client_manquant: "Ce bon n'a pas de client — impossible de créer la facture.",
+  aucune_ligne: "Ce bon n'a aucune ligne de produit / service.",
+  aucun_produit_qbo: "Aucun produit QuickBooks synchronisé. Synchronise le catalogue d'abord.",
+  bon_introuvable: "Bon de travail introuvable.",
+};
 
 let _id = 1;
 const newItem = () => ({ id: _id++, desc: "", qty: 1, price: 0 });
@@ -22,6 +32,28 @@ export default function BonsTravail() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
+  const [converting, setConverting] = useState("");
+  const [convErr, setConvErr] = useState("");
+
+  const convertToInvoice = async (b) => {
+    setConvErr("");
+    setConverting(b.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("qbo-create-invoice", { body: { bon_id: b.id } });
+      if (error) {
+        let code = error.message;
+        try { const j = await error.context.json(); code = j.error || code; if (j.detail) code += " — " + j.detail; } catch { /* ignore */ }
+        setConvErr(QBO_ERRORS[code] || ("Échec de la création de la facture : " + code));
+        return;
+      }
+      if (data?.invoice_id) {
+        setBons((prev) => prev.map((x) => (x.id === b.id ? { ...x, qbo_invoice_id: data.invoice_id } : x)));
+      }
+      if (data?.url) window.open(data.url, "_blank", "noopener");
+    } finally {
+      setConverting("");
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -54,6 +86,8 @@ export default function BonsTravail() {
           <Plus size={16} /> Nouveau bon de travail
         </button>
       </div>
+
+      {convErr && <div className="msg error" style={{ marginBottom: "1rem" }}>{convErr}</div>}
 
       {loading ? (
         <p className="page-sub" style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -100,6 +134,19 @@ export default function BonsTravail() {
                 </div>
               )}
               {b.notes && <p className="bon-notes">{b.notes}</p>}
+              <div className="bon-actions">
+                {b.qbo_invoice_id ? (
+                  <button className="qbo-btn done" onClick={() => convertToInvoice(b)} disabled={converting === b.id}>
+                    {converting === b.id ? <Loader2 size={15} className="spin" /> : <ExternalLink size={15} />}
+                    Voir la facture QuickBooks
+                  </button>
+                ) : (
+                  <button className="qbo-btn" onClick={() => convertToInvoice(b)} disabled={converting === b.id}>
+                    {converting === b.id ? <Loader2 size={15} className="spin" /> : <FileText size={15} />}
+                    {converting === b.id ? "Création…" : "Convertir en facture QuickBooks"}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
