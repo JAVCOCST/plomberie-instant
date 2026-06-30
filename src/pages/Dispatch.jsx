@@ -70,10 +70,10 @@ function ColorPicker({ value, onChange }) {
 }
 
 /* Pastille déplaçable */
-function Chip({ id, data, color, label, initials }) {
+function Chip({ id, data, color, label, initials, className }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id, data });
   return (
-    <div ref={setNodeRef} {...listeners} {...attributes} className="disp-chip"
+    <div ref={setNodeRef} {...listeners} {...attributes} className={`disp-chip ${className || ""}`}
       style={{ background: color, opacity: isDragging ? 0.4 : 1 }} title={label}>
       {initials ? <span className="chip-ini">{initials}</span> : <GripVertical size={13} className="chip-grip" />}
       <span className="chip-name">{label}</span>
@@ -483,7 +483,7 @@ export default function Dispatch() {
                 <span className="res-label">Plombiers</span>
                 <div className="res-chips">
                   {plombiers.map((p) => (
-                    <Chip key={p.id} id={`plb:${p.id}`} data={{ kind: "plombier", plombier: p }} color="#6d7b8d" label={p.name} initials={p.name.charAt(0)} />
+                    <Chip key={p.id} id={`plb:${p.id}`} data={{ kind: "plombier", plombier: p }} color="#dce4fb" className="plombier" label={p.name} initials={p.name.charAt(0)} />
                   ))}
                   <button className="mini-add" onClick={addPlombier} aria-label="Ajouter un plombier"><Plus size={16} /></button>
                 </div>

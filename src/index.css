@@ -1432,6 +1432,9 @@ button:disabled {
 }
 .disp-chip:active { cursor: grabbing; }
 .disp-chip.dragging { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
+/* Pastilles plombier : bleu royal pâle, nom lisible foncé */
+.disp-chip.plombier { color: #1e3a8a; border: 1px solid #b9c6ef; }
+.disp-chip.plombier .chip-ini { background: rgba(30, 58, 138, 0.16); color: #1e3a8a; }
 .chip-ini {
   width: 18px; height: 18px;
   border-radius: 50%;
