@@ -13,6 +13,7 @@ const QBO_ERRORS = {
   aucune_ligne: "Ce bon n'a aucune ligne de produit / service.",
   aucun_produit_qbo: "Aucun produit QuickBooks synchronisé. Synchronise le catalogue d'abord.",
   bon_introuvable: "Bon de travail introuvable.",
+  tax_code_introuvable: "Code de taxe TPS/TVQ introuvable dans QuickBooks.",
 };
 
 let _id = 1;
@@ -41,9 +42,16 @@ export default function BonsTravail() {
     try {
       const { data, error } = await supabase.functions.invoke("qbo-create-invoice", { body: { bon_id: b.id } });
       if (error) {
-        let code = error.message;
-        try { const j = await error.context.json(); code = j.error || code; if (j.detail) code += " — " + j.detail; } catch { /* ignore */ }
-        setConvErr(QBO_ERRORS[code] || ("Échec de la création de la facture : " + code));
+        let code = error.message, extra = "";
+        try {
+          const j = await error.context.json();
+          code = j.error || code;
+          if (j.detail) extra = " — " + j.detail;
+          if (Array.isArray(j.codes) && j.codes.length) {
+            extra = " — codes de taxe disponibles : " + j.codes.map((c) => `${c.name} (#${c.id})`).join(", ");
+          }
+        } catch { /* ignore */ }
+        setConvErr((QBO_ERRORS[code] || ("Échec de la création de la facture : " + code)) + extra);
         return;
       }
       if (data?.invoice_id) {
