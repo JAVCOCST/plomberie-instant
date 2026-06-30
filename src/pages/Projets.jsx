@@ -4,6 +4,7 @@ import {
   Inbox, Wrench, CheckCircle2, FolderKanban, Calendar, Truck, Trash2, Clock,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import { useProjectDrag } from "../projectDrag";
 
 const gps = (addr) =>
   window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`, "_blank", "noopener");
@@ -26,6 +27,14 @@ export default function Projets() {
   const [modal, setModal] = useState(null); // "new" | project
   const [dispatchFor, setDispatchFor] = useState(null);
   const [busy, setBusy] = useState("");
+  const { startDrag } = useProjectDrag();
+
+  // Démarrer un glisser vers le menu/dispatch (sauf sur les boutons internes)
+  const onCardPointerDown = (e, p) => {
+    if (e.button !== 0) return;
+    if (e.target.closest(".proj-actions, .proj-addr, button, a")) return;
+    startDrag && startDrag(p, e);
+  };
 
   const load = async () => {
     setLoading(true);
@@ -137,7 +146,10 @@ export default function Projets() {
             const Icon = STATUS[p._status].icon;
             const photo = Array.isArray(p.photos) && p.photos.length > 0 ? p.photos[0] : null;
             return (
-              <div key={p.id} className={`proj-card ${p._status}`} onClick={() => setModal(p)}>
+              <div key={p.id} className={`proj-card ${p._status}`}
+                onPointerDown={(e) => onCardPointerDown(e, p)}
+                onClick={() => setModal(p)}
+                title="Glisse-moi vers Dispatch, à gauche, pour me placer au calendrier">>
                 <div className="proj-card-media">
                   {photo ? <img src={photo} alt="" /> : <span className="proj-card-noimg"><ImageIcon size={22} /></span>}
                   <span className={`proj-pill ${p._status}`}><Icon size={12} /> {STATUS[p._status].label}</span>

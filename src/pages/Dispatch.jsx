@@ -9,6 +9,7 @@ import {
   Pencil, Camera, Image as ImageIcon, CheckCircle2, Clock,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import { useProjectDrag } from "../projectDrag";
 import EmployeeDialog from "../components/EmployeeDialog";
 import WeatherStrip from "../components/WeatherStrip";
 import {
@@ -84,13 +85,13 @@ function Chip({ id, data, color, label, initials, className }) {
 /* Case-jour de la vue Semaine (zone de dépôt) */
 function DayCell({ id, children }) {
   const { setNodeRef, isOver } = useDroppable({ id });
-  return <td ref={setNodeRef} className={`day-cell ${isOver ? "over" : ""}`}>{children}</td>;
+  return <td ref={setNodeRef} data-drop={id} className={`day-cell ${isOver ? "over" : ""}`}>{children}</td>;
 }
 
 /* Créneau horaire de la vue Jour (zone de dépôt) */
 function DropSlot({ id }) {
   const { setNodeRef, isOver } = useDroppable({ id });
-  return <div ref={setNodeRef} className={`dv-slot ${isOver ? "over" : ""}`} />;
+  return <div ref={setNodeRef} data-drop={id} className={`dv-slot ${isOver ? "over" : ""}`} />;
 }
 
 /* Un call placé : déplaçable (poignée), cliquable, avec heure ajustable.
@@ -325,6 +326,19 @@ export default function Dispatch() {
     if (e) { setError("Échec de l'ajout du call."); return; }
     setAssignments((prev) => [...prev, data]);
   };
+
+  // Dépôt d'un projet glissé depuis la page Projets (drag inter-pages maison)
+  const { registerDrop } = useProjectDrag();
+  useEffect(() => {
+    if (!registerDrop) return;
+    registerDrop(({ project, type, plombierId, jour, heure }) => {
+      if (!project || !plombierId || !jour) return;
+      if (type === "d") addAssignment(plombierId, project.id, jour, heure || "08:00");
+      else if (type === "e") addAssignment(plombierId, project.id, jour);
+    });
+    return () => registerDrop(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const updateAssignmentTime = async (id, heure) => {
     setAssignments((prev) => prev.map((a) => (a.id === id ? { ...a, heure } : a)));
     await supabase.from("pi_assignations").update({ heure }).eq("id", id);

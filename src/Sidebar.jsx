@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, LogOut, X } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import { NAV_GROUPS } from "./nav";
+import { useProjectDrag } from "./projectDrag";
 
 const GROUPS_KEY = "pi_sidebar_groups_v1";
 
@@ -28,6 +29,7 @@ function activeGroupId(pathname) {
 export default function Sidebar({ open, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { dragging, hoverGroup } = useProjectDrag();
   const [openGroups, setOpenGroups] = useState(loadGroupState);
 
   // Ouvre automatiquement le groupe de la route active.
@@ -69,13 +71,14 @@ export default function Sidebar({ open, onClose }) {
 
         <nav className="sidebar-nav">
           {NAV_GROUPS.map((group) => {
-            const isOpen = !!openGroups[group.id];
+            // Pendant un glisser de projet, le groupe survolé s'ouvre tout seul.
+            const isOpen = !!openGroups[group.id] || (dragging && hoverGroup === group.id);
             const GroupIcon = group.icon;
             return (
-              <div key={group.id} className="nav-group">
+              <div key={group.id} className="nav-group" data-nav-group={group.id}>
                 <button
                   type="button"
-                  className="group-header"
+                  className={`group-header ${dragging && hoverGroup === group.id ? "drag-over" : ""}`}
                   onClick={() => toggleGroup(group.id)}
                   aria-expanded={isOpen}
                 >
@@ -97,6 +100,7 @@ export default function Sidebar({ open, onClose }) {
                           to={item.url}
                           end={item.end}
                           onClick={onClose}
+                          data-nav-item={item.url}
                           className={({ isActive }) =>
                             `nav-item ${isActive ? "active" : ""}`
                           }
