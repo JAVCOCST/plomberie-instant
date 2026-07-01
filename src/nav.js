@@ -16,7 +16,6 @@ import {
   Boxes,
   ClipboardCheck,
   Plug,
-  UserCog,
   CheckCircle2,
 } from "lucide-react";
 
@@ -42,8 +41,8 @@ export const NAV_GROUPS = [
       { title: "Clients", url: "/app/clients", icon: Users },
       { title: "Dispatch", url: "/app/dispatch", icon: Truck },
       { title: "Bons de travail", url: "/app/bons", icon: ClipboardCheck },
+      { title: "Employés", url: "/app/acces", icon: HardHat },
       { title: "Contacts", url: "/app/contacts", icon: UserPlus },
-      { title: "Embauche plombiers", url: "/app/embauche", icon: HardHat },
     ],
   },
   {
@@ -54,7 +53,6 @@ export const NAV_GROUPS = [
       { title: "Calculateur de financement", url: "/app/financing", icon: Calculator },
       { title: "Assistant IA", url: "/app/assistant", icon: Bot },
       { title: "Intégration QuickBooks", url: "/app/quickbooks", icon: Plug },
-      { title: "Accès employés", url: "/app/acces", icon: UserCog },
     ],
   },
   {
