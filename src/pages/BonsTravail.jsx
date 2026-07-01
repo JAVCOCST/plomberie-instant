@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Plus, Trash2, X, Camera, Loader2, ClipboardCheck, Clock, Image as ImageIcon, User,
-  FileText, ExternalLink,
+  FileText, ExternalLink, Calendar, Briefcase,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { money, fmtHours } from "../lib/time";
@@ -107,56 +107,53 @@ export default function BonsTravail() {
           <p>Aucun bon de travail pour l'instant.</p>
         </div>
       ) : (
-        <div className="bon-grid">
-          {bons.map((b) => (
-            <div className="bon-card" key={b.id}>
-              <div className="bon-card-head">
-                <span className="bon-pl">{plName[b.plombier_id] || "—"}</span>
-                <span className="bon-total">{money(b.total)}</span>
-              </div>
-              {b.client_name && (
-                <div className="bon-client"><User size={13} /> {b.client_name}</div>
-              )}
-              <div className="bon-meta">
-                <span>{b.jour}</span>
-                {b.projet_id && <span className="bon-proj">{prName[b.projet_id]}</span>}
-                <span className="bon-h"><Clock size={13} /> {fmtHours(Number(b.heures))}</span>
-              </div>
-              {Array.isArray(b.items) && b.items.length > 0 && (
-                <ul className="bon-items">
-                  {b.items.map((it, i) => (
-                    <li key={i}>
-                      <span>{it.qty} × {it.desc}</span>
-                      <span>{money((Number(it.qty) || 0) * (Number(it.price) || 0))}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {Array.isArray(b.photos) && b.photos.length > 0 && (
-                <div className="bon-photos">
-                  {b.photos.map((url, i) => (
-                    <a key={i} href={url} target="_blank" rel="noreferrer">
-                      <img src={url} alt={`photo ${i + 1}`} />
-                    </a>
-                  ))}
+        <div className="bon-list">
+          {bons.map((b) => {
+            const items = Array.isArray(b.items) ? b.items : [];
+            const photos = Array.isArray(b.photos) ? b.photos : [];
+            const invoiced = !!b.qbo_invoice_id;
+            return (
+              <div className={`bon-row ${invoiced ? "invoiced" : ""}`} key={b.id}>
+                <span className="bon-row-avatar">{(plName[b.plombier_id] || "?").charAt(0).toUpperCase()}</span>
+                <div className="bon-row-main">
+                  <div className="bon-row-top">
+                    <span className="bon-row-pl">{plName[b.plombier_id] || "—"}</span>
+                    {b.client_name && <span className="bon-row-client"><User size={12} /> {b.client_name}</span>}
+                    {invoiced && <span className="bon-inv-badge"><FileText size={11} /> Facturé</span>}
+                    <span className="bon-row-total">{money(b.total)}</span>
+                  </div>
+                  <div className="bon-row-meta">
+                    <span><Calendar size={12} /> {b.jour}</span>
+                    {b.projet_id && <span><Briefcase size={12} /> {prName[b.projet_id]}</span>}
+                    <span><Clock size={12} /> {fmtHours(Number(b.heures))}</span>
+                    {items.length > 0 && <span>{items.length} article{items.length > 1 ? "s" : ""}</span>}
+                    {photos.length > 0 && (
+                      <span className="bon-row-thumbs">
+                        {photos.slice(0, 4).map((url, i) => (
+                          <a key={i} href={url} target="_blank" rel="noreferrer"><img src={url} alt={`photo ${i + 1}`} /></a>
+                        ))}
+                        {photos.length > 4 && <span className="bon-more">+{photos.length - 4}</span>}
+                      </span>
+                    )}
+                  </div>
+                  {b.notes && <p className="bon-row-notes">{b.notes}</p>}
                 </div>
-              )}
-              {b.notes && <p className="bon-notes">{b.notes}</p>}
-              <div className="bon-actions">
-                {b.qbo_invoice_id ? (
-                  <button className="qbo-btn done" onClick={() => convertToInvoice(b)} disabled={converting === b.id}>
-                    {converting === b.id ? <Loader2 size={15} className="spin" /> : <ExternalLink size={15} />}
-                    Voir la facture QuickBooks
-                  </button>
-                ) : (
-                  <button className="qbo-btn" onClick={() => convertToInvoice(b)} disabled={converting === b.id}>
-                    {converting === b.id ? <Loader2 size={15} className="spin" /> : <FileText size={15} />}
-                    {converting === b.id ? "Création…" : "Convertir en facture QuickBooks"}
-                  </button>
-                )}
+                <div className="bon-row-actions">
+                  {invoiced ? (
+                    <button className="qbo-btn done" onClick={() => convertToInvoice(b)} disabled={converting === b.id}>
+                      {converting === b.id ? <Loader2 size={15} className="spin" /> : <ExternalLink size={15} />}
+                      Voir la facture
+                    </button>
+                  ) : (
+                    <button className="qbo-btn" onClick={() => convertToInvoice(b)} disabled={converting === b.id}>
+                      {converting === b.id ? <Loader2 size={15} className="spin" /> : <FileText size={15} />}
+                      {converting === b.id ? "Création…" : "Convertir en facture QuickBooks"}
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
