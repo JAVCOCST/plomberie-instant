@@ -141,46 +141,50 @@ export default function Projets() {
           <p>Aucun projet {filter !== "tous" ? `« ${STATUS[filter].label} »` : ""} pour l'instant.</p>
         </div>
       ) : (
-        <div className="proj-grid">
+        <div className="proj-list">
           {rows.map((p) => {
             const Icon = STATUS[p._status].icon;
             const photo = Array.isArray(p.photos) && p.photos.length > 0 ? p.photos[0] : null;
+            const nb = counts[p.id] || 0;
             return (
-              <div key={p.id} className={`proj-card ${p._status}`}
+              <div key={p.id} className={`proj-row ${p._status}`}
                 onPointerDown={(e) => onCardPointerDown(e, p)}
                 onClick={() => setModal(p)}
-                title="Glisse-moi vers Dispatch, à gauche, pour me placer au calendrier">>
-                <div className="proj-card-media">
-                  {photo ? <img src={photo} alt="" /> : <span className="proj-card-noimg"><ImageIcon size={22} /></span>}
-                  <span className={`proj-pill ${p._status}`}><Icon size={12} /> {STATUS[p._status].label}</span>
-                </div>
-                <div className="proj-card-body">
-                  <h3 className="proj-card-name">{p.name}</h3>
-                  {p.address ? (
-                    <button className="proj-addr" onClick={(e) => { e.stopPropagation(); gps(p.address); }}>
-                      <MapPin size={13} /> <span>{p.address}</span> <Navigation size={12} className="proj-addr-go" />
-                    </button>
-                  ) : <span className="proj-addr empty"><MapPin size={13} /> Aucune adresse</span>}
-                  <div className="proj-card-foot">
+                title="Glisse-moi vers Dispatch, à gauche, pour me placer au calendrier">
+                <span className="proj-row-media">
+                  {photo ? <img src={photo} alt="" /> : <ImageIcon size={18} />}
+                </span>
+                <div className="proj-row-main">
+                  <div className="proj-row-top">
+                    <span className="proj-row-name">{p.name}</span>
+                    <span className={`proj-pill ${p._status}`}><Icon size={12} /> {STATUS[p._status].label}</span>
+                  </div>
+                  <div className="proj-row-meta">
+                    {p.address ? (
+                      <button className="proj-addr-inline" onClick={(e) => { e.stopPropagation(); gps(p.address); }}>
+                        <MapPin size={12} /> {p.address}
+                      </button>
+                    ) : <span className="proj-addr-inline empty"><MapPin size={12} /> Aucune adresse</span>}
+                    <span className="proj-row-sep">·</span>
                     {p._status === "termine" && p.finished_at
-                      ? <span><Calendar size={12} /> Terminé le {new Date(p.finished_at).toLocaleDateString("fr-CA")}</span>
-                      : <span><Calendar size={12} /> {counts[p.id] || 0} intervention{(counts[p.id] || 0) > 1 ? "s" : ""} planifiée{(counts[p.id] || 0) > 1 ? "s" : ""}</span>}
+                      ? <span className="proj-row-nb"><Calendar size={12} /> Terminé le {new Date(p.finished_at).toLocaleDateString("fr-CA")}</span>
+                      : <span className="proj-row-nb"><Calendar size={12} /> {nb} intervention{nb > 1 ? "s" : ""}</span>}
                   </div>
-                  <div className="proj-actions" onClick={(e) => e.stopPropagation()}>
-                    {p._status !== "termine" && (
-                      <button className="pa-btn dispatch" onClick={() => setDispatchFor(p)} disabled={busy === p.id}>
-                        <Truck size={14} /> Dispatcher
-                      </button>
-                    )}
-                    {p._status !== "termine" && (
-                      <button className="pa-btn done" onClick={() => terminer(p)} disabled={busy === p.id}>
-                        <CheckCircle2 size={14} /> Terminer
-                      </button>
-                    )}
-                    <button className="pa-btn del" onClick={() => supprimer(p)} disabled={busy === p.id} title="Supprimer" aria-label="Supprimer">
-                      {busy === p.id ? <Loader2 size={14} className="spin" /> : <Trash2 size={14} />}
+                </div>
+                <div className="proj-row-actions" onClick={(e) => e.stopPropagation()}>
+                  {p._status !== "termine" && (
+                    <button className="pa-btn dispatch" onClick={() => setDispatchFor(p)} disabled={busy === p.id}>
+                      <Truck size={14} /> Dispatcher
                     </button>
-                  </div>
+                  )}
+                  {p._status !== "termine" && (
+                    <button className="pa-btn done" onClick={() => terminer(p)} disabled={busy === p.id}>
+                      <CheckCircle2 size={14} /> Terminer
+                    </button>
+                  )}
+                  <button className="pa-btn del" onClick={() => supprimer(p)} disabled={busy === p.id} title="Supprimer" aria-label="Supprimer">
+                    {busy === p.id ? <Loader2 size={14} className="spin" /> : <Trash2 size={14} />}
+                  </button>
                 </div>
               </div>
             );
