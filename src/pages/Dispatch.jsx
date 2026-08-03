@@ -178,7 +178,7 @@ export default function Dispatch() {
   const nowHM = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
 
   const reloadPlombiers = async () => {
-    const { data } = await supabase.from("pi_plombiers").select("*").order("created_at");
+    const { data } = await supabase.from("pi_plombiers").select("*").neq("active", false).order("created_at");
     if (data) setPlombiers(data);
   };
   const reloadProjects = async () => {
@@ -201,7 +201,7 @@ export default function Dispatch() {
     (async () => {
       setLoading(true);
       const [pl, pr, as] = await Promise.all([
-        supabase.from("pi_plombiers").select("*").order("created_at"),
+        supabase.from("pi_plombiers").select("*").neq("active", false).order("created_at"),
         supabase.from("pi_projets").select("*").neq("status", "termine").order("created_at"),
         supabase.from("pi_assignations").select("id,plombier_id,projet_id,jour,heure,duree_min"),
       ]);
