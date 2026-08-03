@@ -41,7 +41,7 @@ export default function Projets() {
     const [pr, as, pl] = await Promise.all([
       supabase.from("pi_projets").select("*").order("created_at", { ascending: false }),
       supabase.from("pi_assignations").select("projet_id"),
-      supabase.from("pi_plombiers").select("id,name").order("created_at"),
+      supabase.from("pi_plombiers").select("id,name").neq("active", false).order("created_at"),
     ]);
     const c = {};
     (as.data || []).forEach((a) => { c[a.projet_id] = (c[a.projet_id] || 0) + 1; });

@@ -67,7 +67,7 @@ export default function BonsTravail() {
     setLoading(true);
     const [b, pl, pr, cl] = await Promise.all([
       supabase.from("pi_bons_travail").select("*").order("created_at", { ascending: false }),
-      supabase.from("pi_plombiers").select("id,name").order("created_at"),
+      supabase.from("pi_plombiers").select("id,name").neq("active", false).order("created_at"),
       supabase.from("pi_projets").select("id,name,color").order("created_at"),
       supabase.from("pi_clients").select("qbo_id,display_name").order("display_name"),
     ]);
