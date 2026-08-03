@@ -255,13 +255,11 @@ export default function Dispatch() {
     return m;
   }, [assignments]);
 
-  // Projets non placés cette semaine
+  // Projets jamais placés (peu importe la semaine) : une fois cédulé, il sort de la réserve
   const availableProjects = useMemo(() => {
-    const wk = new Set(days.map((d) => iso(d)));
-    const placed = new Set();
-    assignments.forEach((a) => { if (wk.has(a.jour)) placed.add(a.projet_id); });
+    const placed = new Set(assignments.map((a) => a.projet_id));
     return projects.filter((p) => !placed.has(p.id));
-  }, [projects, assignments, days]);
+  }, [projects, assignments]);
 
   // Vue Jour : assignations du jour groupées par plombier (timeline)
   const dayIso = iso(current);
