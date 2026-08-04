@@ -13,6 +13,7 @@ export default function AccesEmployes() {
   const [profiles, setProfiles] = useState([]);
   const [punches, setPunches] = useState([]);
   const [bons, setBons] = useState([]);
+  const [compPrice, setCompPrice] = useState(null); // taux horaire du produit « Compagnon »
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // "new" | plombier
   const [accountFor, setAccountFor] = useState(null); // plombier
@@ -24,16 +25,18 @@ export default function AccesEmployes() {
 
   const load = async () => {
     setLoading(true);
-    const [pl, pr, pu, bo] = await Promise.all([
+    const [pl, pr, pu, bo, cp] = await Promise.all([
       supabase.from("pi_plombiers").select("*").order("name"),
       supabase.from("pi_profiles").select("plombier_id,role"),
       supabase.from("pi_punches").select("plombier_id,heure_debut,heure_fin,jour").gte("jour", from).lte("jour", to),
       supabase.from("pi_bons_travail").select("plombier_id,total,items").gte("jour", from).lte("jour", to),
+      supabase.from("pi_produits").select("unit_price").ilike("name", "%compagnon%").limit(1),
     ]);
     setPlombiers(pl.data || []);
     setProfiles(pr.data || []);
     setPunches(pu.data || []);
     setBons(bo.data || []);
+    setCompPrice(cp.data?.[0]?.unit_price != null ? Number(cp.data[0].unit_price) : null);
     setLoading(false);
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [from]);
@@ -51,17 +54,22 @@ export default function AccesEmployes() {
       if (!p.heure_fin) return; // punch en cours non comptabilisé
       h[p.plombier_id] = (h[p.plombier_id] || 0) + hoursBetween(p.heure_debut, p.heure_fin);
     });
+    // Une ligne = main-d'œuvre Compagnon si le libellé contient « compagnon »
+    // OU si son prix correspond au taux du produit Compagnon (rattrape les abréviations ex. « Com »).
+    const isCompagnon = (it) => {
+      if (String(it.desc || "").trim().toLowerCase().includes("compagnon")) return true;
+      if (compPrice != null && Math.abs((Number(it.price) || 0) - compPrice) < 0.01) return true;
+      return false;
+    };
     bons.forEach((bon) => {
       s[bon.plombier_id] = (s[bon.plombier_id] || 0) + (Number(bon.total) || 0);
       const items = Array.isArray(bon.items) ? bon.items : [];
       let comp = 0;
-      items.forEach((it) => {
-        if (String(it.desc || "").trim().toLowerCase().includes("compagnon")) comp += Number(it.qty) || 0;
-      });
+      items.forEach((it) => { if (isCompagnon(it)) comp += Number(it.qty) || 0; });
       b[bon.plombier_id] = (b[bon.plombier_id] || 0) + comp;
     });
     return { h, s, b };
-  }, [punches, bons]);
+  }, [punches, bons, compPrice]);
 
   return (
     <div className="page acces">
