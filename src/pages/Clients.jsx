@@ -26,25 +26,29 @@ export default function Clients() {
   };
 
   useEffect(() => {
-    load().catch(() => setLoading(false));
+    (async () => {
+      await load().catch(() => setLoading(false));
+      runSync(true); // synchro auto silencieuse au chargement
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const sync = async () => {
+  const runSync = async (silent = false) => {
     setSyncing(true);
-    setMsg("");
-    setErr("");
+    if (!silent) { setMsg(""); setErr(""); }
     try {
       const { data, error } = await supabase.functions.invoke("qbo-sync-clients");
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setMsg(`${data?.synced ?? 0} client(s) synchronisé(s) depuis QuickBooks.`);
+      if (!silent) setMsg(`${data?.synced ?? 0} client(s) synchronisé(s) depuis QuickBooks.`);
       await load();
     } catch (e) {
-      setErr(`Échec de la synchronisation : ${e?.message || e}.`);
+      if (!silent) setErr(`Échec de la synchronisation : ${e?.message || e}.`);
     } finally {
       setSyncing(false);
     }
   };
+  const sync = () => runSync(false);
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();

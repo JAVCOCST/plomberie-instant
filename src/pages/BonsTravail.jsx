@@ -78,7 +78,14 @@ export default function BonsTravail() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    // Synchro clients QuickBooks en arrière-plan puis rafraîchir la liste
+    supabase.functions.invoke("qbo-sync-clients")
+      .then(() => supabase.from("pi_clients").select("qbo_id,display_name").order("display_name"))
+      .then(({ data }) => { if (data) setClients(data); })
+      .catch(() => { /* silencieux */ });
+  }, []);
 
   const plName = useMemo(() => Object.fromEntries(plombiers.map((p) => [p.id, p.name])), [plombiers]);
   const prName = useMemo(() => Object.fromEntries(projects.map((p) => [p.id, p.name])), [projects]);
