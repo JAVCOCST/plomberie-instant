@@ -35,6 +35,19 @@ export default function BonsTravail() {
   const [formOpen, setFormOpen] = useState(false);
   const [converting, setConverting] = useState("");
   const [convErr, setConvErr] = useState("");
+  const [deleting, setDeleting] = useState("");
+
+  const supprimer = async (b) => {
+    const extra = b.qbo_invoice_id
+      ? " (La facture déjà créée dans QuickBooks ne sera PAS supprimée.)"
+      : "";
+    if (!window.confirm(`Supprimer ce bon de travail de ${b.client_name || "—"} ?${extra}\nCette action est irréversible.`)) return;
+    setDeleting(b.id);
+    const { error } = await supabase.from("pi_bons_travail").delete().eq("id", b.id);
+    setDeleting("");
+    if (error) { setConvErr("Échec de la suppression : " + error.message); return; }
+    setBons((prev) => prev.filter((x) => x.id !== b.id));
+  };
 
   const convertToInvoice = async (b) => {
     setConvErr("");
@@ -157,6 +170,9 @@ export default function BonsTravail() {
                       {converting === b.id ? "Création…" : "Convertir en facture QuickBooks"}
                     </button>
                   )}
+                  <button className="pa-btn del" onClick={() => supprimer(b)} disabled={deleting === b.id} title="Supprimer" aria-label="Supprimer">
+                    {deleting === b.id ? <Loader2 size={14} className="spin" /> : <Trash2 size={14} />}
+                  </button>
                 </div>
               </div>
             );
