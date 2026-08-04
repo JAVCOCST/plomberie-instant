@@ -28,7 +28,7 @@ export default function AccesEmployes() {
       supabase.from("pi_plombiers").select("*").order("name"),
       supabase.from("pi_profiles").select("plombier_id,role"),
       supabase.from("pi_punches").select("plombier_id,heure_debut,heure_fin,jour").gte("jour", from).lte("jour", to),
-      supabase.from("pi_bons_travail").select("plombier_id,total").gte("jour", from).lte("jour", to),
+      supabase.from("pi_bons_travail").select("plombier_id,total,items").gte("jour", from).lte("jour", to),
     ]);
     setPlombiers(pl.data || []);
     setProfiles(pr.data || []);
@@ -43,15 +43,24 @@ export default function AccesEmployes() {
     [profiles]
   );
 
-  // Statistiques de la semaine courante : heures travaillées et ventes par plombier
+  // Statistiques de la semaine courante par plombier :
+  //  h = heures réelles (punches) · s = ventes · b = heures facturées (produit « Compagnon »)
   const stats = useMemo(() => {
-    const h = {}, s = {};
+    const h = {}, s = {}, b = {};
     punches.forEach((p) => {
       if (!p.heure_fin) return; // punch en cours non comptabilisé
       h[p.plombier_id] = (h[p.plombier_id] || 0) + hoursBetween(p.heure_debut, p.heure_fin);
     });
-    bons.forEach((b) => { s[b.plombier_id] = (s[b.plombier_id] || 0) + (Number(b.total) || 0); });
-    return { h, s };
+    bons.forEach((bon) => {
+      s[bon.plombier_id] = (s[bon.plombier_id] || 0) + (Number(bon.total) || 0);
+      const items = Array.isArray(bon.items) ? bon.items : [];
+      let comp = 0;
+      items.forEach((it) => {
+        if (String(it.desc || "").trim().toLowerCase().includes("compagnon")) comp += Number(it.qty) || 0;
+      });
+      b[bon.plombier_id] = (b[bon.plombier_id] || 0) + comp;
+    });
+    return { h, s, b };
   }, [punches, bons]);
 
   return (
@@ -107,6 +116,7 @@ export default function AccesEmployes() {
 
                 {(() => {
                   const hrs = stats.h[p.id] || 0;
+                  const billed = stats.b[p.id] || 0;
                   const sal = stats.s[p.id] || 0;
                   const tgt = Number(p.weekly_target) || 0;
                   const stg = Number(p.weekly_sales_target) || 0;
@@ -116,9 +126,14 @@ export default function AccesEmployes() {
                     <div className="emp-card-perf">
                       <div className="emp-perf-title"><TrendingUp size={12} /> Cette semaine</div>
                       <div className="emp-perf-row">
-                        <span className="emp-perf-lbl">Heures</span>
+                        <span className="emp-perf-lbl">H. réelles</span>
                         <span className="emp-perf-val">{fmtHours(hrs)}</span>
                         {tgt > 0 && <span className={`perf-pill ${perfClass(perf)}`}>{perf.toFixed(0)}%</span>}
+                      </div>
+                      <div className="emp-perf-row">
+                        <span className="emp-perf-lbl">H. facturées</span>
+                        <span className="emp-perf-val">{fmtHours(billed)}</span>
+                        <span className="emp-perf-hint" title="Quantité du produit « Compagnon » sur les bons">Compagnon</span>
                       </div>
                       <div className="emp-perf-row">
                         <span className="emp-perf-lbl">Ventes</span>

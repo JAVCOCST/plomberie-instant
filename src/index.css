@@ -2364,3 +2364,9 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
 .emp-perf-lbl { width: 52px; font-size: 0.76rem; color: var(--muted); }
 .emp-perf-val { font-size: 0.85rem; font-weight: 700; color: var(--text); flex: 1; }
 .emp-card-perf .perf-pill { font-size: 0.72rem; }
+
+.emp-perf-lbl { width: 74px; }
+.emp-perf-hint {
+  font-size: 0.66rem; font-weight: 700; color: #64748b;
+  background: #eef2f6; padding: 1px 7px; border-radius: 999px;
+}
