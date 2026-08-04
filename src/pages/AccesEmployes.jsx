@@ -1,35 +1,58 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   UserPlus, Loader2, Check, KeyRound, X, Users, Pencil, Phone, Mail,
-  Target, DollarSign, Calendar, ShieldCheck, ShieldAlert, Plus,
+  Target, DollarSign, Calendar, ShieldCheck, ShieldAlert, Plus, TrendingUp,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
-import { money } from "../lib/time";
+import { money, fmtHours, hoursBetween, startOfWeek, addDays, iso } from "../lib/time";
+
+const perfClass = (p) => (p >= 100 ? "good" : p >= 75 ? "warn" : "bad");
 
 export default function AccesEmployes() {
   const [plombiers, setPlombiers] = useState([]);
   const [profiles, setProfiles] = useState([]);
+  const [punches, setPunches] = useState([]);
+  const [bons, setBons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // "new" | plombier
   const [accountFor, setAccountFor] = useState(null); // plombier
   const [msg, setMsg] = useState("");
 
+  const weekStart = useMemo(() => startOfWeek(new Date()), []);
+  const from = iso(weekStart);
+  const to = iso(addDays(weekStart, 6));
+
   const load = async () => {
     setLoading(true);
-    const [pl, pr] = await Promise.all([
+    const [pl, pr, pu, bo] = await Promise.all([
       supabase.from("pi_plombiers").select("*").order("name"),
       supabase.from("pi_profiles").select("plombier_id,role"),
+      supabase.from("pi_punches").select("plombier_id,heure_debut,heure_fin,jour").gte("jour", from).lte("jour", to),
+      supabase.from("pi_bons_travail").select("plombier_id,total").gte("jour", from).lte("jour", to),
     ]);
     setPlombiers(pl.data || []);
     setProfiles(pr.data || []);
+    setPunches(pu.data || []);
+    setBons(bo.data || []);
     setLoading(false);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [from]);
 
   const linkedIds = useMemo(
     () => new Set(profiles.filter((p) => p.role === "employee" && p.plombier_id).map((p) => p.plombier_id)),
     [profiles]
   );
+
+  // Statistiques de la semaine courante : heures travaillées et ventes par plombier
+  const stats = useMemo(() => {
+    const h = {}, s = {};
+    punches.forEach((p) => {
+      if (!p.heure_fin) return; // punch en cours non comptabilisé
+      h[p.plombier_id] = (h[p.plombier_id] || 0) + hoursBetween(p.heure_debut, p.heure_fin);
+    });
+    bons.forEach((b) => { s[b.plombier_id] = (s[b.plombier_id] || 0) + (Number(b.total) || 0); });
+    return { h, s };
+  }, [punches, bons]);
 
   return (
     <div className="page acces">
@@ -81,6 +104,30 @@ export default function AccesEmployes() {
                   <div><Target size={13} /> Perf. <strong>{Number(p.weekly_target) || 0} h/sem</strong></div>
                   <div><DollarSign size={13} /> Ventes <strong>{money(Number(p.weekly_sales_target) || 0)}/sem</strong></div>
                 </div>
+
+                {(() => {
+                  const hrs = stats.h[p.id] || 0;
+                  const sal = stats.s[p.id] || 0;
+                  const tgt = Number(p.weekly_target) || 0;
+                  const stg = Number(p.weekly_sales_target) || 0;
+                  const perf = tgt > 0 ? (hrs / tgt) * 100 : 0;
+                  const spct = stg > 0 ? (sal / stg) * 100 : 0;
+                  return (
+                    <div className="emp-card-perf">
+                      <div className="emp-perf-title"><TrendingUp size={12} /> Cette semaine</div>
+                      <div className="emp-perf-row">
+                        <span className="emp-perf-lbl">Heures</span>
+                        <span className="emp-perf-val">{fmtHours(hrs)}</span>
+                        {tgt > 0 && <span className={`perf-pill ${perfClass(perf)}`}>{perf.toFixed(0)}%</span>}
+                      </div>
+                      <div className="emp-perf-row">
+                        <span className="emp-perf-lbl">Ventes</span>
+                        <span className="emp-perf-val">{money(sal)}</span>
+                        {stg > 0 && <span className={`perf-pill ${perfClass(spct)}`}>{spct.toFixed(0)}%</span>}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <div className="emp-card-foot">
                   {hasAccount ? (

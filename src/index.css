@@ -2349,3 +2349,18 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
   .bon-row-actions { width: 100%; }
   .bon-row-actions .qbo-btn { width: 100%; }
 }
+
+/* Stats de la semaine sur la carte employé */
+.emp-card-perf {
+  margin-top: 0.7rem; padding: 0.6rem 0.7rem;
+  background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+}
+.emp-perf-title {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.03em; color: var(--muted); margin-bottom: 0.4rem;
+}
+.emp-perf-row { display: flex; align-items: center; gap: 0.5rem; padding: 2px 0; }
+.emp-perf-lbl { width: 52px; font-size: 0.76rem; color: var(--muted); }
+.emp-perf-val { font-size: 0.85rem; font-weight: 700; color: var(--text); flex: 1; }
+.emp-card-perf .perf-pill { font-size: 0.72rem; }
