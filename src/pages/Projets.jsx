@@ -20,6 +20,7 @@ const ORDER = ["adispatcher", "encours", "termine"];
 export default function Projets() {
   const [projets, setProjets] = useState([]);
   const [counts, setCounts] = useState({});
+  const [donePids, setDonePids] = useState(() => new Set()); // projets dont le call est punché out
   const [plombiers, setPlombiers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
@@ -38,16 +39,18 @@ export default function Projets() {
 
   const load = async () => {
     setLoading(true);
-    const [pr, as, pl] = await Promise.all([
+    const [pr, as, pl, pu] = await Promise.all([
       supabase.from("pi_projets").select("*").order("created_at", { ascending: false }),
       supabase.from("pi_assignations").select("projet_id"),
       supabase.from("pi_plombiers").select("id,name").neq("active", false).order("created_at"),
+      supabase.from("pi_punches").select("projet_id,heure_fin"),
     ]);
     const c = {};
     (as.data || []).forEach((a) => { c[a.projet_id] = (c[a.projet_id] || 0) + 1; });
     setCounts(c);
     setProjets(pr.data || []);
     setPlombiers(pl.data || []);
+    setDonePids(new Set((pu.data || []).filter((x) => x.heure_fin && x.projet_id).map((x) => x.projet_id)));
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -66,12 +69,14 @@ export default function Projets() {
     load();
   };
 
+  // Terminé = marqué manuellement OU call punché out ; en cours = affecté ; sinon à dispatcher
   const statusOf = (p) =>
-    p.status === "termine" ? "termine" : counts[p.id] ? "encours" : "adispatcher";
+    (p.status === "termine" || donePids.has(p.id)) ? "termine" : counts[p.id] ? "encours" : "adispatcher";
 
   const withStatus = useMemo(
     () => projets.map((p) => ({ ...p, _status: statusOf(p) })),
-    [projets, counts]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [projets, counts, donePids]
   );
 
   const tally = useMemo(() => {
@@ -166,8 +171,8 @@ export default function Projets() {
                       </button>
                     ) : <span className="proj-addr-inline empty"><MapPin size={12} /> Aucune adresse</span>}
                     <span className="proj-row-sep">·</span>
-                    {p._status === "termine" && p.finished_at
-                      ? <span className="proj-row-nb"><Calendar size={12} /> Terminé le {new Date(p.finished_at).toLocaleDateString("fr-CA")}</span>
+                    {p._status === "termine"
+                      ? <span className="proj-row-nb"><Calendar size={12} /> {p.finished_at ? `Terminé le ${new Date(p.finished_at).toLocaleDateString("fr-CA")}` : "Terminé"}</span>
                       : <span className="proj-row-nb"><Calendar size={12} /> {nb} intervention{nb > 1 ? "s" : ""}</span>}
                   </div>
                 </div>
