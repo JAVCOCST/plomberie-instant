@@ -209,9 +209,15 @@ export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedPr
   // Ajout d'un client absent de QuickBooks (directement depuis le bon)
   const [newClients, setNewClients] = useState([]);
   const [showAddClient, setShowAddClient] = useState(false);
-  const [nc, setNc] = useState({ email: "", phone: "", address: "" });
+  const [nc, setNc] = useState({ name: "", email: "", phone: "", address: "" });
   const [ncSaving, setNcSaving] = useState(false);
   const [ncErr, setNcErr] = useState("");
+
+  const openAddClient = () => {
+    setNc({ name: clientInput.trim(), email: "", phone: "", address: "" });
+    setNcErr("");
+    setShowAddClient(true);
+  };
 
   useEffect(() => {
     supabase
@@ -251,8 +257,8 @@ export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedPr
 
   const createClient = async () => {
     setNcErr("");
-    const name = clientInput.trim();
-    if (!name) { setNcErr("Entre d'abord le nom du client."); return; }
+    const name = (nc.name || "").trim();
+    if (!name) { setNcErr("Entre le nom du client."); return; }
     setNcSaving(true);
     try {
       const { data, error } = await supabase.functions.invoke("qbo-create-customer", {
@@ -271,7 +277,7 @@ export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedPr
       setNewClients((arr) => [...arr, created]);
       setClientInput(created.display_name);
       setShowAddClient(false);
-      setNc({ email: "", phone: "", address: "" });
+      setNc({ name: "", email: "", phone: "", address: "" });
     } finally {
       setNcSaving(false);
     }
@@ -369,15 +375,16 @@ export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedPr
               <datalist id="pi-clients-list">
                 {allClients.map((c) => <option key={c.qbo_id} value={c.display_name} />)}
               </datalist>
-              {!selectedClient && clientInput && !showAddClient && (
-                <button type="button" className="add-client-link" onClick={() => setShowAddClient(true)}>
-                  <UserPlus size={13} /> Ajouter « {clientInput} » comme nouveau client
+              {!selectedClient && !showAddClient && (
+                <button type="button" className="add-client-btn" onClick={openAddClient}>
+                  <UserPlus size={15} /> {clientInput.trim() ? `Ajouter « ${clientInput.trim()} » comme nouveau client` : "Nouveau client (absent de QuickBooks)"}
                 </button>
               )}
               {showAddClient && (
                 <div className="add-client-box">
-                  <p className="add-client-title"><UserPlus size={14} /> Nouveau client : <strong>{clientInput || "—"}</strong></p>
+                  <p className="add-client-title"><UserPlus size={14} /> Nouveau client</p>
                   {ncErr && <div className="msg error" style={{ marginBottom: "0.5rem" }}>{ncErr}</div>}
+                  <input className="cell-input" placeholder="Nom du client *" value={nc.name} onChange={(e) => setNc((s) => ({ ...s, name: e.target.value }))} />
                   <input className="cell-input" placeholder="Courriel (optionnel)" value={nc.email} onChange={(e) => setNc((s) => ({ ...s, email: e.target.value }))} />
                   <input className="cell-input" placeholder="Téléphone (optionnel)" value={nc.phone} onChange={(e) => setNc((s) => ({ ...s, phone: e.target.value }))} />
                   <input className="cell-input" placeholder="Adresse (optionnel)" value={nc.address} onChange={(e) => setNc((s) => ({ ...s, address: e.target.value }))} />

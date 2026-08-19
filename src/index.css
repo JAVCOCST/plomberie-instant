@@ -2406,3 +2406,12 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
   margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
   font-size: 0.74rem; color: var(--muted);
 }
+
+/* Bouton « Nouveau client » toujours visible sous le champ client (mobile-friendly) */
+.add-client-btn {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; width: 100%;
+  justify-content: center; padding: 9px 12px; border-radius: 9px;
+  background: #eef2ff; color: #2563eb; border: 1px solid #c7d2fe;
+  font-size: 0.82rem; font-weight: 700; cursor: pointer;
+}
+.add-client-btn:hover { background: #e0e7ff; }
