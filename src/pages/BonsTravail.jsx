@@ -52,6 +52,9 @@ export default function BonsTravail() {
   const convertToInvoice = async (b) => {
     setConvErr("");
     setConverting(b.id);
+    // Ouvre l'onglet TOUT DE SUITE (dans le geste du clic) pour éviter le bloqueur de popup,
+    // puis on le redirige vers la facture une fois créée.
+    const win = window.open("", "_blank");
     try {
       const { data, error } = await supabase.functions.invoke("qbo-create-invoice", { body: { bon_id: b.id } });
       if (error) {
@@ -65,12 +68,21 @@ export default function BonsTravail() {
           }
         } catch { /* ignore */ }
         setConvErr((QBO_ERRORS[code] || ("Échec de la création de la facture : " + code)) + extra);
+        if (win) win.close();
         return;
       }
       if (data?.invoice_id) {
         setBons((prev) => prev.map((x) => (x.id === b.id ? { ...x, qbo_invoice_id: data.invoice_id } : x)));
       }
-      if (data?.url) window.open(data.url, "_blank", "noopener");
+      if (data?.url) {
+        if (win) { try { win.opener = null; } catch { /* ignore */ } win.location.href = data.url; }
+        else window.open(data.url, "_blank", "noopener");
+      } else if (win) {
+        win.close();
+      }
+    } catch (e) {
+      setConvErr("Échec : " + (e?.message || e));
+      if (win) win.close();
     } finally {
       setConverting("");
     }
