@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Users, DownloadCloud, Loader2, Mail, Phone, MapPin } from "lucide-react";
+import { Search, Users, DownloadCloud, Loader2, Mail, Phone, MapPin, UserPlus, X, Check } from "lucide-react";
 import { supabase } from "../supabaseClient";
 
 function money(n) {
@@ -15,6 +15,7 @@ export default function Clients() {
   const [syncing, setSyncing] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
 
   const load = async () => {
     const { data } = await supabase
@@ -69,12 +70,24 @@ export default function Clients() {
           <h1 className="page-title">Clients</h1>
           <p className="page-sub">Importés de QuickBooks</p>
         </div>
-        <button className="add-primary" onClick={sync} disabled={syncing}>
-          {syncing
-            ? (<><Loader2 size={16} className="spin" /> Synchronisation…</>)
-            : (<><DownloadCloud size={16} /> Synchroniser depuis QuickBooks</>)}
-        </button>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          <button className="add-primary" onClick={() => setAddOpen(true)}>
+            <UserPlus size={16} /> Ajouter un client
+          </button>
+          <button className="btn-secondary" style={{ width: "auto" }} onClick={sync} disabled={syncing}>
+            {syncing
+              ? (<><Loader2 size={16} className="spin" /> Synchronisation…</>)
+              : (<><DownloadCloud size={16} /> Synchroniser</>)}
+          </button>
+        </div>
       </div>
+
+      {addOpen && (
+        <ClientModal
+          onClose={() => setAddOpen(false)}
+          onCreated={(name) => { setAddOpen(false); setMsg(`Client « ${name} » créé dans QuickBooks.`); load(); }}
+        />
+      )}
 
       {msg && <div className="msg success" style={{ maxWidth: 560 }}>{msg}</div>}
       {err && <div className="msg error" style={{ maxWidth: 560 }}>{err}</div>}
@@ -133,6 +146,82 @@ export default function Clients() {
       <p className="cat-foot">
         {!loading && `${rows.length} client${rows.length > 1 ? "s" : ""}`}
       </p>
+    </div>
+  );
+}
+
+/* Modal : créer un client (dans QuickBooks + l'app) */
+function ClientModal({ onClose, onCreated }) {
+  const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const create = async () => {
+    setErr("");
+    if (!name.trim()) { setErr("Le nom du client est requis."); return; }
+    setSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("qbo-create-customer", {
+        body: { display_name: name.trim(), company_name: company, email, phone, address },
+      });
+      if (error) {
+        let code = error.message;
+        try { const j = await error.context.json(); code = j.error || code; } catch { /* ignore */ }
+        setErr(code === "nom_deja_utilise" ? "Ce nom de client existe déjà dans QuickBooks."
+          : code === "not_connected" ? "QuickBooks n'est pas connecté."
+          : "Échec : " + code);
+        setSaving(false);
+        return;
+      }
+      onCreated(data.display_name || name.trim());
+    } catch (e) {
+      setErr("Échec : " + (e?.message || e)); setSaving(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+        <div className="modal-head">
+          <UserPlus size={18} />
+          <h2>Nouveau client</h2>
+          <button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button>
+        </div>
+        {err && <div className="msg error" style={{ margin: "1rem 1.25rem 0" }}>{err}</div>}
+        <div className="modal-section">
+          <div className="fld" style={{ marginBottom: "0.8rem" }}>
+            <label>Nom du client <span className="req-star">*</span></label>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Jean Tremblay ou 9339-5853 Québec Inc" />
+          </div>
+          <div className="fld" style={{ marginBottom: "0.8rem" }}>
+            <label>Entreprise (optionnel)</label>
+            <input value={company} onChange={(e) => setCompany(e.target.value)} />
+          </div>
+          <div className="fld" style={{ marginBottom: "0.8rem" }}>
+            <label>Courriel (optionnel)</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="client@exemple.com" />
+          </div>
+          <div className="fld" style={{ marginBottom: "0.8rem" }}>
+            <label>Téléphone (optionnel)</label>
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} />
+          </div>
+          <div className="fld">
+            <label>Adresse (optionnel)</label>
+            <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 rue Exemple, Ville" />
+          </div>
+        </div>
+        <div className="modal-foot">
+          <span style={{ flex: 1 }} />
+          <button className="btn-secondary" onClick={onClose} disabled={saving}>Annuler</button>
+          <button className="save-btn" onClick={create} disabled={saving}>
+            {saving ? (<><Loader2 size={16} className="spin" /> Création…</>) : (<><Check size={16} /> Créer le client</>)}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

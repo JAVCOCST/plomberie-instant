@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Plus, Trash2, X, Camera, Loader2, ClipboardCheck, Clock, Image as ImageIcon, User,
-  FileText, ExternalLink, Calendar, Briefcase,
+  FileText, ExternalLink, Calendar, Briefcase, UserPlus, Check,
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { money, fmtHours } from "../lib/time";
@@ -206,6 +206,12 @@ export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedPr
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [produits, setProduits] = useState([]);
+  // Ajout d'un client absent de QuickBooks (directement depuis le bon)
+  const [newClients, setNewClients] = useState([]);
+  const [showAddClient, setShowAddClient] = useState(false);
+  const [nc, setNc] = useState({ email: "", phone: "", address: "" });
+  const [ncSaving, setNcSaving] = useState(false);
+  const [ncErr, setNcErr] = useState("");
 
   useEffect(() => {
     supabase
@@ -234,10 +240,42 @@ export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedPr
     );
   };
 
-  const selectedClient = useMemo(
-    () => (clients || []).find((c) => c.display_name === clientInput) || null,
-    [clients, clientInput]
+  const allClients = useMemo(
+    () => [...(clients || []), ...newClients],
+    [clients, newClients]
   );
+  const selectedClient = useMemo(
+    () => allClients.find((c) => c.display_name === clientInput) || null,
+    [allClients, clientInput]
+  );
+
+  const createClient = async () => {
+    setNcErr("");
+    const name = clientInput.trim();
+    if (!name) { setNcErr("Entre d'abord le nom du client."); return; }
+    setNcSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("qbo-create-customer", {
+        body: { display_name: name, email: nc.email, phone: nc.phone, address: nc.address },
+      });
+      if (error) {
+        let code = error.message;
+        try { const j = await error.context.json(); code = j.error || code; } catch { /* ignore */ }
+        setNcErr(code === "nom_deja_utilise" ? "Ce nom de client existe déjà dans QuickBooks."
+          : code === "not_connected" ? "QuickBooks n'est pas connecté."
+          : "Échec de la création du client : " + code);
+        setNcSaving(false);
+        return;
+      }
+      const created = { qbo_id: data.qbo_id, display_name: data.display_name, email: nc.email || null, address: nc.address || null };
+      setNewClients((arr) => [...arr, created]);
+      setClientInput(created.display_name);
+      setShowAddClient(false);
+      setNc({ email: "", phone: "", address: "" });
+    } finally {
+      setNcSaving(false);
+    }
+  };
 
   const total = useMemo(
     () => items.reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.price) || 0), 0),
@@ -329,10 +367,28 @@ export function BonForm({ plombiers, projects, clients, fixedPlombierId, fixedPr
                 className={selectedClient ? "client-ok" : ""}
               />
               <datalist id="pi-clients-list">
-                {(clients || []).map((c) => <option key={c.qbo_id} value={c.display_name} />)}
+                {allClients.map((c) => <option key={c.qbo_id} value={c.display_name} />)}
               </datalist>
-              {!selectedClient && clientInput && (
-                <span className="field-hint">Choisis un client de la liste.</span>
+              {!selectedClient && clientInput && !showAddClient && (
+                <button type="button" className="add-client-link" onClick={() => setShowAddClient(true)}>
+                  <UserPlus size={13} /> Ajouter « {clientInput} » comme nouveau client
+                </button>
+              )}
+              {showAddClient && (
+                <div className="add-client-box">
+                  <p className="add-client-title"><UserPlus size={14} /> Nouveau client : <strong>{clientInput || "—"}</strong></p>
+                  {ncErr && <div className="msg error" style={{ marginBottom: "0.5rem" }}>{ncErr}</div>}
+                  <input className="cell-input" placeholder="Courriel (optionnel)" value={nc.email} onChange={(e) => setNc((s) => ({ ...s, email: e.target.value }))} />
+                  <input className="cell-input" placeholder="Téléphone (optionnel)" value={nc.phone} onChange={(e) => setNc((s) => ({ ...s, phone: e.target.value }))} />
+                  <input className="cell-input" placeholder="Adresse (optionnel)" value={nc.address} onChange={(e) => setNc((s) => ({ ...s, address: e.target.value }))} />
+                  <div className="add-client-actions">
+                    <button type="button" className="btn-secondary" onClick={() => { setShowAddClient(false); setNcErr(""); }} disabled={ncSaving}>Annuler</button>
+                    <button type="button" className="save-btn" onClick={createClient} disabled={ncSaving}>
+                      {ncSaving ? (<><Loader2 size={15} className="spin" /> Création…</>) : (<><Check size={15} /> Créer le client</>)}
+                    </button>
+                  </div>
+                  <p className="add-client-hint">Le client sera créé dans QuickBooks et disponible pour la facturation.</p>
+                </div>
               )}
             </div>
             {!fixedProjetId && (
