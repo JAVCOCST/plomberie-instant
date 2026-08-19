@@ -2387,3 +2387,22 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
 .add-client-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
 .add-client-actions .save-btn, .add-client-actions .btn-secondary { width: auto; }
 .add-client-hint { margin: 0; font-size: 0.72rem; color: var(--muted); }
+
+/* Tableau perf/ventes par période (Semaine/Mois/Année) sur la fiche employé */
+.emp-perf-table { width: 100%; border-collapse: collapse; margin-top: 2px; }
+.emp-perf-table th {
+  font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
+  color: var(--muted); text-align: right; padding: 2px 4px;
+}
+.emp-perf-table th:first-child { text-align: left; }
+.emp-perf-table td {
+  font-size: 0.8rem; text-align: right; padding: 3px 4px; color: var(--text);
+  border-top: 1px solid var(--border); white-space: nowrap;
+}
+.emp-perf-table td.epk { text-align: left; font-weight: 700; color: var(--muted); }
+.emp-perf-table td.eps { font-weight: 800; }
+.emp-perf-goals {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+  font-size: 0.74rem; color: var(--muted);
+}

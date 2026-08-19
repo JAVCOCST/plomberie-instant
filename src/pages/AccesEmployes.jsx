@@ -19,17 +19,29 @@ export default function AccesEmployes() {
   const [accountFor, setAccountFor] = useState(null); // plombier
   const [msg, setMsg] = useState("");
 
-  const weekStart = useMemo(() => startOfWeek(new Date()), []);
-  const from = iso(weekStart);
-  const to = iso(addDays(weekStart, 6));
+  // Bornes de dates : semaine, mois, année (jusqu'à aujourd'hui)
+  const bounds = useMemo(() => {
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth();
+    const ws = startOfWeek(now);
+    return {
+      weekStart: iso(ws),
+      weekEnd: iso(addDays(ws, 6)),
+      monthStart: iso(new Date(y, m, 1)),
+      monthEnd: iso(new Date(y, m + 1, 0)),
+      yearStart: iso(new Date(y, 0, 1)),
+      today: iso(now),
+    };
+  }, []);
+  const yearFrom = bounds.yearStart;
 
   const load = async () => {
     setLoading(true);
     const [pl, pr, pu, bo, cp] = await Promise.all([
       supabase.from("pi_plombiers").select("*").order("name"),
       supabase.from("pi_profiles").select("plombier_id,role"),
-      supabase.from("pi_punches").select("plombier_id,heure_debut,heure_fin,jour").gte("jour", from).lte("jour", to),
-      supabase.from("pi_bons_travail").select("plombier_id,total,items").gte("jour", from).lte("jour", to),
+      supabase.from("pi_punches").select("plombier_id,heure_debut,heure_fin,jour").gte("jour", yearFrom).lte("jour", bounds.today),
+      supabase.from("pi_bons_travail").select("plombier_id,total,items,jour").gte("jour", yearFrom).lte("jour", bounds.today),
       supabase.from("pi_produits").select("unit_price").ilike("name", "%compagnon%").limit(1),
     ]);
     setPlombiers(pl.data || []);
@@ -39,37 +51,46 @@ export default function AccesEmployes() {
     setCompPrice(cp.data?.[0]?.unit_price != null ? Number(cp.data[0].unit_price) : null);
     setLoading(false);
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [from]);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [yearFrom]);
 
   const linkedIds = useMemo(
     () => new Set(profiles.filter((p) => p.role === "employee" && p.plombier_id).map((p) => p.plombier_id)),
     [profiles]
   );
 
-  // Statistiques de la semaine courante par plombier :
+  // Statistiques par plombier et par période (semaine / mois / année) :
   //  h = heures réelles (punches) · s = ventes · b = heures facturées (produit « Compagnon »)
   const stats = useMemo(() => {
-    const h = {}, s = {}, b = {};
-    punches.forEach((p) => {
-      if (!p.heure_fin) return; // punch en cours non comptabilisé
-      h[p.plombier_id] = (h[p.plombier_id] || 0) + hoursBetween(p.heure_debut, p.heure_fin);
-    });
-    // Une ligne = main-d'œuvre Compagnon si le libellé contient « compagnon »
-    // OU si son prix correspond au taux du produit Compagnon (rattrape les abréviations ex. « Com »).
+    const mk = () => ({ h: {}, s: {}, b: {} });
+    const out = { week: mk(), month: mk(), year: mk() };
     const isCompagnon = (it) => {
       if (String(it.desc || "").trim().toLowerCase().includes("compagnon")) return true;
       if (compPrice != null && Math.abs((Number(it.price) || 0) - compPrice) < 0.01) return true;
       return false;
     };
+    const periodsFor = (jour) => {
+      const p = ["year"];
+      if (jour >= bounds.monthStart && jour <= bounds.monthEnd) p.push("month");
+      if (jour >= bounds.weekStart && jour <= bounds.weekEnd) p.push("week");
+      return p;
+    };
+    punches.forEach((p) => {
+      if (!p.heure_fin) return;
+      const hrs = hoursBetween(p.heure_debut, p.heure_fin);
+      periodsFor(p.jour).forEach((k) => { out[k].h[p.plombier_id] = (out[k].h[p.plombier_id] || 0) + hrs; });
+    });
     bons.forEach((bon) => {
-      s[bon.plombier_id] = (s[bon.plombier_id] || 0) + (Number(bon.total) || 0);
+      const sale = Number(bon.total) || 0;
       const items = Array.isArray(bon.items) ? bon.items : [];
       let comp = 0;
       items.forEach((it) => { if (isCompagnon(it)) comp += Number(it.qty) || 0; });
-      b[bon.plombier_id] = (b[bon.plombier_id] || 0) + comp;
+      periodsFor(bon.jour).forEach((k) => {
+        out[k].s[bon.plombier_id] = (out[k].s[bon.plombier_id] || 0) + sale;
+        out[k].b[bon.plombier_id] = (out[k].b[bon.plombier_id] || 0) + comp;
+      });
     });
-    return { h, s, b };
-  }, [punches, bons, compPrice]);
+    return out;
+  }, [punches, bons, compPrice, bounds]);
 
   return (
     <div className="page acces">
@@ -123,31 +144,40 @@ export default function AccesEmployes() {
                 </div>
 
                 {(() => {
-                  const hrs = stats.h[p.id] || 0;
-                  const billed = stats.b[p.id] || 0;
-                  const sal = stats.s[p.id] || 0;
                   const tgt = Number(p.weekly_target) || 0;
                   const stg = Number(p.weekly_sales_target) || 0;
-                  const perf = tgt > 0 ? (hrs / tgt) * 100 : 0;
-                  const spct = stg > 0 ? (sal / stg) * 100 : 0;
+                  const rows = [
+                    { key: "week", label: "Semaine" },
+                    { key: "month", label: "Mois" },
+                    { key: "year", label: "Année" },
+                  ];
+                  const weekPerf = tgt > 0 ? ((stats.week.h[p.id] || 0) / tgt) * 100 : null;
+                  const weekSalesPct = stg > 0 ? ((stats.week.s[p.id] || 0) / stg) * 100 : null;
                   return (
                     <div className="emp-card-perf">
-                      <div className="emp-perf-title"><TrendingUp size={12} /> Cette semaine</div>
-                      <div className="emp-perf-row">
-                        <span className="emp-perf-lbl">H. réelles</span>
-                        <span className="emp-perf-val">{fmtHours(hrs)}</span>
-                        {tgt > 0 && <span className={`perf-pill ${perfClass(perf)}`}>{perf.toFixed(0)}%</span>}
-                      </div>
-                      <div className="emp-perf-row">
-                        <span className="emp-perf-lbl">H. facturées</span>
-                        <span className="emp-perf-val">{fmtHours(billed)}</span>
-                        <span className="emp-perf-hint" title="Quantité du produit « Compagnon » sur les bons">Compagnon</span>
-                      </div>
-                      <div className="emp-perf-row">
-                        <span className="emp-perf-lbl">Ventes</span>
-                        <span className="emp-perf-val">{money(sal)}</span>
-                        {stg > 0 && <span className={`perf-pill ${perfClass(spct)}`}>{spct.toFixed(0)}%</span>}
-                      </div>
+                      <div className="emp-perf-title"><TrendingUp size={12} /> Performance & ventes</div>
+                      <table className="emp-perf-table">
+                        <thead>
+                          <tr><th></th><th>Réelles</th><th>Facturées</th><th>Ventes</th></tr>
+                        </thead>
+                        <tbody>
+                          {rows.map((r) => (
+                            <tr key={r.key}>
+                              <td className="epk">{r.label}</td>
+                              <td>{fmtHours(stats[r.key].h[p.id] || 0)}</td>
+                              <td>{fmtHours(stats[r.key].b[p.id] || 0)}</td>
+                              <td className="eps">{money(stats[r.key].s[p.id] || 0)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {(weekPerf != null || weekSalesPct != null) && (
+                        <div className="emp-perf-goals">
+                          <span>Objectif semaine :</span>
+                          {weekPerf != null && <span className={`perf-pill ${perfClass(weekPerf)}`}>{weekPerf.toFixed(0)}% h</span>}
+                          {weekSalesPct != null && <span className={`perf-pill ${perfClass(weekSalesPct)}`}>{weekSalesPct.toFixed(0)}% ventes</span>}
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
