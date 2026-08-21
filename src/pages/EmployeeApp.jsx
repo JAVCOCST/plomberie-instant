@@ -155,7 +155,10 @@ export default function EmployeeApp({ plombierId }) {
                     return (
                       <div key={a.id} className="emp-job" style={{ borderLeftColor: proj?.color || "#94a3b8" }}>
                         <div className="emp-job-top">
-                          <span className="emp-job-name">{proj?.name || "Projet"}</span>
+                          <span className="emp-job-name">
+                            {proj?.name || "Projet"}
+                            {proj?.is_soumission && <span className="emp-soum-badge">Soumission</span>}
+                          </span>
                           <span className="emp-job-per">{a.heure ? a.heure.slice(0, 5) : ""}</span>
                         </div>
                         {Array.isArray(proj?.photos) && proj.photos.length > 0 && (
@@ -178,9 +181,15 @@ export default function EmployeeApp({ plombierId }) {
                               <CheckCircle2 size={16} /> Terminé · {punch.heure_debut?.slice(0,5)}–{punch.heure_fin?.slice(0,5)} ({fmtHours(hoursBetween(punch.heure_debut, punch.heure_fin))})
                             </span>
                           ) : open ? (
-                            <button className="emp-btn out" onClick={() => setBonFor({ projet_id: a.projet_id, punchId: punch.id })}>
-                              <ClipboardCheck size={16} /> Punch out — remplir le bon
-                            </button>
+                            proj?.is_soumission ? (
+                              <button className="emp-btn out" onClick={() => finishBon(punch.id)}>
+                                <CheckCircle2 size={16} /> Punch out — soumission (sans bon)
+                              </button>
+                            ) : (
+                              <button className="emp-btn out" onClick={() => setBonFor({ projet_id: a.projet_id, punchId: punch.id })}>
+                                <ClipboardCheck size={16} /> Punch out — remplir le bon
+                              </button>
+                            )
                           ) : (
                             <button className="emp-btn in" onClick={() => punchIn(a)}>
                               <LogIn size={16} /> Punch in
@@ -201,7 +210,7 @@ export default function EmployeeApp({ plombierId }) {
                                   onChange={(e) => { addPunchPhotos(punch, e.target.files); e.target.value = ""; }} />
                               </label>
                             </div>
-                            <p className="emp-hint"><Clock size={12} /> Punché à {punch.heure_debut?.slice(0,5)} — ajoute des photos pendant le travail, puis remplis le bon pour puncher out.</p>
+                            <p className="emp-hint"><Clock size={12} /> Punché à {punch.heure_debut?.slice(0,5)} — {proj?.is_soumission ? "soumission : punche out directement, aucun bon requis." : "ajoute des photos pendant le travail, puis remplis le bon pour puncher out."}</p>
                           </>
                         )}
                       </div>

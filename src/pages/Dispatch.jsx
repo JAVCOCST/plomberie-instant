@@ -720,6 +720,7 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
   const [color, setColor] = useState(project?.color || PALETTE[(paletteIndex || 0) % PALETTE.length]);
   const [existing, setExisting] = useState(Array.isArray(project?.photos) ? project.photos : []);
   const [newFiles, setNewFiles] = useState([]);
+  const [isSoum, setIsSoum] = useState(project?.is_soumission || false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
@@ -730,7 +731,7 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
     try {
       let id = project?.id;
       if (!isEdit) {
-        const { data, error } = await supabase.from("pi_projets").insert({ name: name.trim(), address: address || null, color }).select().single();
+        const { data, error } = await supabase.from("pi_projets").insert({ name: name.trim(), address: address || null, color, is_soumission: isSoum }).select().single();
         if (error) throw error;
         id = data.id;
       }
@@ -744,7 +745,7 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
         const { data } = supabase.storage.from("bons-photos").getPublicUrl(path);
         urls.push(data.publicUrl);
       }
-      const { error: uErr } = await supabase.from("pi_projets").update({ name: name.trim(), address: address || null, color, photos: urls }).eq("id", id);
+      const { error: uErr } = await supabase.from("pi_projets").update({ name: name.trim(), address: address || null, color, photos: urls, is_soumission: isSoum }).eq("id", id);
       if (uErr) throw uErr;
       onSaved();
     } catch (e) { setErr(e?.message || "Échec."); setSaving(false); }
@@ -762,13 +763,17 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <span className="proj-dot" style={{ background: color, width: 14, height: 14 }} />
-          <h2>{isEdit ? "Modifier le call" : "Nouveau call"}</h2>
+          <h2>{isEdit ? "Modifier le call" : (isSoum ? "Nouvelle soumission" : "Nouveau call")}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button>
         </div>
         {err && <div className="msg error" style={{ margin: "1rem 1.25rem 0" }}>{err}</div>}
         <div className="modal-section">
+          <div className="soum-toggle-row">
+            <button type="button" className={`soum-tab ${!isSoum ? "on" : ""}`} onClick={() => setIsSoum(false)}>Call (avec bon)</button>
+            <button type="button" className={`soum-tab ${isSoum ? "on" : ""}`} onClick={() => setIsSoum(true)}>Soumission (sans bon)</button>
+          </div>
           <div className="fld" style={{ marginBottom: "0.8rem" }}>
-            <label>Nom du call</label>
+            <label>{isSoum ? "Nom de la soumission" : "Nom du call"}</label>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Rénovation salle de bain — Laval" />
           </div>
           <div className="fld" style={{ marginBottom: "0.8rem" }}>

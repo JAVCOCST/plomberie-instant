@@ -2435,3 +2435,18 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
 .addr-ac-list li svg { color: #2563eb; flex-shrink: 0; }
 .addr-ac-list li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .addr-ac-list li:hover { background: #f1f5f9; }
+
+/* Bascule Call / Soumission dans le modal de création */
+.soum-toggle-row { display: flex; gap: 6px; margin-bottom: 0.9rem; }
+.soum-tab {
+  flex: 1; padding: 8px 10px; border-radius: 9px; cursor: pointer;
+  border: 1px solid var(--border); background: #fff; color: var(--muted);
+  font-size: 0.82rem; font-weight: 700;
+}
+.soum-tab.on { background: #0f172a; color: #fff; border-color: #0f172a; }
+/* Badge Soumission (app employé) */
+.emp-soum-badge {
+  display: inline-block; margin-left: 7px; padding: 1px 8px; border-radius: 999px;
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.02em;
+  background: #ede9fe; color: #6d28d9; vertical-align: middle;
+}
