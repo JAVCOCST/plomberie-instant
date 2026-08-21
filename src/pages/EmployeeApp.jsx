@@ -153,7 +153,7 @@ export default function EmployeeApp({ plombierId }) {
                     const done = punch && punch.heure_fin;
                     const open = punch && !punch.heure_fin;
                     return (
-                      <div key={a.id} className="emp-job" style={{ borderLeftColor: proj?.color || "#94a3b8" }}>
+                      <div key={a.id} className="emp-job" style={{ borderLeftColor: proj?.is_soumission ? "#2563eb" : "#94a3b8" }}>
                         <div className="emp-job-top">
                           <span className="emp-job-name">
                             {proj?.name || "Projet"}

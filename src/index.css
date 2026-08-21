@@ -2450,3 +2450,21 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
   font-size: 0.66rem; font-weight: 800; letter-spacing: 0.02em;
   background: #ede9fe; color: #6d28d9; vertical-align: middle;
 }
+
+/* Soumission (bleu) — prime sur les couleurs de statut. Placé APRÈS les règles de statut. */
+.call-entry.soumission {
+  background: #dbeafe; border: 1px solid #93c5fd; border-left: 5px solid #2563eb;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.call-entry.soumission .call-name,
+.call-entry.soumission .call-time { color: #1e3a8a; }
+.call-entry.soumission.done { background: #eff6ff; }
+
+.proj-row.soumission { border-left-color: #2563eb; }
+.proj-pill.soumission { background: #dbeafe; color: #1d4ed8; }
+
+.soum-tag {
+  display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 999px;
+  font-size: 0.62rem; font-weight: 800; background: #dbeafe; color: #1d4ed8;
+  vertical-align: middle;
+}

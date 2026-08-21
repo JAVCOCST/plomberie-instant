@@ -104,7 +104,7 @@ function fmtMin(m) {
   return `${mm}min`;
 }
 
-function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, state, onResizeStart, onOpen, onTime, onRemove }) {
+function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, state, soum, onResizeStart, onOpen, onTime, onRemove }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `asg:${a.id}`, data: { kind: "assignment", assignment: a },
   });
@@ -115,7 +115,7 @@ function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, pu
   const noDrag = (e) => e.stopPropagation();
   return (
     <div ref={setNodeRef} {...listeners} {...attributes}
-      className={`call-entry draggable ${state || "todo"} ${positioned ? "positioned" : ""}`}
+      className={`call-entry draggable ${state || "todo"} ${soum ? "soumission" : ""} ${positioned ? "positioned" : ""}`}
       style={{ opacity: isDragging ? 0.4 : 1, ...style }}
       onClick={() => onOpen()}>
       <span className="call-grip" title="Déplacer"><GripVertical size={12} /></span>
@@ -414,7 +414,7 @@ export default function Dispatch() {
     return (
       <CallEntry key={a.id} a={a} proj={proj} pl={pl} st={st} mode={mode}
         nowHM={nowHM} positioned={extra?.positioned} style={extra?.style}
-        durMin={extra?.durMin} punched={extra?.punched} state={callState(a, st)}
+        durMin={extra?.durMin} punched={extra?.punched} state={callState(a, st)} soum={!!proj.is_soumission}
         onResizeStart={(e) => startResize(e, a)}
         onOpen={() => { if (!justDragged.current) setJobDetail({ punch: st, plombier: pl, projet: proj }); }}
         onTime={(h) => updateAssignmentTime(a.id, h)}
@@ -479,8 +479,7 @@ export default function Dispatch() {
                   {availableProjects.length === 0 && <span className="res-empty">Tous les calls sont placés cette semaine.</span>}
                   {availableProjects.map((p) => (
                     <div className="pool-item" key={p.id}>
-                      <ColorPicker value={p.color} onChange={(c) => updateProjectColor(p.id, c)} />
-                      <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.color} label={p.name} />
+                      <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.is_soumission ? "#2563eb" : "#64748b"} label={p.name} />
                       {Array.isArray(p.photos) && p.photos.length > 0 && (
                         <img src={p.photos[0]} className="proj-thumb" alt="" onClick={() => setProjectModal(p)} />
                       )}
@@ -587,8 +586,7 @@ export default function Dispatch() {
                       : projects.map((pr) => (
                           <tr key={pr.id}>
                             <td className="cal-row-head">
-                              <ColorPicker value={pr.color} onChange={(c) => updateProjectColor(pr.id, c)} />
-                              <span className="row-head-name">{pr.name}</span>
+                              <span className="row-head-name">{pr.name}{pr.is_soumission && <span className="soum-tag">Soum.</span>}</span>
                               <button className="addr-btn set" onClick={() => setProjectModal(pr)} aria-label="Modifier"><Pencil size={13} /></button>
                             </td>
                             {days.map((d) => {
@@ -616,15 +614,15 @@ export default function Dispatch() {
           const st = punchByKey[`${a.plombier_id}|${a.jour}|${a.projet_id}`];
           const geo = callGeometry(a, st);
           return (
-            <div className={`call-entry dragging ${callState(a, st)}`} style={{ height: geo.height, width: 230, alignItems: "flex-start" }}>
+            <div className={`call-entry dragging ${callState(a, st)} ${proj?.is_soumission ? "soumission" : ""}`} style={{ height: geo.height, width: 230, alignItems: "flex-start" }}>
               <span className="call-grip"><GripVertical size={12} /></span>
               <span className="call-name" style={{ whiteSpace: "normal" }}>{proj?.name || "Call"}</span>
             </div>
           );
         })() : (
           <div className="disp-chip dragging" style={{
-            background: dragged.kind === "project" ? dragged.project.color
-              : dragged.kind === "assignment" ? (projectById[dragged.assignment.projet_id]?.color || "#475569")
+            background: dragged.kind === "project" ? (dragged.project.is_soumission ? "#2563eb" : "#64748b")
+              : dragged.kind === "assignment" ? (projectById[dragged.assignment.projet_id]?.is_soumission ? "#2563eb" : "#64748b")
               : "#334155",
           }}>
             <span className="chip-name">
@@ -717,12 +715,13 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
   const isEdit = !!project;
   const [name, setName] = useState(project?.name || "");
   const [address, setAddress] = useState(project?.address || "");
-  const [color, setColor] = useState(project?.color || PALETTE[(paletteIndex || 0) % PALETTE.length]);
   const [existing, setExisting] = useState(Array.isArray(project?.photos) ? project.photos : []);
   const [newFiles, setNewFiles] = useState([]);
   const [isSoum, setIsSoum] = useState(project?.is_soumission || false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+  // Plus de couleur choisie manuellement : bleu pour une soumission, gris neutre sinon.
+  const color = isSoum ? "#2563eb" : "#6d7b8d";
 
   const save = async () => {
     setErr("");
@@ -776,17 +775,9 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
             <label>{isSoum ? "Nom de la soumission" : "Nom du call"}</label>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Rénovation salle de bain — Laval" />
           </div>
-          <div className="fld" style={{ marginBottom: "0.8rem" }}>
+          <div className="fld">
             <label>Adresse (GPS)</label>
             <AddressAutocomplete value={address} onChange={setAddress} placeholder="123 rue Exemple, Ville" />
-          </div>
-          <div className="fld">
-            <label>Couleur</label>
-            <div className="pm-swatches">
-              {PALETTE.map((c) => (
-                <button key={c} type="button" className={`cpick-swatch ${c === color ? "sel" : ""}`} style={{ background: c }} onClick={() => setColor(c)} />
-              ))}
-            </div>
           </div>
         </div>
         <div className="modal-section">

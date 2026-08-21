@@ -153,7 +153,7 @@ export default function Projets() {
             const photo = Array.isArray(p.photos) && p.photos.length > 0 ? p.photos[0] : null;
             const nb = counts[p.id] || 0;
             return (
-              <div key={p.id} className={`proj-row ${p._status}`}
+              <div key={p.id} className={`proj-row ${p._status} ${p.is_soumission ? "soumission" : ""}`}
                 onPointerDown={(e) => onCardPointerDown(e, p)}
                 onClick={() => setModal(p)}
                 title="Glisse-moi vers Dispatch, à gauche, pour me placer au calendrier">
@@ -163,6 +163,7 @@ export default function Projets() {
                 <div className="proj-row-main">
                   <div className="proj-row-top">
                     <span className="proj-row-name">{p.name}</span>
+                    {p.is_soumission && <span className="proj-pill soumission">Soumission</span>}
                     <span className={`proj-pill ${p._status}`}><Icon size={12} /> {STATUS[p._status].label}</span>
                   </div>
                   <div className="proj-row-meta">
@@ -313,9 +314,8 @@ function ProjectEditor({ project, onClose, onSaved }) {
     try {
       let id = project?.id;
       if (!isEdit) {
-        const color = PALETTE[Math.floor(Math.random() * PALETTE.length)];
         const { data, error } = await supabase.from("pi_projets")
-          .insert({ name: name.trim(), address: address || null, color }).select().single();
+          .insert({ name: name.trim(), address: address || null, color: "#6d7b8d" }).select().single();
         if (error) throw error;
         id = data.id;
       }
