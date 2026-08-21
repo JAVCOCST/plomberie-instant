@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { useProjectDrag } from "../projectDrag";
+import AddressAutocomplete from "../components/AddressAutocomplete";
 import EmployeeDialog from "../components/EmployeeDialog";
 import WeatherStrip from "../components/WeatherStrip";
 import {
@@ -772,7 +773,7 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
           </div>
           <div className="fld" style={{ marginBottom: "0.8rem" }}>
             <label>Adresse (GPS)</label>
-            <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 rue Exemple, Ville" />
+            <AddressAutocomplete value={address} onChange={setAddress} placeholder="123 rue Exemple, Ville" />
           </div>
           <div className="fld">
             <label>Couleur</label>

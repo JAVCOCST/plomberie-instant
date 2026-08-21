@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { useProjectDrag } from "../projectDrag";
+import AddressAutocomplete from "../components/AddressAutocomplete";
 
 const gps = (addr) =>
   window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`, "_blank", "noopener");
@@ -356,7 +357,7 @@ function ProjectEditor({ project, onClose, onSaved }) {
           </div>
           <div className="fld">
             <label>Adresse (GPS)</label>
-            <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 rue Exemple, Ville" />
+            <AddressAutocomplete value={address} onChange={setAddress} placeholder="123 rue Exemple, Ville" />
           </div>
         </div>
         <div className="modal-section">
