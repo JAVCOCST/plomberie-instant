@@ -35,7 +35,7 @@ export default function Timesheets() {
   const load = async () => {
     setLoading(true);
     const [pl, pr, pu, bo] = await Promise.all([
-      supabase.from("pi_plombiers").select("*").order("created_at"),
+      supabase.from("pi_plombiers").select("*").neq("active", false).order("created_at"),
       supabase.from("pi_projets").select("*").order("created_at"),
       supabase.from("pi_punches").select("*").gte("jour", from).lte("jour", to),
       supabase.from("pi_bons_travail").select("plombier_id,total").gte("jour", from).lte("jour", to),
