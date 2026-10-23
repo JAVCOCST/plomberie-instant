@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Petit Soleil — Aperçu du site</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nuit: #1E2A3A; --ambre: #F2B544; --creme: #F7F3EC; --aube: #E8833A; --peche: #F9D9B8;
+    --pierre: #6B6A66; --ligne: #E4DDD0; --blanc: #FFFDF9;
+    --glow: #FFF6DF;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--creme); color: var(--nuit); font: 16px/1.6 Inter, system-ui, sans-serif; }
+  h1, h2, h3, .serif { font-family: Fraunces, Georgia, serif; font-weight: 500; letter-spacing: -0.01em; margin: 0; }
+  p { margin: 0 0 12px; }
+  a { color: inherit; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 28px; border-radius: 99px; font: 600 16px Inter, sans-serif; border: 0; cursor: pointer; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px -10px rgba(30,42,58,.5); }
+  .btn.primary { background: var(--nuit); color: var(--creme); }
+  .btn.sun { background: var(--ambre); color: var(--nuit); }
+  .btn.ghost { background: transparent; color: inherit; box-shadow: inset 0 0 0 1.5px currentColor; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--aube); margin-bottom: 12px; }
+  .muted { color: var(--pierre); }
+  section { padding: 88px 0; }
+
+  /* Preview ribbon */
+  .ribbon { background: #FFF; border-bottom: 1px dashed var(--ligne); font-size: 13px; color: var(--pierre); text-align: center; padding: 6px 16px; }
+
+  /* Announcement + header */
+  .announce { background: var(--nuit); color: var(--creme); font-size: 14px; text-align: center; padding: 10px 16px; }
+  .announce span { transition: opacity .4s; }
+  header.site { position: sticky; top: 0; z-index: 10; background: rgba(247,243,236,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--ligne); }
+  header.site .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 20px; }
+  header.site .logo { width: 170px; flex: none; }
+  header.site nav { display: flex; gap: 28px; font-size: 15px; font-weight: 500; }
+  header.site nav a { text-decoration: none; }
+  header.site nav a:hover { color: var(--aube); }
+  .icons { display: flex; gap: 16px; align-items: center; font-size: 14px; font-weight: 600; }
+  .lang { border: 1px solid var(--ligne); border-radius: 99px; padding: 4px 10px; }
+  .cart { position: relative; width: 22px; height: 22px; }
+  .cart b { position: absolute; top: -8px; right: -10px; background: var(--ambre); color: var(--nuit); font-size: 11px; border-radius: 99px; min-width: 18px; height: 18px; display: grid; place-items: center; }
+
+  /* Hero */
+  .hero { padding: 0; background: linear-gradient(180deg, #16202D 0%, #22324A 55%, #3B4660 100%); color: var(--creme); overflow: hidden; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; align-items: center; gap: 40px; min-height: 620px; padding-top: 56px; padding-bottom: 56px; }
+  .hero h1 { font-size: clamp(40px, 6vw, 72px); line-height: 1.02; margin-bottom: 20px; }
+  .hero p.lead { font-size: 19px; color: rgba(247,243,236,.82); max-width: 500px; margin-bottom: 30px; }
+  .hero .ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero .eyebrow { color: var(--ambre); }
+  .hero-art svg { width: 100%; height: auto; display: block; }
+  .stars { margin-top: 26px; font-size: 14px; color: rgba(247,243,236,.7); }
+
+  /* Trust */
+  .trust { background: var(--blanc); border-bottom: 1px solid var(--ligne); padding: 26px 0; }
+  .trust .wrap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .trust div { display: flex; gap: 12px; align-items: center; font-size: 14px; }
+  .trust i { font-style: normal; font-size: 22px; width: 44px; height: 44px; border-radius: 50%; background: var(--peche); display: grid; place-items: center; flex: none; }
+
+  /* Problem */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .split h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.1; margin-bottom: 20px; }
+  .lux { background: var(--blanc); border: 1px solid var(--ligne); border-radius: 20px; padding: 28px; }
+  .lux .row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 14px; align-items: center; padding: 12px 0; font-size: 15px; }
+  .lux .bar { height: 14px; border-radius: 99px; background: var(--ligne); overflow: hidden; }
+  .lux .bar span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--ambre), var(--aube)); }
+  .lux .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .lux small { display: block; margin-top: 10px; color: var(--pierre); font-size: 12px; }
+
+  /* Steps */
+  .steps { background: var(--blanc); border-top: 1px solid var(--ligne); border-bottom: 1px solid var(--ligne); }
+  .steps h2 { font-size: clamp(30px, 4vw, 44px); text-align: center; margin-bottom: 48px; }
+  .steps .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .step { text-align: center; padding: 0 12px; }
+  .step .n { width: 64px; height: 64px; border-radius: 50%; background: var(--creme); border: 1px solid var(--ligne); display: grid; place-items: center; margin: 0 auto 18px; font-family: Fraunces, serif; font-size: 26px; color: var(--aube); }
+  .step h3 { font-size: 22px; margin-bottom: 8px; }
+
+  /* Product */
+  .product .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: start; }
+  .gallery { position: sticky; top: 96px; }
+  .stage { border-radius: 24px; background: linear-gradient(180deg, #EFE7DA, var(--creme)); border: 1px solid var(--ligne); aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; }
+  .stage svg { width: 82%; height: auto; }
+  .thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 12px; }
+  .thumbs div { aspect-ratio: 1; border-radius: 12px; border: 1px solid var(--ligne); background: var(--blanc); }
+  .thumbs div:first-child { box-shadow: inset 0 0 0 2px var(--nuit); }
+  .p-title { font-size: clamp(30px, 3.6vw, 42px); line-height: 1.1; margin: 4px 0 8px; }
+  .rating { font-size: 14px; color: var(--pierre); margin-bottom: 16px; }
+  .price { font-family: Fraunces, serif; font-size: 34px; margin: 6px 0 4px; }
+  .price small { font: 400 14px Inter, sans-serif; color: var(--pierre); margin-left: 8px; }
+  .keys { list-style: none; padding: 0; margin: 20px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .keys li { background: var(--blanc); border: 1px solid var(--ligne); border-radius: 14px; padding: 12px 14px; font-size: 14px; line-height: 1.4; }
+  .keys b { display: block; font-size: 15px; }
+  .label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin: 22px 0 10px; }
+  .tones { display: flex; gap: 10px; }
+  .tone { flex: 1; border: 1.5px solid var(--ligne); background: var(--blanc); border-radius: 12px; padding: 10px; font: 500 14px Inter, sans-serif; cursor: pointer; display: flex; align-items: center; gap: 8px; justify-content: center; color: var(--nuit); }
+  .tone i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 1px rgba(0,0,0,.1); }
+  .tone[aria-pressed="true"] { border-color: var(--nuit); }
+  .offers { display: grid; gap: 10px; }
+  .offer { position: relative; display: grid; grid-template-columns: 22px 1fr auto; gap: 12px; align-items: center; border: 1.5px solid var(--ligne); background: var(--blanc); border-radius: 16px; padding: 16px 18px; cursor: pointer; text-align: left; font: inherit; color: inherit; width: 100%; }
+  .offer .dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--ligne); }
+  .offer[aria-checked="true"] { border-color: var(--nuit); box-shadow: 0 0 0 1px var(--nuit); }
+  .offer[aria-checked="true"] .dot { border: 6px solid var(--nuit); }
+  .offer b { display: block; }
+  .offer small { color: var(--pierre); }
+  .offer .op { font-family: Fraunces, serif; font-size: 20px; text-align: right; }
+  .offer .op s { display: block; font: 400 13px Inter, sans-serif; color: var(--pierre); }
+  .offer .badge { position: absolute; top: -10px; right: 16px; background: var(--ambre); font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 99px; }
+  .add { width: 100%; margin-top: 20px; min-height: 58px; font-size: 17px; }
+  .ship { font-size: 14px; color: var(--pierre); text-align: center; margin-top: 10px; }
+  .assure { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-top: 18px; font-size: 14px; padding: 16px 18px; border-radius: 16px; background: var(--peche); }
+  details { border-bottom: 1px solid var(--ligne); }
+  details summary { cursor: pointer; list-style: none; padding: 18px 0; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font: 400 24px Fraunces, serif; transition: transform .2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details .body { padding: 0 0 18px; color: var(--pierre); }
+  .acc { margin-top: 28px; border-top: 1px solid var(--ligne); }
+
+  /* Compare */
+  .compare { background: var(--blanc); border-top: 1px solid var(--ligne); border-bottom: 1px solid var(--ligne); }
+  .compare h2 { font-size: clamp(28px, 3.6vw, 40px); text-align: center; margin-bottom: 36px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { padding: 16px 12px; border-bottom: 1px solid var(--ligne); text-align: center; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { font-weight: 600; font-size: 14px; color: var(--pierre); }
+  .hl { background: rgba(242,181,68,.16); font-weight: 600; color: var(--nuit) !important; }
+  .table-wrap { overflow-x: auto; max-width: 860px; margin: 0 auto; }
+
+  /* Kit */
+  .kit { background: var(--nuit); color: var(--creme); }
+  .kit .eyebrow { color: var(--ambre); }
+  .kit h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.1; margin-bottom: 18px; }
+  .kit p { color: rgba(247,243,236,.8); }
+  .kit .art { border-radius: 24px; background: radial-gradient(80% 80% at 50% 100%, #8C5A3A 0%, #2B3A50 70%); aspect-ratio: 5/4; display: grid; place-items: center; }
+  .kit .art svg { width: 78%; }
+  .kit .price-line { font-family: Fraunces, serif; font-size: 26px; margin: 18px 0 26px; }
+  .kit .price-line s { font: 400 16px Inter, sans-serif; opacity: .6; margin-left: 10px; }
+
+  /* Guarantee + gift */
+  .guarantee { text-align: center; }
+  .guarantee .sun { width: 84px; margin: 0 auto 20px; }
+  .guarantee h2 { font-size: clamp(32px, 4.4vw, 52px); margin-bottom: 14px; }
+  .guarantee p { max-width: 560px; margin: 0 auto 26px; font-size: 18px; }
+  .gift { background: var(--peche); border-radius: 28px; padding: 56px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; }
+  .gift h2 { font-size: clamp(30px, 4vw, 46px); margin-bottom: 12px; }
+  .gift .box { aspect-ratio: 1; max-width: 300px; margin-left: auto; width: 100%; }
+
+  /* Newsletter + footer */
+  .news { background: var(--blanc); border-top: 1px solid var(--ligne); text-align: center; }
+  .news h2 { font-size: clamp(28px, 3.6vw, 40px); margin-bottom: 10px; }
+  .news form { display: flex; gap: 10px; max-width: 480px; margin: 22px auto 12px; }
+  .news input[type=email] { flex: 1; min-width: 0; height: 52px; border-radius: 99px; border: 1.5px solid var(--ligne); padding: 0 20px; font: 16px Inter, sans-serif; background: var(--creme); color: var(--nuit); }
+  .news label { font-size: 13px; color: var(--pierre); display: inline-flex; gap: 8px; align-items: flex-start; max-width: 480px; text-align: left; }
+  footer { background: var(--nuit); color: rgba(247,243,236,.8); padding: 64px 0 32px; font-size: 14px; }
+  footer .cols { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; }
+  footer h4 { color: var(--creme); font: 600 13px Inter, sans-serif; text-transform: uppercase; letter-spacing: .1em; margin: 0 0 14px; }
+  footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  footer .logo { width: 180px; margin-bottom: 16px; }
+  footer .legal { border-top: 1px solid rgba(247,243,236,.15); margin-top: 48px; padding-top: 22px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; }
+
+  /* Lamp glow driven by tone */
+  .lamp-face { transition: fill .4s ease; }
+  .lamp-halo { transition: fill .4s ease, opacity .4s ease; }
+
+  @media (max-width: 900px) {
+    header.site nav { display: none; }
+    .hero .wrap, .split, .product .grid, .gift { grid-template-columns: 1fr; }
+    .hero .wrap { min-height: 0; text-align: center; padding-top: 40px; }
+    .hero p.lead { margin-left: auto; margin-right: auto; }
+    .hero .ctas { justify-content: center; }
+    .trust .wrap { grid-template-columns: 1fr 1fr; }
+    .steps .grid { grid-template-columns: 1fr; }
+    .gallery { position: static; }
+    .gift { padding: 32px 24px; }
+    .gift .box { margin: 0 auto; max-width: 220px; }
+    footer .cols { grid-template-columns: 1fr; }
+    section { padding: 64px 0; }
+  }
+  @media (max-width: 520px) {
+    .lux .row { grid-template-columns: 1fr 70px; }
+    .lux .bar { grid-column: 1 / -1; grid-row: 2; }
+    .keys, .assure { grid-template-columns: 1fr; }
+    .news form { flex-direction: column; }
+    .icons .lang { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ribbon">Aperçu de la boutique · illustrations temporaires en attendant les vraies photos · version française (la version anglaise suivra les textes de <code>site/</code>)</div>
+
+<div class="announce"><span id="ann">☀️ Livraison gratuite partout au Canada</span></div>
+
+<header class="site">
+  <div class="wrap">
+    <a href="#" class="logo" aria-label="Petit Soleil — accueil"><svg style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 20 410 66" role="img" aria-label="Petit Soleil"><title>Petit Soleil</title><path d="M28.00 68.00a22.00 22.00 0 0 1 44.00 0z" fill="#F2B544"/><g stroke="#F2B544" stroke-width="6.00" stroke-linecap="round"><line x1="23.15" y1="52.50" x2="14.49" y2="47.50"/><line x1="34.50" y1="41.15" x2="29.50" y2="32.49"/><line x1="50.00" y1="37.00" x2="50.00" y2="27.00"/><line x1="65.50" y1="41.15" x2="70.50" y2="32.49"/><line x1="76.85" y1="52.50" x2="85.51" y2="47.50"/></g><line x1="12.00" y1="68.00" x2="88.00" y2="68.00" stroke="#1E2A3A" stroke-width="6.00" stroke-linecap="round"/><path transform="translate(112 68) scale(0.03)" fill="#1E2A3A" d="M422 -901V-816Q468 -864 521 -898Q623 -965 746 -965Q864 -965 956.5 -904.5Q1049 -844 1102.5 -738.0Q1156 -632 1156 -494Q1156 -335 1093.0 -219.0Q1030 -103 923.0 -39.5Q816 24 684 24Q565 24 472 -33Q451 -46 432 -61V317Q432 346 441.5 360.5Q451 375 469 379L530 390Q549 395 557.5 405.0Q566 415 566 429Q566 446 554.0 456.0Q542 466 516 466H119Q94 466 82.0 456.0Q70 446 70 429Q70 415 78.5 405.5Q87 396 105 390L148 380Q167 374 176.5 360.5Q186 347 186 318V-746Q186 -770 178.0 -780.5Q170 -791 153 -794L93 -797Q75 -801 67.5 -809.0Q60 -817 60 -830Q60 -844 69.0 -852.5Q78 -861 103 -871L269 -935Q303 -948 324.5 -953.5Q346 -959 362 -959Q393 -959 407.5 -943.5Q422 -928 422 -901ZM432 -730V-179Q463 -144 498 -122Q564 -78 640 -78Q714 -78 772.5 -120.0Q831 -162 865.0 -248.5Q899 -335 899 -467Q899 -592 866.0 -674.5Q833 -757 776.5 -798.0Q720 -839 647 -839Q571 -839 503 -794Q466 -769 432 -730ZM2201.0 -588Q2201.0 -538 2172.0 -511.5Q2143.0 -485 2089.0 -485H1525.0Q1537.0 -330 1616.0 -246Q1709.0 -146 1861.0 -146Q1955.0 -146 2024.5 -186.0Q2094.0 -226 2128.0 -295Q2143.0 -313 2152.5 -319.5Q2162.0 -326 2173.0 -326Q2187.0 -326 2194.0 -313.0Q2201.0 -300 2200.0 -282Q2195.0 -199 2140.5 -129.0Q2086.0 -59 1993.5 -17.5Q1901.0 24 1783.0 24Q1640.0 24 1530.5 -35.0Q1421.0 -94 1359.5 -201.0Q1298.0 -308 1298.0 -452Q1298.0 -601 1357.5 -716.5Q1417.0 -832 1527.0 -898.5Q1637.0 -965 1790.0 -965Q1918.0 -965 2010.0 -917.0Q2102.0 -869 2151.5 -784.0Q2201.0 -699 2201.0 -588ZM1902.0 -556Q1952.0 -556 1952.0 -600Q1952.0 -733 1899.0 -805.0Q1846.0 -877 1757.0 -877Q1688.0 -877 1635.0 -836.5Q1582.0 -796 1553.0 -721Q1525.0 -650 1523.0 -556ZM2400.0 -853 2350.0 -867Q2325.0 -874 2315.5 -884.0Q2306.0 -894 2306.0 -907Q2306.0 -925 2318.5 -934.0Q2331.0 -943 2351.0 -943H2414.0Q2439.0 -943 2455.0 -951.5Q2471.0 -960 2486.0 -983L2581.0 -1133Q2599.0 -1157 2616.0 -1168.5Q2633.0 -1180 2650.0 -1180Q2669.0 -1180 2679.5 -1168.0Q2690.0 -1156 2690.0 -1134V-943H2911.0Q2933.0 -943 2945.0 -934.5Q2957.0 -926 2957.0 -909Q2957.0 -886 2933.5 -870.0Q2910.0 -854 2858.0 -854H2690.0V-266Q2690.0 -196 2718.0 -159.5Q2746.0 -123 2797.0 -123Q2833.0 -123 2853.5 -136.5Q2874.0 -150 2886.0 -167.5Q2898.0 -185 2909.0 -198.5Q2920.0 -212 2936.0 -213Q2950.0 -213 2957.5 -204.0Q2965.0 -195 2965.0 -175Q2965.0 -124 2931.0 -80.0Q2897.0 -36 2837.5 -8.5Q2778.0 19 2702.0 19Q2583.0 19 2514.0 -42.0Q2445.0 -103 2445.0 -226V-795Q2445.0 -820 2434.5 -832.5Q2424.0 -845 2400.0 -853ZM3452.0 -913V-149Q3452.0 -120 3462.0 -106.5Q3472.0 -93 3490.0 -86L3530.0 -76Q3548.0 -70 3557.0 -60.5Q3566.0 -51 3566.0 -37Q3566.0 -20 3553.0 -10.0Q3540.0 0 3517.0 0H3142.0Q3119.0 0 3106.5 -10.0Q3094.0 -20 3094.0 -37Q3094.0 -51 3102.5 -60.5Q3111.0 -70 3128.0 -76L3171.0 -86Q3189.0 -93 3199.0 -106.5Q3209.0 -120 3209.0 -148V-750Q3209.0 -774 3201.0 -784.0Q3193.0 -794 3176.0 -797L3116.0 -799Q3099.0 -803 3091.0 -811.0Q3083.0 -819 3083.0 -832Q3083.0 -846 3093.0 -855.5Q3103.0 -865 3126.0 -873L3323.0 -939Q3353.0 -949 3371.5 -953.5Q3390.0 -958 3408.0 -958Q3428.0 -958 3440.0 -946.0Q3452.0 -934 3452.0 -913ZM3752.0 -853 3702.0 -867Q3677.0 -874 3667.5 -884.0Q3658.0 -894 3658.0 -907Q3658.0 -925 3670.5 -934.0Q3683.0 -943 3703.0 -943H3766.0Q3791.0 -943 3807.0 -951.5Q3823.0 -960 3838.0 -983L3933.0 -1133Q3951.0 -1157 3968.0 -1168.5Q3985.0 -1180 4002.0 -1180Q4021.0 -1180 4031.5 -1168.0Q4042.0 -1156 4042.0 -1134V-943H4263.0Q4285.0 -943 4297.0 -934.5Q4309.0 -926 4309.0 -909Q4309.0 -886 4285.5 -870.0Q4262.0 -854 4210.0 -854H4042.0V-266Q4042.0 -196 4070.0 -159.5Q4098.0 -123 4149.0 -123Q4185.0 -123 4205.5 -136.5Q4226.0 -150 4238.0 -167.5Q4250.0 -185 4261.0 -198.5Q4272.0 -212 4288.0 -213Q4302.0 -213 4309.5 -204.0Q4317.0 -195 4317.0 -175Q4317.0 -124 4283.0 -80.0Q4249.0 -36 4189.5 -8.5Q4130.0 19 4054.0 19Q3935.0 19 3866.0 -42.0Q3797.0 -103 3797.0 -226V-795Q3797.0 -820 3786.5 -832.5Q3776.0 -845 3752.0 -853ZM5295.0 -58Q5367.0 -58 5407.5 -95.0Q5448.0 -132 5448.0 -189Q5448.0 -224 5431.5 -253.0Q5415.0 -282 5370.5 -306.0Q5326.0 -330 5243.0 -350Q5097.0 -382 5015.5 -429.0Q4934.0 -476 4902.0 -537.5Q4870.0 -599 4870.0 -672Q4870.0 -805 4964.5 -885.0Q5059.0 -965 5237.0 -965Q5302.0 -965 5343.5 -954.0Q5385.0 -943 5412.0 -931.5Q5439.0 -920 5460.0 -920Q5481.0 -920 5492.0 -931.5Q5503.0 -943 5513.5 -954.0Q5524.0 -965 5544.0 -965Q5558.0 -965 5568.5 -956.0Q5579.0 -947 5587.0 -923L5656.0 -717Q5667.0 -686 5663.0 -666.0Q5659.0 -646 5638.0 -638Q5617.0 -630 5602.0 -637.5Q5587.0 -645 5573.0 -666Q5529.0 -747 5477.0 -794.5Q5425.0 -842 5368.0 -862.0Q5311.0 -882 5250.0 -882Q5160.0 -882 5115.0 -845.0Q5070.0 -808 5070.0 -745Q5070.0 -708 5089.0 -677.5Q5108.0 -647 5159.5 -621.5Q5211.0 -596 5306.0 -573Q5432.0 -544 5506.0 -501.0Q5580.0 -458 5612.5 -397.5Q5645.0 -337 5645.0 -256Q5645.0 -173 5603.0 -109.5Q5561.0 -46 5485.0 -11.0Q5409.0 24 5308.0 24Q5245.0 24 5206.5 11.5Q5168.0 -1 5142.5 -13.5Q5117.0 -26 5093.0 -26Q5072.0 -26 5059.0 -13.5Q5046.0 -1 5034.0 11.5Q5022.0 24 5005.0 24Q4991.0 24 4982.0 14.5Q4973.0 5 4968.0 -18L4927.0 -213Q4920.0 -251 4924.0 -269.0Q4928.0 -287 4947.0 -295Q4967.0 -303 4982.0 -293.0Q4997.0 -283 5013.0 -256Q5072.0 -150 5145.0 -104.0Q5218.0 -58 5295.0 -58ZM6329.0 -965Q6480.0 -965 6594.5 -902.0Q6709.0 -839 6773.5 -727.0Q6838.0 -615 6838.0 -469Q6838.0 -328 6772.0 -216.5Q6706.0 -105 6590.0 -40.5Q6474.0 24 6321.0 24Q6170.0 24 6056.0 -39.5Q5942.0 -103 5877.5 -215.0Q5813.0 -327 5813.0 -472Q5813.0 -615 5878.5 -726.0Q5944.0 -837 6060.0 -901.0Q6176.0 -965 6329.0 -965ZM6400.0 -71Q6476.0 -82 6522.5 -136.5Q6569.0 -191 6583.5 -284.5Q6598.0 -378 6575.0 -508Q6553.0 -637 6506.0 -722.0Q6459.0 -807 6393.5 -844.5Q6328.0 -882 6250.0 -870Q6175.0 -858 6128.0 -804.0Q6081.0 -750 6067.0 -656.5Q6053.0 -563 6075.0 -433Q6097.0 -304 6144.0 -219.0Q6191.0 -134 6256.5 -96.5Q6322.0 -59 6400.0 -71ZM7352.0 -1423V-149Q7352.0 -120 7361.5 -106.0Q7371.0 -92 7389.0 -86L7431.0 -76Q7450.0 -70 7458.5 -60.5Q7467.0 -51 7467.0 -37Q7467.0 -20 7455.0 -10.0Q7443.0 0 7417.0 0H7039.0Q7013.0 0 7001.0 -10.0Q6989.0 -20 6989.0 -37Q6989.0 -51 6998.0 -60.5Q7007.0 -70 7025.0 -76L7068.0 -86Q7087.0 -92 7096.5 -105.5Q7106.0 -119 7106.0 -148V-1268Q7106.0 -1292 7098.5 -1302.5Q7091.0 -1313 7073.0 -1316L7013.0 -1319Q6995.0 -1323 6987.5 -1331.0Q6980.0 -1339 6980.0 -1352Q6980.0 -1366 6989.0 -1375.5Q6998.0 -1385 7023.0 -1394L7199.0 -1457Q7235.0 -1470 7256.0 -1475.5Q7277.0 -1481 7293.0 -1481Q7322.0 -1481 7337.0 -1465.5Q7352.0 -1450 7352.0 -1423ZM8497.0 -588Q8497.0 -538 8468.0 -511.5Q8439.0 -485 8385.0 -485H7821.0Q7833.0 -330 7912.0 -246Q8005.0 -146 8157.0 -146Q8251.0 -146 8320.5 -186.0Q8390.0 -226 8424.0 -295Q8439.0 -313 8448.5 -319.5Q8458.0 -326 8469.0 -326Q8483.0 -326 8490.0 -313.0Q8497.0 -300 8496.0 -282Q8491.0 -199 8436.5 -129.0Q8382.0 -59 8289.5 -17.5Q8197.0 24 8079.0 24Q7936.0 24 7826.5 -35.0Q7717.0 -94 7655.5 -201.0Q7594.0 -308 7594.0 -452Q7594.0 -601 7653.5 -716.5Q7713.0 -832 7823.0 -898.5Q7933.0 -965 8086.0 -965Q8214.0 -965 8306.0 -917.0Q8398.0 -869 8447.5 -784.0Q8497.0 -699 8497.0 -588ZM8198.0 -556Q8248.0 -556 8248.0 -600Q8248.0 -733 8195.0 -805.0Q8142.0 -877 8053.0 -877Q7984.0 -877 7931.0 -836.5Q7878.0 -796 7849.0 -721Q7821.0 -650 7819.0 -556ZM9006.0 -913V-149Q9006.0 -120 9016.0 -106.5Q9026.0 -93 9044.0 -86L9084.0 -76Q9102.0 -70 9111.0 -60.5Q9120.0 -51 9120.0 -37Q9120.0 -20 9107.0 -10.0Q9094.0 0 9071.0 0H8696.0Q8673.0 0 8660.5 -10.0Q8648.0 -20 8648.0 -37Q8648.0 -51 8656.5 -60.5Q8665.0 -70 8682.0 -76L8725.0 -86Q8743.0 -93 8753.0 -106.5Q8763.0 -120 8763.0 -148V-750Q8763.0 -774 8755.0 -784.0Q8747.0 -794 8730.0 -797L8670.0 -799Q8653.0 -803 8645.0 -811.0Q8637.0 -819 8637.0 -832Q8637.0 -846 8647.0 -855.5Q8657.0 -865 8680.0 -873L8877.0 -939Q8907.0 -949 8925.5 -953.5Q8944.0 -958 8962.0 -958Q8982.0 -958 8994.0 -946.0Q9006.0 -934 9006.0 -913ZM9619.0 -1423V-149Q9619.0 -120 9628.5 -106.0Q9638.0 -92 9656.0 -86L9698.0 -76Q9717.0 -70 9725.5 -60.5Q9734.0 -51 9734.0 -37Q9734.0 -20 9722.0 -10.0Q9710.0 0 9684.0 0H9306.0Q9280.0 0 9268.0 -10.0Q9256.0 -20 9256.0 -37Q9256.0 -51 9265.0 -60.5Q9274.0 -70 9292.0 -76L9335.0 -86Q9354.0 -92 9363.5 -105.5Q9373.0 -119 9373.0 -148V-1268Q9373.0 -1292 9365.5 -1302.5Q9358.0 -1313 9340.0 -1316L9280.0 -1319Q9262.0 -1323 9254.5 -1331.0Q9247.0 -1339 9247.0 -1352Q9247.0 -1366 9256.0 -1375.5Q9265.0 -1385 9290.0 -1394L9466.0 -1457Q9502.0 -1470 9523.0 -1475.5Q9544.0 -1481 9560.0 -1481Q9589.0 -1481 9604.0 -1465.5Q9619.0 -1450 9619.0 -1423Z"/><circle cx="211.31" cy="30.02" r="5.04" fill="#F2B544"/><circle cx="377.94" cy="30.02" r="5.04" fill="#F2B544"/></svg></a>
+    <nav aria-label="Menu principal">
+      <a href="#produit">La lampe</a>
+      <a href="#kit">Kit Matin</a>
+      <a href="#cadeau">Idées cadeaux</a>
+      <a href="#histoire">Notre histoire</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="icons">
+      <span class="lang">FR · EN</span>
+      <span class="cart" aria-label="Panier">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        <b id="count">0</b>
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Lampe lumière du jour · 10 000 lux</div>
+      <h1>La lumière du jour, même en janvier.</h1>
+      <p class="lead">Il fait noir à 16 h et tu te lèves avant le soleil. Offre-toi 20 minutes de lumière vive avec ton café.</p>
+      <div class="ctas">
+        <a class="btn sun" href="#produit">Découvrir la lampe</a>
+        <a class="btn ghost" href="#kit">Voir le Kit Matin</a>
+      </div>
+      <div class="stars">Livraison gratuite · 30 jours pour l'essayer · Né au Québec</div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 520 440">
+        <defs>
+          <radialGradient id="hglow" cx="50%" cy="45%" r="60%">
+            <stop offset="0" stop-color="#FFF4D6" stop-opacity=".95"/>
+            <stop offset=".35" stop-color="#F2B544" stop-opacity=".35"/>
+            <stop offset="1" stop-color="#F2B544" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="win" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0F1724"/><stop offset="1" stop-color="#2D3E5A"/>
+          </linearGradient>
+          <linearGradient id="table" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#C79A6B"/><stop offset="1" stop-color="#8A6444"/>
+          </linearGradient>
+        </defs>
+        <!-- window -->
+        <rect x="40" y="20" width="230" height="250" rx="10" fill="url(#win)" stroke="#5B6A84" stroke-width="6"/>
+        <line x1="155" y1="20" x2="155" y2="270" stroke="#5B6A84" stroke-width="5"/>
+        <line x1="40" y1="145" x2="270" y2="145" stroke="#5B6A84" stroke-width="5"/>
+        <g fill="#F7F3EC" opacity=".8">
+          <circle cx="70" cy="50" r="2"/><circle cx="120" cy="90" r="1.6"/><circle cx="210" cy="60" r="2.2"/><circle cx="240" cy="110" r="1.5"/>
+          <circle cx="90" cy="180" r="2"/><circle cx="190" cy="200" r="1.7"/><circle cx="245" cy="230" r="2"/><circle cx="60" cy="240" r="1.5"/>
+        </g>
+        <circle cx="230" cy="48" r="10" fill="#E9E4D6" opacity=".55"/>
+        <!-- glow -->
+        <ellipse class="lamp-halo" cx="335" cy="205" rx="180" ry="180" fill="url(#hglow)"/>
+        <!-- table -->
+        <rect x="0" y="340" width="520" height="100" fill="url(#table)"/>
+        <rect x="0" y="336" width="520" height="8" fill="#D8B088"/>
+        <!-- lamp -->
+        <g transform="translate(250 112)">
+          <path d="M110 214 L150 228 L156 222 L120 206 Z" fill="#E7E1D6"/>
+          <rect x="0" y="0" width="170" height="216" rx="22" fill="#FFFDF9" stroke="#E4DDD0" stroke-width="2"/>
+          <rect class="lamp-face" x="14" y="14" width="142" height="168" rx="12" fill="#FFF8E8"/>
+          <g fill="#C9C2B5"><circle cx="40" cy="199" r="3"/><circle cx="52" cy="199" r="3"/><circle cx="64" cy="199" r="3"/><circle cx="96" cy="199" r="6" fill="none" stroke="#C9C2B5" stroke-width="2"/><circle cx="120" cy="199" r="6" fill="none" stroke="#C9C2B5" stroke-width="2"/><circle cx="144" cy="199" r="6" fill="none" stroke="#C9C2B5" stroke-width="2"/></g>
+        </g>
+        <!-- mug -->
+        <g transform="translate(150 280)">
+          <path d="M0 6 h64 v40 a18 18 0 0 1 -18 18 h-28 a18 18 0 0 1 -18 -18 z" fill="#F7F3EC"/>
+          <path d="M64 16 a14 14 0 0 1 0 28" fill="none" stroke="#F7F3EC" stroke-width="7"/>
+          <ellipse cx="32" cy="7" rx="32" ry="6" fill="#6B4A33"/>
+          <path d="M20 -6 q6 -10 0 -20 M36 -4 q6 -10 0 -22" stroke="#F7F3EC" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
+        </g>
+        <!-- book -->
+        <rect x="40" y="320" width="90" height="16" rx="3" fill="#E8833A"/>
+        <rect x="48" y="306" width="78" height="14" rx="3" fill="#F9D9B8"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<div class="trust">
+  <div class="wrap">
+    <div><i>🚚</i><span><b>Livraison gratuite</b><br><span class="muted">partout au Canada</span></span></div>
+    <div><i>↩️</i><span><b>30 jours</b><br><span class="muted">pour l'essayer</span></span></div>
+    <div><i>🛡️</i><span><b>Garantie 1 an</b><br><span class="muted">en plus de la garantie légale</span></span></div>
+    <div><i>⚜️</i><span><b>Né au Québec</b><br><span class="muted">pensé pour l'hiver</span></span></div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section id="histoire">
+  <div class="wrap split">
+    <div>
+      <div class="eyebrow">Pourquoi Petit Soleil</div>
+      <h2>L'hiver, on manque de lumière. Pas de motivation.</h2>
+      <p class="muted" style="font-size:18px">En décembre, le soleil se lève vers 7 h 30 et se couche avant 16 h 15. On passe nos journées à l'intérieur, sous un éclairage qui donne à peine 300 à 500 lux. Dehors, une matinée ensoleillée en donne plus de 10 000.</p>
+      <p style="font-size:18px">Petit Soleil ramène cette lumière-là sur ta table de cuisine.</p>
+    </div>
+    <div class="lux" aria-label="Comparaison de luminosité">
+      <div class="row"><span>Lampe de bureau</span><div class="bar"><span style="width:5%"></span></div><span class="val">~400 lux</span></div>
+      <div class="row"><span>Janvier, ciel gris</span><div class="bar"><span style="width:22%"></span></div><span class="val">~2 000 lux</span></div>
+      <div class="row"><span><b>Petit Soleil</b></span><div class="bar"><span style="width:100%"></span></div><span class="val">10 000 lux</span></div>
+      <small>Ordres de grandeur, mesurés à courte distance. Produit de bien-être, pas un appareil médical.</small>
+    </div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="steps">
+  <div class="wrap">
+    <h2>Simple comme un café</h2>
+    <div class="grid">
+      <div class="step"><div class="n">1</div><h3>Pose-la à côté de toi</h3><p class="muted">Sur la table, le comptoir ou le bureau, à environ 30 cm de ton visage.</p></div>
+      <div class="step"><div class="n">2</div><h3>Choisis ta lumière</h3><p class="muted">3 tons, du blanc chaud à la lumière du jour, et 5 intensités, d'une touche.</p></div>
+      <div class="step"><div class="n">3</div><h3>Vis ton matin</h3><p class="muted">Lis, mange, travaille. La minuterie l'éteint toute seule après 10 à 60 minutes.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT -->
+<section class="product" id="produit">
+  <div class="wrap grid">
+    <div class="gallery">
+      <div class="stage" aria-hidden="true">
+        <svg viewBox="0 0 300 320">
+          <defs>
+            <radialGradient id="pglow" cx="50%" cy="45%" r="55%">
+              <stop offset="0" stop-color="#FFF4D6" stop-opacity=".9"/><stop offset="1" stop-color="#F2B544" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <ellipse class="lamp-halo" cx="150" cy="160" rx="140" ry="140" fill="url(#pglow)"/>
+          <ellipse cx="160" cy="300" rx="110" ry="9" fill="#1E2A3A" opacity=".08"/>
+          <g transform="translate(65 40)">
+            <path d="M120 236 L170 254 L176 247 L130 226 Z" fill="#E7E1D6"/>
+            <rect width="170" height="240" rx="22" fill="#FFFDF9" stroke="#E4DDD0" stroke-width="2"/>
+            <rect class="lamp-face" x="14" y="14" width="142" height="190" rx="12" fill="#FFF8E8"/>
+            <g fill="#C9C2B5"><circle cx="40" cy="222" r="3"/><circle cx="52" cy="222" r="3"/><circle cx="64" cy="222" r="3"/><circle cx="96" cy="222" r="6" fill="none" stroke="#C9C2B5" stroke-width="2"/><circle cx="120" cy="222" r="6" fill="none" stroke="#C9C2B5" stroke-width="2"/><circle cx="144" cy="222" r="6" fill="none" stroke="#C9C2B5" stroke-width="2"/></g>
+          </g>
+        </svg>
+      </div>
+      <div class="thumbs" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+
+    <div>
+      <div class="eyebrow">Petit Soleil</div>
+      <h2 class="p-title">Lampe lumière du jour — 10 000 lux</h2>
+      <div class="rating">Ton soleil de 7 h du matin. 3 tons de lumière · 5 intensités · minuterie.</div>
+      <div class="price" id="price">69,99 $ <small>Livraison gratuite</small></div>
+
+      <ul class="keys">
+        <li>☀️ <b>10 000 lux</b>l'éclat d'une matinée ensoleillée</li>
+        <li>🎚️ <b>3 tons, 5 intensités</b>du blanc chaud au blanc du jour</li>
+        <li>⏱️ <b>Minuterie 10–60 min</b>elle s'éteint toute seule</li>
+        <li>🪶 <b>Mince et légère</b>610 g, du comptoir au bureau</li>
+      </ul>
+
+      <div class="label">Essaie les 3 tons</div>
+      <div class="tones" role="group" aria-label="Ton de lumière">
+        <button class="tone" data-face="#FFE7B8" data-halo="#F2B544" aria-pressed="false"><i style="background:#FFE7B8"></i>Chaud</button>
+        <button class="tone" data-face="#FFF8E8" data-halo="#F6CF7A" aria-pressed="true"><i style="background:#FFF8E8"></i>Neutre</button>
+        <button class="tone" data-face="#F4FAFF" data-halo="#CFE3F5" aria-pressed="false"><i style="background:#F4FAFF"></i>Jour</button>
+      </div>
+
+      <div class="label">Choisis ton offre</div>
+      <div class="offers" role="radiogroup" aria-label="Offre">
+        <button class="offer" role="radio" aria-checked="true" data-price="69,99 $">
+          <span class="dot"></span><span><b>Lampe seule</b><small>1 lampe lumière du jour</small></span><span class="op">69,99 $</span>
+        </button>
+        <button class="offer" role="radio" aria-checked="false" data-price="99,99 $">
+          <span class="badge">Meilleure valeur</span>
+          <span class="dot"></span><span><b>Kit Matin</b><small>Lampe + réveil d'aube · économise 10 $</small></span><span class="op">99,99 $<s>109,98 $</s></span>
+        </button>
+        <button class="offer" role="radio" aria-checked="false" data-price="119,99 $">
+          <span class="dot"></span><span><b>Duo cadeau</b><small>2 lampes · une pour toi, une à offrir</small></span><span class="op">119,99 $<s>139,98 $</s></span>
+        </button>
+      </div>
+
+      <button class="btn primary add" id="add">Ajouter au panier&nbsp;·&nbsp;<span id="addPrice">69,99 $</span></button>
+      <div class="ship">Expédiée en 1 à 3 jours ouvrables · livraison en 7 à 15 jours ouvrables</div>
+
+      <div class="assure">
+        <span>🚚 Livraison gratuite et suivie</span>
+        <span>↩️ 30 jours pour l'essayer</span>
+        <span>🛡️ Garantie 1 an</span>
+        <span>🔒 Paiement sécurisé</span>
+      </div>
+
+      <div class="acc">
+        <details open>
+          <summary>Pourquoi tu vas l'aimer</summary>
+          <div class="body">La lampe Petit Soleil t'offre 10 000 lux de lumière blanche et vive, à poser à côté de toi pendant le café, les courriels ou le déjeuner des enfants. Tu ne la fixes pas : elle éclaire ton matin pendant que tu vis ta routine.</div>
+        </details>
+        <details>
+          <summary>Comment l'utiliser</summary>
+          <div class="body">Le matin, à environ 30 cm, un peu sur le côté. 20 à 30 minutes suffisent pour la plupart des gens ; commence par 10 à 15 minutes. Évite le soir, pour ne pas nuire à ton sommeil.</div>
+        </details>
+        <details>
+          <summary>Caractéristiques</summary>
+          <div class="body">10 000 lux · 3 tons · 5 intensités · minuterie 10/20/30/40/50/60 min · commandes tactiles · adaptateur inclus (prise nord-américaine) · 610 g.</div>
+        </details>
+        <details>
+          <summary>Livraison et retours</summary>
+          <div class="body">Livraison gratuite et suivie partout au Canada, en 7 à 15 jours ouvrables. 30 jours après la réception pour l'essayer : si elle ne te convient pas, on te rembourse.</div>
+        </details>
+        <details>
+          <summary>Sécurité</summary>
+          <div class="body">Produit de bien-être, pas un appareil médical. Ne fixe pas directement la source lumineuse. En cas de condition oculaire ou médicale, parles-en d'abord à un professionnel de la santé.</div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section class="compare">
+  <div class="wrap">
+    <h2>Pourquoi pas juste une lampe ordinaire ?</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Lampe de bureau</th><th>Matin de janvier</th><th class="hl">Petit Soleil</th></tr></thead>
+        <tbody>
+          <tr><td>Lumière à ~30 cm</td><td class="muted">~300–500 lux</td><td class="muted">~1 000–3 000 lux</td><td class="hl">10 000 lux</td></tr>
+          <tr><td>Lumière uniforme et diffuse</td><td class="muted">✕</td><td class="muted">✓</td><td class="hl">✓</td></tr>
+          <tr><td>Minuterie</td><td class="muted">✕</td><td class="muted">—</td><td class="hl">✓</td></tr>
+          <tr><td>Disponible à 6 h 30</td><td class="muted">✓</td><td class="muted">✕</td><td class="hl">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- KIT -->
+<section class="kit" id="kit">
+  <div class="wrap split">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 400 300">
+        <defs><radialGradient id="kg" cx="50%" cy="60%" r="60%"><stop offset="0" stop-color="#FFD98A" stop-opacity=".8"/><stop offset="1" stop-color="#F2B544" stop-opacity="0"/></radialGradient></defs>
+        <ellipse cx="200" cy="160" rx="180" ry="128" fill="url(#kg)"/>
+        <g transform="translate(70 70)"><rect width="120" height="160" rx="16" fill="#FFFDF9"/><rect x="10" y="10" width="100" height="124" rx="9" fill="#FFF8E8"/></g>
+        <g transform="translate(230 140)">
+          <path d="M0 90 a60 60 0 0 1 120 0 z" fill="#FFC872"/>
+          <path d="M14 90 a46 46 0 0 1 92 0 z" fill="#FFE2A8"/>
+          <rect x="-6" y="88" width="132" height="14" rx="7" fill="#F7F3EC"/>
+          <text x="60" y="76" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#1E2A3A">6:30</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="eyebrow">Le duo du matin</div>
+      <h2>Réveille-toi avec le soleil, même quand il dort encore.</h2>
+      <p>Le réveil d'aube s'allume doucement 30 minutes avant ton alarme, comme un lever de soleil. La lampe prend le relais au déjeuner. Deux objets, une routine.</p>
+      <div class="price-line">99,99 $ <s>109,98 $</s></div>
+      <a class="btn sun" href="#produit">Voir le Kit Matin</a>
+    </div>
+  </div>
+</section>
+
+<!-- GUARANTEE -->
+<section class="guarantee">
+  <div class="wrap">
+    <div class="sun"><svg style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 18 100 60" role="img" aria-label="Petit Soleil"><title>Petit Soleil</title><path d="M28.00 68.00a22.00 22.00 0 0 1 44.00 0z" fill="#F2B544"/><g stroke="#F2B544" stroke-width="6.00" stroke-linecap="round"><line x1="23.15" y1="52.50" x2="14.49" y2="47.50"/><line x1="34.50" y1="41.15" x2="29.50" y2="32.49"/><line x1="50.00" y1="37.00" x2="50.00" y2="27.00"/><line x1="65.50" y1="41.15" x2="70.50" y2="32.49"/><line x1="76.85" y1="52.50" x2="85.51" y2="47.50"/></g><line x1="12.00" y1="68.00" x2="88.00" y2="68.00" stroke="#1E2A3A" stroke-width="6.00" stroke-linecap="round"/></svg></div>
+    <h2>30 matins pour l'essayer</h2>
+    <p class="muted">Utilise-la tous les matins pendant 30 jours. Si tu ne l'aimes pas, écris-nous : on te rembourse, sans questionnaire.</p>
+    <a class="btn primary" href="#produit">Je l'essaie</a>
+  </div>
+</section>
+
+<!-- GIFT -->
+<section id="cadeau" style="padding-top:0">
+  <div class="wrap">
+    <div class="gift">
+      <div>
+        <div class="eyebrow">Idée cadeau</div>
+        <h2>Offre un petit soleil.</h2>
+        <p style="font-size:18px">Pour la personne qui déteste l'hiver (on en connaît tous une). Emballage soigné, facture sans prix, et 30 jours pour l'échanger.</p>
+        <p><b>Commande avant le 4 décembre pour l'avoir à Noël.</b></p>
+        <a class="btn primary" href="#produit" style="margin-top:8px">Idées cadeaux</a>
+      </div>
+      <svg class="box" viewBox="0 0 200 200" aria-hidden="true">
+        <rect x="30" y="80" width="140" height="100" rx="8" fill="#1E2A3A"/>
+        <rect x="22" y="62" width="156" height="30" rx="6" fill="#26354A"/>
+        <rect x="92" y="62" width="16" height="118" fill="#F2B544"/>
+        <path d="M100 62 C 70 20, 40 50, 100 62 C 160 50, 130 20, 100 62 Z" fill="none" stroke="#F2B544" stroke-width="10" stroke-linejoin="round"/>
+        <circle cx="100" cy="135" r="16" fill="#F2B544"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding-top:0">
+  <div class="wrap" style="max-width:820px">
+    <div class="eyebrow" style="text-align:center">FAQ</div>
+    <h2 style="text-align:center;font-size:clamp(28px,3.6vw,40px);margin-bottom:24px">Questions fréquentes</h2>
+    <div class="acc">
+      <details><summary>Combien de temps faut-il l'utiliser ?</summary><div class="body">Pour la plupart des gens, 20 à 30 minutes le matin suffisent. Commence par 10 à 15 minutes les premiers jours. La minuterie s'occupe de l'éteindre.</div></details>
+      <details><summary>Est-ce que je dois regarder la lumière ?</summary><div class="body">Non, surtout pas. Place-la à environ 30 cm, un peu sur le côté, et fais tes affaires : lire, manger, travailler.</div></details>
+      <details><summary>Ça sert à quoi, 10 000 lux ?</summary><div class="body">Le lux mesure la quantité de lumière qui arrive sur une surface. Une pièce bien éclairée tourne autour de 300 à 500 lux ; une matinée ensoleillée dehors dépasse 10 000 lux.</div></details>
+      <details><summary>Combien de temps pour la livraison ?</summary><div class="body">On expédie en 1 à 3 jours ouvrables, puis la livraison prend 7 à 15 jours ouvrables partout au Canada. Elle est gratuite et suivie.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="news">
+  <div class="wrap">
+    <h2>10 % sur ta première commande</h2>
+    <p class="muted">Et des conseils simples pour mieux vivre l'hiver, environ deux fois par mois. Promis, pas plus.</p>
+    <form onsubmit="event.preventDefault();this.querySelector('button').textContent='Merci ! ☀️'">
+      <input type="email" placeholder="Ton courriel" aria-label="Courriel" required>
+      <button class="btn primary" type="submit">Recevoir mon code</button>
+    </form>
+    <label><input type="checkbox"> J'accepte de recevoir les courriels de Petit Soleil. Je peux me désabonner en tout temps.</label>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <div class="logo"><svg style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 20 410 66" role="img" aria-label="Petit Soleil"><title>Petit Soleil</title><path d="M28.00 68.00a22.00 22.00 0 0 1 44.00 0z" fill="#F2B544"/><g stroke="#F2B544" stroke-width="6.00" stroke-linecap="round"><line x1="23.15" y1="52.50" x2="14.49" y2="47.50"/><line x1="34.50" y1="41.15" x2="29.50" y2="32.49"/><line x1="50.00" y1="37.00" x2="50.00" y2="27.00"/><line x1="65.50" y1="41.15" x2="70.50" y2="32.49"/><line x1="76.85" y1="52.50" x2="85.51" y2="47.50"/></g><line x1="12.00" y1="68.00" x2="88.00" y2="68.00" stroke="#F7F3EC" stroke-width="6.00" stroke-linecap="round"/><path transform="translate(112 68) scale(0.03)" fill="#F7F3EC" d="M422 -901V-816Q468 -864 521 -898Q623 -965 746 -965Q864 -965 956.5 -904.5Q1049 -844 1102.5 -738.0Q1156 -632 1156 -494Q1156 -335 1093.0 -219.0Q1030 -103 923.0 -39.5Q816 24 684 24Q565 24 472 -33Q451 -46 432 -61V317Q432 346 441.5 360.5Q451 375 469 379L530 390Q549 395 557.5 405.0Q566 415 566 429Q566 446 554.0 456.0Q542 466 516 466H119Q94 466 82.0 456.0Q70 446 70 429Q70 415 78.5 405.5Q87 396 105 390L148 380Q167 374 176.5 360.5Q186 347 186 318V-746Q186 -770 178.0 -780.5Q170 -791 153 -794L93 -797Q75 -801 67.5 -809.0Q60 -817 60 -830Q60 -844 69.0 -852.5Q78 -861 103 -871L269 -935Q303 -948 324.5 -953.5Q346 -959 362 -959Q393 -959 407.5 -943.5Q422 -928 422 -901ZM432 -730V-179Q463 -144 498 -122Q564 -78 640 -78Q714 -78 772.5 -120.0Q831 -162 865.0 -248.5Q899 -335 899 -467Q899 -592 866.0 -674.5Q833 -757 776.5 -798.0Q720 -839 647 -839Q571 -839 503 -794Q466 -769 432 -730ZM2201.0 -588Q2201.0 -538 2172.0 -511.5Q2143.0 -485 2089.0 -485H1525.0Q1537.0 -330 1616.0 -246Q1709.0 -146 1861.0 -146Q1955.0 -146 2024.5 -186.0Q2094.0 -226 2128.0 -295Q2143.0 -313 2152.5 -319.5Q2162.0 -326 2173.0 -326Q2187.0 -326 2194.0 -313.0Q2201.0 -300 2200.0 -282Q2195.0 -199 2140.5 -129.0Q2086.0 -59 1993.5 -17.5Q1901.0 24 1783.0 24Q1640.0 24 1530.5 -35.0Q1421.0 -94 1359.5 -201.0Q1298.0 -308 1298.0 -452Q1298.0 -601 1357.5 -716.5Q1417.0 -832 1527.0 -898.5Q1637.0 -965 1790.0 -965Q1918.0 -965 2010.0 -917.0Q2102.0 -869 2151.5 -784.0Q2201.0 -699 2201.0 -588ZM1902.0 -556Q1952.0 -556 1952.0 -600Q1952.0 -733 1899.0 -805.0Q1846.0 -877 1757.0 -877Q1688.0 -877 1635.0 -836.5Q1582.0 -796 1553.0 -721Q1525.0 -650 1523.0 -556ZM2400.0 -853 2350.0 -867Q2325.0 -874 2315.5 -884.0Q2306.0 -894 2306.0 -907Q2306.0 -925 2318.5 -934.0Q2331.0 -943 2351.0 -943H2414.0Q2439.0 -943 2455.0 -951.5Q2471.0 -960 2486.0 -983L2581.0 -1133Q2599.0 -1157 2616.0 -1168.5Q2633.0 -1180 2650.0 -1180Q2669.0 -1180 2679.5 -1168.0Q2690.0 -1156 2690.0 -1134V-943H2911.0Q2933.0 -943 2945.0 -934.5Q2957.0 -926 2957.0 -909Q2957.0 -886 2933.5 -870.0Q2910.0 -854 2858.0 -854H2690.0V-266Q2690.0 -196 2718.0 -159.5Q2746.0 -123 2797.0 -123Q2833.0 -123 2853.5 -136.5Q2874.0 -150 2886.0 -167.5Q2898.0 -185 2909.0 -198.5Q2920.0 -212 2936.0 -213Q2950.0 -213 2957.5 -204.0Q2965.0 -195 2965.0 -175Q2965.0 -124 2931.0 -80.0Q2897.0 -36 2837.5 -8.5Q2778.0 19 2702.0 19Q2583.0 19 2514.0 -42.0Q2445.0 -103 2445.0 -226V-795Q2445.0 -820 2434.5 -832.5Q2424.0 -845 2400.0 -853ZM3452.0 -913V-149Q3452.0 -120 3462.0 -106.5Q3472.0 -93 3490.0 -86L3530.0 -76Q3548.0 -70 3557.0 -60.5Q3566.0 -51 3566.0 -37Q3566.0 -20 3553.0 -10.0Q3540.0 0 3517.0 0H3142.0Q3119.0 0 3106.5 -10.0Q3094.0 -20 3094.0 -37Q3094.0 -51 3102.5 -60.5Q3111.0 -70 3128.0 -76L3171.0 -86Q3189.0 -93 3199.0 -106.5Q3209.0 -120 3209.0 -148V-750Q3209.0 -774 3201.0 -784.0Q3193.0 -794 3176.0 -797L3116.0 -799Q3099.0 -803 3091.0 -811.0Q3083.0 -819 3083.0 -832Q3083.0 -846 3093.0 -855.5Q3103.0 -865 3126.0 -873L3323.0 -939Q3353.0 -949 3371.5 -953.5Q3390.0 -958 3408.0 -958Q3428.0 -958 3440.0 -946.0Q3452.0 -934 3452.0 -913ZM3752.0 -853 3702.0 -867Q3677.0 -874 3667.5 -884.0Q3658.0 -894 3658.0 -907Q3658.0 -925 3670.5 -934.0Q3683.0 -943 3703.0 -943H3766.0Q3791.0 -943 3807.0 -951.5Q3823.0 -960 3838.0 -983L3933.0 -1133Q3951.0 -1157 3968.0 -1168.5Q3985.0 -1180 4002.0 -1180Q4021.0 -1180 4031.5 -1168.0Q4042.0 -1156 4042.0 -1134V-943H4263.0Q4285.0 -943 4297.0 -934.5Q4309.0 -926 4309.0 -909Q4309.0 -886 4285.5 -870.0Q4262.0 -854 4210.0 -854H4042.0V-266Q4042.0 -196 4070.0 -159.5Q4098.0 -123 4149.0 -123Q4185.0 -123 4205.5 -136.5Q4226.0 -150 4238.0 -167.5Q4250.0 -185 4261.0 -198.5Q4272.0 -212 4288.0 -213Q4302.0 -213 4309.5 -204.0Q4317.0 -195 4317.0 -175Q4317.0 -124 4283.0 -80.0Q4249.0 -36 4189.5 -8.5Q4130.0 19 4054.0 19Q3935.0 19 3866.0 -42.0Q3797.0 -103 3797.0 -226V-795Q3797.0 -820 3786.5 -832.5Q3776.0 -845 3752.0 -853ZM5295.0 -58Q5367.0 -58 5407.5 -95.0Q5448.0 -132 5448.0 -189Q5448.0 -224 5431.5 -253.0Q5415.0 -282 5370.5 -306.0Q5326.0 -330 5243.0 -350Q5097.0 -382 5015.5 -429.0Q4934.0 -476 4902.0 -537.5Q4870.0 -599 4870.0 -672Q4870.0 -805 4964.5 -885.0Q5059.0 -965 5237.0 -965Q5302.0 -965 5343.5 -954.0Q5385.0 -943 5412.0 -931.5Q5439.0 -920 5460.0 -920Q5481.0 -920 5492.0 -931.5Q5503.0 -943 5513.5 -954.0Q5524.0 -965 5544.0 -965Q5558.0 -965 5568.5 -956.0Q5579.0 -947 5587.0 -923L5656.0 -717Q5667.0 -686 5663.0 -666.0Q5659.0 -646 5638.0 -638Q5617.0 -630 5602.0 -637.5Q5587.0 -645 5573.0 -666Q5529.0 -747 5477.0 -794.5Q5425.0 -842 5368.0 -862.0Q5311.0 -882 5250.0 -882Q5160.0 -882 5115.0 -845.0Q5070.0 -808 5070.0 -745Q5070.0 -708 5089.0 -677.5Q5108.0 -647 5159.5 -621.5Q5211.0 -596 5306.0 -573Q5432.0 -544 5506.0 -501.0Q5580.0 -458 5612.5 -397.5Q5645.0 -337 5645.0 -256Q5645.0 -173 5603.0 -109.5Q5561.0 -46 5485.0 -11.0Q5409.0 24 5308.0 24Q5245.0 24 5206.5 11.5Q5168.0 -1 5142.5 -13.5Q5117.0 -26 5093.0 -26Q5072.0 -26 5059.0 -13.5Q5046.0 -1 5034.0 11.5Q5022.0 24 5005.0 24Q4991.0 24 4982.0 14.5Q4973.0 5 4968.0 -18L4927.0 -213Q4920.0 -251 4924.0 -269.0Q4928.0 -287 4947.0 -295Q4967.0 -303 4982.0 -293.0Q4997.0 -283 5013.0 -256Q5072.0 -150 5145.0 -104.0Q5218.0 -58 5295.0 -58ZM6329.0 -965Q6480.0 -965 6594.5 -902.0Q6709.0 -839 6773.5 -727.0Q6838.0 -615 6838.0 -469Q6838.0 -328 6772.0 -216.5Q6706.0 -105 6590.0 -40.5Q6474.0 24 6321.0 24Q6170.0 24 6056.0 -39.5Q5942.0 -103 5877.5 -215.0Q5813.0 -327 5813.0 -472Q5813.0 -615 5878.5 -726.0Q5944.0 -837 6060.0 -901.0Q6176.0 -965 6329.0 -965ZM6400.0 -71Q6476.0 -82 6522.5 -136.5Q6569.0 -191 6583.5 -284.5Q6598.0 -378 6575.0 -508Q6553.0 -637 6506.0 -722.0Q6459.0 -807 6393.5 -844.5Q6328.0 -882 6250.0 -870Q6175.0 -858 6128.0 -804.0Q6081.0 -750 6067.0 -656.5Q6053.0 -563 6075.0 -433Q6097.0 -304 6144.0 -219.0Q6191.0 -134 6256.5 -96.5Q6322.0 -59 6400.0 -71ZM7352.0 -1423V-149Q7352.0 -120 7361.5 -106.0Q7371.0 -92 7389.0 -86L7431.0 -76Q7450.0 -70 7458.5 -60.5Q7467.0 -51 7467.0 -37Q7467.0 -20 7455.0 -10.0Q7443.0 0 7417.0 0H7039.0Q7013.0 0 7001.0 -10.0Q6989.0 -20 6989.0 -37Q6989.0 -51 6998.0 -60.5Q7007.0 -70 7025.0 -76L7068.0 -86Q7087.0 -92 7096.5 -105.5Q7106.0 -119 7106.0 -148V-1268Q7106.0 -1292 7098.5 -1302.5Q7091.0 -1313 7073.0 -1316L7013.0 -1319Q6995.0 -1323 6987.5 -1331.0Q6980.0 -1339 6980.0 -1352Q6980.0 -1366 6989.0 -1375.5Q6998.0 -1385 7023.0 -1394L7199.0 -1457Q7235.0 -1470 7256.0 -1475.5Q7277.0 -1481 7293.0 -1481Q7322.0 -1481 7337.0 -1465.5Q7352.0 -1450 7352.0 -1423ZM8497.0 -588Q8497.0 -538 8468.0 -511.5Q8439.0 -485 8385.0 -485H7821.0Q7833.0 -330 7912.0 -246Q8005.0 -146 8157.0 -146Q8251.0 -146 8320.5 -186.0Q8390.0 -226 8424.0 -295Q8439.0 -313 8448.5 -319.5Q8458.0 -326 8469.0 -326Q8483.0 -326 8490.0 -313.0Q8497.0 -300 8496.0 -282Q8491.0 -199 8436.5 -129.0Q8382.0 -59 8289.5 -17.5Q8197.0 24 8079.0 24Q7936.0 24 7826.5 -35.0Q7717.0 -94 7655.5 -201.0Q7594.0 -308 7594.0 -452Q7594.0 -601 7653.5 -716.5Q7713.0 -832 7823.0 -898.5Q7933.0 -965 8086.0 -965Q8214.0 -965 8306.0 -917.0Q8398.0 -869 8447.5 -784.0Q8497.0 -699 8497.0 -588ZM8198.0 -556Q8248.0 -556 8248.0 -600Q8248.0 -733 8195.0 -805.0Q8142.0 -877 8053.0 -877Q7984.0 -877 7931.0 -836.5Q7878.0 -796 7849.0 -721Q7821.0 -650 7819.0 -556ZM9006.0 -913V-149Q9006.0 -120 9016.0 -106.5Q9026.0 -93 9044.0 -86L9084.0 -76Q9102.0 -70 9111.0 -60.5Q9120.0 -51 9120.0 -37Q9120.0 -20 9107.0 -10.0Q9094.0 0 9071.0 0H8696.0Q8673.0 0 8660.5 -10.0Q8648.0 -20 8648.0 -37Q8648.0 -51 8656.5 -60.5Q8665.0 -70 8682.0 -76L8725.0 -86Q8743.0 -93 8753.0 -106.5Q8763.0 -120 8763.0 -148V-750Q8763.0 -774 8755.0 -784.0Q8747.0 -794 8730.0 -797L8670.0 -799Q8653.0 -803 8645.0 -811.0Q8637.0 -819 8637.0 -832Q8637.0 -846 8647.0 -855.5Q8657.0 -865 8680.0 -873L8877.0 -939Q8907.0 -949 8925.5 -953.5Q8944.0 -958 8962.0 -958Q8982.0 -958 8994.0 -946.0Q9006.0 -934 9006.0 -913ZM9619.0 -1423V-149Q9619.0 -120 9628.5 -106.0Q9638.0 -92 9656.0 -86L9698.0 -76Q9717.0 -70 9725.5 -60.5Q9734.0 -51 9734.0 -37Q9734.0 -20 9722.0 -10.0Q9710.0 0 9684.0 0H9306.0Q9280.0 0 9268.0 -10.0Q9256.0 -20 9256.0 -37Q9256.0 -51 9265.0 -60.5Q9274.0 -70 9292.0 -76L9335.0 -86Q9354.0 -92 9363.5 -105.5Q9373.0 -119 9373.0 -148V-1268Q9373.0 -1292 9365.5 -1302.5Q9358.0 -1313 9340.0 -1316L9280.0 -1319Q9262.0 -1323 9254.5 -1331.0Q9247.0 -1339 9247.0 -1352Q9247.0 -1366 9256.0 -1375.5Q9265.0 -1385 9290.0 -1394L9466.0 -1457Q9502.0 -1470 9523.0 -1475.5Q9544.0 -1481 9560.0 -1481Q9589.0 -1481 9604.0 -1465.5Q9619.0 -1450 9619.0 -1423Z"/><circle cx="211.31" cy="30.02" r="5.04" fill="#F2B544"/><circle cx="377.94" cy="30.02" r="5.04" fill="#F2B544"/></svg></div>
+        <p>Des objets simples pour ramener la lumière du jour dans la maison. Nés au Québec, pensés pour les longs hivers.</p>
+      </div>
+      <div><h4>Boutique</h4><ul><li>La lampe</li><li>Kit Matin</li><li>Idées cadeaux</li><li>Carte-cadeau</li></ul></div>
+      <div><h4>Aide</h4><ul><li>FAQ</li><li>Suivre ma commande</li><li>Livraison</li><li>Retours et remboursements</li><li>Garantie</li><li>Nous joindre</li></ul></div>
+    </div>
+    <div class="legal">
+      <span>© 2026 Petit Soleil · Confidentialité · Conditions d'utilisation</span>
+      <span>Produit de bien-être, pas un appareil médical.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Rotating announcement bar
+  const msgs = ["☀️ Livraison gratuite partout au Canada", "30 jours pour l'essayer, satisfait ou remboursé", "🎁 Commande avant le 4 décembre pour l'avoir à Noël"];
+  let i = 0; const ann = document.getElementById("ann");
+  setInterval(() => { ann.style.opacity = 0; setTimeout(() => { i = (i + 1) % msgs.length; ann.textContent = msgs[i]; ann.style.opacity = 1; }, 400); }, 3500);
+
+  // Light tone preview
+  document.querySelectorAll(".tone").forEach(btn => btn.addEventListener("click", () => {
+    document.querySelectorAll(".tone").forEach(b => b.setAttribute("aria-pressed", b === btn));
+    document.querySelectorAll(".lamp-face").forEach(f => f.setAttribute("fill", btn.dataset.face));
+    document.querySelectorAll("#pglow stop:first-child, #hglow stop:nth-child(2)").forEach(s => s.setAttribute("stop-color", btn.dataset.halo));
+  }));
+
+  // Offer selector
+  const addPrice = document.getElementById("addPrice"), price = document.getElementById("price");
+  document.querySelectorAll(".offer").forEach(o => o.addEventListener("click", () => {
+    document.querySelectorAll(".offer").forEach(x => x.setAttribute("aria-checked", x === o));
+    addPrice.textContent = o.dataset.price;
+    price.firstChild.textContent = o.dataset.price + " ";
+  }));
+
+  // Fake add to cart
+  let count = 0;
+  document.getElementById("add").addEventListener("click", () => { document.getElementById("count").textContent = ++count; });
+</script>
+</body>
+</html>
