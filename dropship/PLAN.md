@@ -300,3 +300,22 @@ ou de produit (plan B : réveil simulateur d'aube vendu seul) plutôt que d'insi
 
 Fait : charte de marque et logo (`marque/`). À venir dans ce dossier : tous les textes du site (FR + EN), les
 politiques, la FAQ, les scripts vidéo et les courriels, prêts à copier dans Shopify.
+
+---
+
+## 11. Journal des décisions
+
+### 23 oct. 2026 — Fournisseur candidat n° 1 (QKsource)
+- Produit : *SAD UV Lamp… LED Phototherapy* — SKU **QSHD242056202BY**, couleur **SK40 DC**, prise **US**, 610 g.
+- Prix produit **14,10 $ US** · livraison Canada **QSPacket JYSP Sensitive 11,64 $ US** · **total 25,74 $ US** (~36 $ CA).
+- Délais : traitement 1–3 jours + livraison 7–15 jours = **8 à 18 jours**.
+- Stock : 7 223 (usine). Seulement 3 « Lists », 0 avis → **échantillon obligatoire**.
+- Pas d'expédition vers les États-Unis depuis ce fournisseur.
+
+**Décision : lancement au Canada d'abord** (site FR + EN, CAD). États-Unis ajoutés en janvier avec un fournisseur
+en entrepôt américain.
+
+Marge estimée par lampe à 69,99 $ CA : 69,99 − 36 (produit + livraison) − 2,30 (paiement) ≈ **31–32 $ CA avant pub**,
+moins les droits de douane éventuels (à confirmer : la ligne est-elle DDP ?).
+
+Conséquence pour Noël : avec jusqu'à 18 jours de délai, la date limite « livré avant Noël » est vers le **4 décembre**.
