@@ -15,6 +15,7 @@
 | Produit vedette | Lampe « lumière du jour » 10 000 lux, sans UV, format bureau, minuterie |
 | Produit d'appoint | Réveil simulateur d'aube (matins noirs) — vendu en ensemble « Kit Matin » |
 | Marchés | Canada (FR + EN) et États-Unis (EN) |
+| Marque | **Petit Soleil** — « La lumière du jour, même en janvier. » (charte : `marque/charte.html`) |
 | Plateforme | Shopify (Basic) + Shopify Markets (CAD / USD) |
 | Fournisseur | CJ Dropshipping, entrepôt **États-Unis** (droits de douane déjà payés, livraison 3–7 jours) |
 | Prix de vente | 69,99 $ CA / 49,99 $ US — Kit Matin 99,99 $ CA / 74,99 $ US |
@@ -74,18 +75,14 @@ la pub rentable.
 
 ## 2. La marque
 
-### 2.1 Noms proposés (fonctionnent en français ET en anglais)
-| Nom | Idée | Recommandation |
-|---|---|---|
-| **Solvie** | *sol* (soleil) + *vie* — court, doux, facile à prononcer partout | ⭐ Mon premier choix |
-| **Lueur** | Mot français simple, chaleureux ; reste joli en anglais | Très fort au Québec, un peu moins aux É.‑U. |
-| **Aube & Co.** | L'aube = le matin = le moment d'usage | Bon pour la gamme réveil + lampe |
-| **Nordlys** | « Aurore boréale » en norvégien — évoque le Nord, l'hiver | Original, plus difficile à épeler |
+### 2.1 Nom retenu : Petit Soleil
+Choisi le 23 octobre 2026. Logo, couleurs, typographies, slogans et ton : voir `marque/charte.html`. Les fichiers du
+logo (SVG + PNG) sont dans `marque/logo/`.
 
-**À faire de ton côté :** vérifier que le **.com** et le **.ca** sont libres (sur un registraire comme Namecheap
-ou directement dans Shopify), et qu'aucune marque déposée n'existe déjà (recherche rapide sur
+**À faire de ton côté :** acheter le domaine (idéalement `petitsoleil.co`, `petitsoleil.ca`, `getpetitsoleil.com` ou
+`petitsoleillamp.com` si `petitsoleil.com` est pris) et faire une recherche rapide de marque déposée sur
 [ised-isde.canada.ca](https://ised-isde.canada.ca/cipo/trademark-search/srch) et
-[tmsearch.uspto.gov](https://tmsearch.uspto.gov)). Je n'ai pas pu vérifier les domaines depuis mon environnement.
+[tmsearch.uspto.gov](https://tmsearch.uspto.gov).
 
 ### 2.2 Positionnement
 - **Promesse :** « La lumière du jour, même en janvier. » / *"Daylight, even in January."*
@@ -143,7 +140,7 @@ Thank you,
 | Avis clients | **Judge.me** | Gratuit / ~15 $ US par mois |
 | Courriels | **Klaviyo** ou **Shopify Email** | Gratuit au début |
 | Paiement | Shopify Payments + PayPal + Apple Pay / Google Pay | ~2,9 % + 0,30 $ |
-| Domaine | solvie.com (ou autre) | ~20 $ US/an |
+| Domaine | petitsoleil.ca / .co (ou variante) | ~20 $ US/an |
 
 ---
 
@@ -295,11 +292,11 @@ ou de produit (plan B : réveil simulateur d'aube vendu seul) plutôt que d'insi
 
 ## 10. Prochaine étape — ce que j'attends de toi
 
-1. **Nom** : Solvie, Lueur, Aube & Co., Nordlys, ou une autre idée ?
+1. ~~Nom~~ → **Petit Soleil** ✅
 2. Acheter le **domaine** et créer le compte **Shopify** (je te guide écran par écran au besoin).
-3. Créer le compte **CJ Dropshipping** et m'envoyer les liens des 3 lampes en entrepôt US que je t'aurai
-   présélectionnées. Je peux aussi te guider pendant que tu cherches.
+3. ~~Créer le compte CJ Dropshipping~~ ✅ → **choisir 3 lampes en entrepôt US** (voir `FOURNISSEUR-CJ.md`)
+   et m'envoyer leurs liens.
 4. Confirmer le **budget publicité** que tu es prêt à mettre au départ.
 
-Dès que j'ai le nom, je produis dans ce dossier : la charte de marque, tous les textes du site (FR + EN), les
+Fait : charte de marque et logo (`marque/`). À venir dans ce dossier : tous les textes du site (FR + EN), les
 politiques, la FAQ, les scripts vidéo et les courriels, prêts à copier dans Shopify.
