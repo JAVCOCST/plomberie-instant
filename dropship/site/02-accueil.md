@@ -13,7 +13,7 @@ Photo : cuisine ou bureau à 6 h 45, fenêtre encore bleue, lampe allumée, tass
 | Titre | La lumière du jour, même en janvier. | Daylight, even in January. |
 | Texte | Il fait noir à 16 h et tu te lèves avant le soleil. Offre-toi 20 minutes de lumière vive avec ton café. | It's dark by 4 p.m. and you're up before the sun. Give yourself 20 minutes of bright light with your morning coffee. |
 | Bouton 1 | Découvrir la lampe | Discover the lamp |
-| Bouton 2 | Voir le Kit Matin | See the Morning Kit |
+| Bouton 2 | Idées cadeaux | Gift ideas |
 
 ## 2. Bandeau de confiance (4 icônes)
 
@@ -48,17 +48,16 @@ EN : "No need to stare at it: it does its thing while you do yours."
 ## 5. Produit vedette (bloc « produit en vedette » de Shopify)
 Produit : **Lampe lumière du jour**. Le texte vient de la fiche produit.
 
-## 6. Kit Matin (image + texte)
+## 6. Duo cadeau (image + texte, mis en avant de novembre à décembre)
 
 | | FR | EN |
 |---|---|---|
-| Petit titre | Le duo du matin | The morning duo |
-| Titre | Le Kit Matin : réveille-toi avec le soleil, même quand il dort encore. | The Morning Kit: wake up with the sun, even when it's still asleep. |
-| Texte | Le réveil d'aube s'allume doucement 30 minutes avant ton alarme, comme un lever de soleil. La lampe prend le relais au déjeuner. Deux objets, une routine. | The sunrise alarm gently brightens 30 minutes before your alarm, like a real sunrise. The lamp takes over at breakfast. Two objects, one routine. |
-| Prix | 99,99 $ au lieu de 109,98 $ | $99.99 instead of $109.98 |
-| Bouton | Voir le Kit Matin | See the Morning Kit |
-
-> Ce bloc dépend de la disponibilité du réveil chez le fournisseur. S'il n'est pas prêt au lancement, le masquer.
+| Petit titre | Idée cadeau | Gift idea |
+| Titre | Offre un petit soleil. Garde l'autre. | Give a little sunshine. Keep one too. |
+| Texte | Pour la personne qui déteste l'hiver (on en connaît tous une). Deux lampes, une pour toi, une à offrir. Facture sans prix et 30 jours pour l'échanger. | For the person who hates winter (we all know one). Two lamps: one for you, one to give. No prices on the slip, and 30 days to exchange it. |
+| Prix | 119,99 $ au lieu de 139,98 $ | $119.99 instead of $139.98 |
+| Note | Commande avant le 4 décembre pour l'avoir à Noël. | Order by December 4 for Christmas delivery. |
+| Bouton | Voir le Duo cadeau | See the Gift Duo |
 
 ## 7. Avis clients
 Titre — FR : « Ils ont retrouvé leurs matins » · EN : "Brighter mornings, in their words"
@@ -66,18 +65,10 @@ Titre — FR : « Ils ont retrouvé leurs matins » · EN : "Brighter mornings, 
 > **Ne jamais inventer d'avis.** Au lancement, masquer ce bloc. Importer ou afficher les avis réels via Judge.me dès
 > les premières commandes (courriel de demande d'avis à J+14, voir `../marketing/courriels.md`).
 
-## 8. Idée cadeau (bannière, novembre–décembre)
-
-| | FR | EN |
-|---|---|---|
-| Titre | Offre un petit soleil. | Give a little sunshine. |
-| Texte | Pour la personne qui déteste l'hiver (on en connaît tous une). Emballage soigné, facture sans prix, et 30 jours pour l'échanger. | For the person who hates winter (we all know one). Carefully packed, no prices on the slip, and 30 days to exchange it. |
-| Bouton | Idées cadeaux | Gift ideas |
-
-## 9. FAQ courte (4 questions, lien vers la FAQ complète)
+## 8. FAQ courte (4 questions, lien vers la FAQ complète)
 Reprendre les questions 1, 2, 5 et 9 de `06-faq.md`. Lien : « Toutes les questions » / "All questions".
 
-## 10. Infolettre (bloc pleine largeur)
+## 9. Infolettre (bloc pleine largeur)
 
 | | FR | EN |
 |---|---|---|

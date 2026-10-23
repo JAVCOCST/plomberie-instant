@@ -9,15 +9,14 @@
 | 🎁 Commande avant le 4 décembre pour l'avoir à Noël | 🎁 Order by December 4 for Christmas delivery |
 
 > Période Black Friday (20 nov. – 1er déc.) : remplacer le 1er message par
-> **FR :** « Black Friday : −20 % sur le Kit Matin, jusqu'au 1er décembre » ·
-> **EN :** "Black Friday: 20% off the Morning Kit, until December 1"
+> **FR :** « Black Friday : le Duo cadeau à 99,99 $, jusqu'au 1er décembre » ·
+> **EN :** "Black Friday: the Gift Duo for $99.99, until December 1"
 
 ## Menu principal
 
 | FR | EN | Lien |
 |---|---|---|
 | La lampe | The lamp | /products/lampe-lumiere-du-jour |
-| Kit Matin | Morning Kit | /products/kit-matin |
 | Idées cadeaux | Gift ideas | /collections/cadeaux |
 | Notre histoire | Our story | /pages/notre-histoire |
 | FAQ | FAQ | /pages/faq |
@@ -30,8 +29,8 @@ Icônes à droite : recherche, compte, panier. Sélecteur de langue : **FR / EN*
 - FR : Des objets simples pour ramener la lumière du jour dans la maison. Nés au Québec, pensés pour les longs hivers.
 - EN : Simple things that bring daylight back into your home. Born in Québec, made for long winters.
 
-**Colonne 2 — Boutique / Shop** : La lampe · Kit Matin · Idées cadeaux · Carte-cadeau
-*(EN : The lamp · Morning Kit · Gift ideas · Gift card)*
+**Colonne 2 — Boutique / Shop** : La lampe · Duo cadeau · Idées cadeaux · Carte-cadeau
+*(EN : The lamp · Gift Duo · Gift ideas · Gift card)*
 
 **Colonne 3 — Aide / Help** : FAQ · Suivre ma commande · Livraison · Retours et remboursements · Garantie · Nous joindre
 *(EN : FAQ · Track my order · Shipping · Returns & refunds · Warranty · Contact us)*
@@ -56,7 +55,7 @@ Icônes à droite : recherche, compte, panier. Sélecteur de langue : **FR / EN*
 | Panier vide | Ton panier est vide. Un peu de soleil ? | Your cart is empty. Need some sunshine? |
 | Bouton panier vide | Voir la lampe | See the lamp |
 | Ligne de réassurance | Livraison gratuite · Retour 30 jours · Garantie 1 an | Free shipping · 30-day returns · 1-year warranty |
-| Suggestion (si lampe seule) | Passe au **Kit Matin** et ajoute le réveil d'aube pour 30 $ de plus. | Upgrade to the **Morning Kit** and add the sunrise alarm for just $30 more. |
+| Suggestion (si lampe seule) | Passe au **Duo cadeau** : une 2e lampe à offrir pour 50 $ de plus (économise 20 $). | Upgrade to the **Gift Duo**: a 2nd lamp to give for just $50 more (save $20). |
 | Bouton | Passer à la caisse | Checkout |
 | Note cadeau (case) | C'est un cadeau (facture sans prix dans la boîte) | This is a gift (no prices on the packing slip) |
 

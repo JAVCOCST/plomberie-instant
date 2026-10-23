@@ -4,7 +4,7 @@ Dès que la lampe est entre tes mains. Un téléphone récent suffit, en mode po
 Style : voir la charte (section 07 « Photos ») : bois clair, laine, tasse, fenêtre bleue dehors, lampe **toujours allumée**.
 
 ## Matériel
-- La lampe (+ le réveil si Kit Matin)
+- La lampe (idéalement 2, pour les photos du Duo cadeau)
 - Une table en bois ou un comptoir clair, une tasse en céramique, un livre, un plaid en laine, une petite plante
 - Un grand carton blanc ou un drap crème (fond produit)
 - Moment idéal : **entre 6 h 30 et 7 h 30** (ciel bleu foncé dehors) ou vers 16 h (crépuscule)
@@ -24,7 +24,7 @@ Style : voir la charte (section 07 « Photos ») : bois clair, laine, tasse, fen
 10. Plaid + livre + lampe, coin lecture
 11. Comptoir de cuisine, déjeuner des enfants (sans visages si pas d'autorisation)
 12. Lampe emballée en cadeau, ruban, sous le sapin
-13. Réveil d'aube sur la table de chevet, lumière orangée (si Kit Matin)
+13. Duo cadeau : deux lampes, une emballée avec un ruban, l'autre allumée sur la table
 14. Plan large de la pièce dans le noir, seule la lampe éclaire (contraste fort)
 
 ## Vidéos (9:16)

@@ -143,10 +143,10 @@ l'angle, la page produit ou le produit.
 | Période | Message principal |
 |---|---|
 | Lancement → 19 nov. | « Il est 7 h », routine du matin (vidéos 1, 2, 3) |
-| 20 nov. → 1er déc. | Black Friday (−15 % lampe / −20 % Kit Matin) + vidéos gagnantes |
+| 20 nov. → 1er déc. | Black Friday (lampe −15 % / Duo cadeau à 99,99 $) + vidéos gagnantes |
 | 2 → 4 déc. | Urgence Noël : « Dernière chance pour Noël » |
 | 5 → 24 déc. | Carte-cadeau numérique |
 | Janvier → février | « Janvier est long » : le vrai pic d'usage |
 
-> Marge en Black Friday : lampe à 59,49 $ (−15 %) ≈ 21 $ de marge. Le coût par achat doit rester sous ~18 $ pendant
-> cette période, sinon ne pas augmenter les budgets.
+> Marges en Black Friday : lampe à 59,49 $ (−15 %) ≈ 21 $ ; Duo à 99,99 $ ≈ 35 $. Le coût par achat doit rester sous
+> ~18 $ pendant cette période, sinon ne pas augmenter les budgets. Mettre le Duo en avant dans les pubs « cadeau ».

@@ -94,7 +94,7 @@ Les textes à coller sont dans `site/` et `politiques/` ; le logo dans `marque/l
 
 **Accueil** : construire les sections dans l'ordre de `site/02-accueil.md`
 (Bannière avec image → Texte avec icônes (4 colonnes) → Image avec texte → Colonnes multiples (3 étapes) →
-Produit en vedette → Image avec texte (Kit Matin) → Bannière (cadeau) → Contenu réductible (FAQ) → Inscription à la
+Produit en vedette → Image avec texte (Duo cadeau) → Contenu réductible (FAQ) → Inscription à la
 newsletter).
 
 **En-tête / pied de page** : barre d'annonce et menus de `site/01-elements-globaux.md`.
@@ -113,7 +113,8 @@ newsletter).
 4. [ ] Vérifier dans QKsource que la variante Shopify est bien **liée** au SKU fournisseur (sinon les commandes ne
        partiront pas automatiquement).
 5. [ ] Traduire la fiche en anglais (Translate & Adapt).
-6. [ ] Kit Matin et Duo cadeau : à ajouter **quand le réveil est confirmé** (voir `site/04-produit-kit-matin.md`).
+6. [ ] Ajouter l'option **Offre** : Lampe seule (69,99 $) et Duo cadeau (119,99 $, 2 lampes côté QKsource). Voir
+       `site/04-produit-duo-cadeau.md`.
 
 ## Étape 12 — Pages et menus (30 min)
 **Boutique en ligne → Pages** : créer
@@ -141,7 +142,7 @@ site et nuisent à la confiance.
 - [ ] **Paramètres → Notifications** : traduire et personnaliser « Confirmation de commande » et « Confirmation
       d'expédition » (`marketing/courriels.md`, section C). Mettre le logo et la couleur `#1E2A3A`.
 - [ ] **Shopify Email → Automatisations** : créer « Bienvenue » (A1–A3) et « Panier abandonné » (B1–B3).
-- [ ] **Remises** : créer `SOLEIL10` (10 %, 1re commande, 1 utilisation par client), `REVIENS10` (10 %).
+- [ ] **Remises** : créer `SOLEIL10` (10 %, 1re commande, 1 utilisation par client), `REVIENS10` (10 %), `AMI15` (15 %).
 
 ## Étape 15 — Tests (45 min) ✅ ne pas sauter
 - [ ] Ouvrir le site sur **téléphone** (la majorité des acheteurs) : accueil, fiche produit, panier, FAQ, en FR et en EN.

@@ -8,7 +8,7 @@ Chaque fichier = une page ou un groupe d'éléments. Les blocs sont dans l'ordre
 | `01-elements-globaux.md` | Barre d'annonce, menu, pied de page, panier, référencement (SEO) |
 | `02-accueil.md` | Page d'accueil |
 | `03-produit-lampe.md` | Fiche produit : la lampe |
-| `04-produit-kit-matin.md` | Fiche produit : Kit Matin et Duo cadeau |
+| `04-produit-duo-cadeau.md` | Offres : lampe seule, Duo cadeau, collection cadeaux |
 | `05-notre-histoire.md` | Page « Notre histoire » |
 | `06-faq.md` | Questions fréquentes |
 | `07-contact-suivi.md` | Contact et suivi de commande |

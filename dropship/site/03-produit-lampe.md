@@ -4,7 +4,7 @@
 - **Prix :** 69,99 $ CA · **Prix barré (compare at) :** aucun. On ne crée pas de faux rabais.
 - **Fournisseur :** QKsource, SKU `QSHD242056202BY`, variante SK40 DC, prise US
 - **Poids d'expédition :** 0,61 kg (+ boîte, à confirmer)
-- **Variantes affichées (via sélecteur d'offre) :** Lampe seule · Kit Matin · Duo cadeau → voir `04-produit-kit-matin.md`
+- **Variantes affichées (via sélecteur d'offre) :** Lampe seule · Duo cadeau → voir `04-produit-duo-cadeau.md`
 
 ---
 

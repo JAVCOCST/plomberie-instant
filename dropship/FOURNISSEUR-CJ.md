@@ -14,7 +14,8 @@ Dans la barre de recherche de CJ (cjdropshipping.com), essayer ces recherches un
 3. `SAD light lamp`
 4. `sunlight therapy lamp`
 
-Pour le produit d'appoint (réveil) : `sunrise alarm clock` et `wake up light`.
+Produit d'appoint (plus tard) : un réveil d'aube **avec prise nord-américaine ou USB** (`sunrise alarm clock USB`). Le
+modèle trouvé chez QKsource n'existe qu'en prise européenne : écarté.
 
 ## Étape 2 — Filtrer
 
@@ -65,7 +66,6 @@ stock and shipping to Canada and the USA. Please also confirm measured lux and d
 ## Étape 6 — Commander les échantillons
 
 - Une fois les 3 modèles choisis : **Add to cart → Sample order** (ou commande normale d'une unité) livrée **chez toi**.
-- Ajouter **1 réveil d'aube** pour le Kit Matin.
 - Prévoir un **luxmètre** (environ 20 $ sur Amazon) pour mesurer les lux à 30 cm à la réception.
 
 Quand ils arrivent : on les teste ensemble avec la grille de la section 3 de `PLAN.md`, et tu en profites pour

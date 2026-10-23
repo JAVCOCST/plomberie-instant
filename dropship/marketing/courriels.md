@@ -220,22 +220,22 @@ Ajouter au modèle standard, après le récapitulatif :
 > Règle : on demande un avis à **tous** les clients, pas seulement aux satisfaits, et on n'offre rien en échange d'un
 > avis positif.
 
-### C5 — 21 jours après la livraison (si l'achat était la lampe seule)
-- **Objet FR :** Et si le soleil se levait avant toi ? · **Subject EN:** What if the sun rose before you did?
+### C5 — 21 jours après la livraison : « Qui d'autre aurait besoin de soleil ? »
+- **Objet FR :** Tu connais quelqu'un qui déteste l'hiver ? · **Subject EN:** Know someone who hates winter?
 
 **FR**
-> Ta lampe s'occupe du café. Le **réveil d'aube** s'occupe du réveil : il s'allume doucement 30 minutes avant ton alarme,
-> comme un vrai lever de soleil. Pour nos clients : 15 % avec le code **AUBE15**.
+> Si ton petit soleil t'aide à passer l'hiver, il y a sûrement quelqu'un autour de toi qui en aurait besoin aussi.
+> Pour nos clients : 15 % sur une lampe à offrir, avec le code **AMI15**. On peut la livrer directement chez la
+> personne, avec une facture sans prix.
 >
-> [Voir le réveil d'aube]
+> [Offrir un petit soleil]
 
 **EN**
-> Your lamp takes care of coffee time. The **sunrise alarm** takes care of waking up: it gently lights up 30 minutes
-> before your alarm, like a real sunrise. For our customers: 15% off with code **AUBE15**.
+> If your little sunshine is helping you through winter, there's probably someone around you who could use one too.
+> For our customers: 15% off a lamp to give, with code **AMI15**. We can ship it straight to them, with no prices on
+> the slip.
 >
-> [See the sunrise alarm]
-
-> C5 seulement quand le réveil est offert.
+> [Give a little sunshine]
 
 ---
 
@@ -243,7 +243,7 @@ Ajouter au modèle standard, après le récapitulatif :
 
 | Date d'envoi | Sujet FR | Subject EN | Contenu |
 |---|---|---|---|
-| 20 nov. | Le Black Friday commence (en douceur) | Black Friday starts (gently) | −20 % Kit Matin / −15 % lampe, jusqu'au 1er déc. |
+| 20 nov. | Le Black Friday commence (en douceur) | Black Friday starts (gently) | Lampe à 59,49 $ (−15 %) / Duo cadeau à 99,99 $, jusqu'au 1er déc. |
 | 27 nov. | C'est aujourd'hui ☀️ | It's today ☀️ | Rappel Black Friday |
 | 1er déc. | Derniers jours des rabais + date limite de Noël | Last days of the sale + Christmas deadline | Rappel du 4 décembre |
 | 3 déc. | Plus que 24 h pour l'avoir à Noël | 24 hours left for Christmas delivery | Carte-cadeau en plan B |

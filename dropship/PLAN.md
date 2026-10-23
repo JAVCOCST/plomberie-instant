@@ -13,12 +13,12 @@
 | Élément | Décision proposée |
 |---|---|
 | Produit vedette | Lampe « lumière du jour » 10 000 lux, sans UV, format bureau, minuterie |
-| Produit d'appoint | Réveil simulateur d'aube (matins noirs) — vendu en ensemble « Kit Matin » |
+| Offre panier moyen | **Duo cadeau** (2 lampes) — le réveil d'aube est abandonné (prise européenne seulement) |
 | Marchés | Canada (FR + EN) et États-Unis (EN) |
 | Marque | **Petit Soleil** — « La lumière du jour, même en janvier. » (charte : `marque/charte.html`) |
 | Plateforme | Shopify (Basic) + Shopify Markets (CAD / USD) |
 | Fournisseur | CJ Dropshipping, entrepôt **États-Unis** (droits de douane déjà payés, livraison 3–7 jours) |
-| Prix de vente | 69,99 $ CA / 49,99 $ US — Kit Matin 99,99 $ CA / 74,99 $ US |
+| Prix de vente | 69,99 $ CA / 49,99 $ US — Duo cadeau 119,99 $ CA / 89,99 $ US |
 | Lancement visé | **10 novembre 2026**, avant le Black Friday (27 nov.) et Noël |
 | Budget de départ | 3 000 – 4 500 $ CA, dont ~2 000 $ de publicité test |
 
@@ -36,15 +36,15 @@ Ce qu'on exige du modèle choisi (à vérifier sur échantillon, pas sur la fich
   Pas de batterie au lithium (simplifie l'expédition).
 - Design sobre (blanc / bois clair), car c'est la photo qui vend.
 
-### 1.2 Produit d'appoint — Réveil simulateur d'aube
-Augmente le panier moyen et prolonge la saison. Vendu seul (39,99 $ CA / 29,99 $ US) ou dans le **Kit Matin**.
+### 1.2 Produit d'appoint — abandonné pour l'instant
+Le réveil simulateur d'aube trouvé chez QKsource n'existe qu'en prise européenne : écarté (23 oct.). Le **Duo cadeau**
+joue le rôle d'offre à panier plus élevé. On cherchera plus tard un réveil avec prise nord-américaine ou USB.
 
 ### 1.3 Structure de l'offre
 | Offre | Canada | États-Unis | Rôle |
 |---|---|---|---|
 | Lampe seule | 69,99 $ | 49,99 $ | Produit d'entrée |
-| **Kit Matin** (lampe + réveil) | 99,99 $ | 74,99 $ | Meilleure marge par commande — mettre en avant |
-| Duo cadeau (2 lampes) | 119,99 $ | 89,99 $ | Noël / « une pour toi, une à offrir » |
+| **Duo cadeau** (2 lampes) | 119,99 $ | 89,99 $ | Meilleure marge par commande (~55 $) — mettre en avant pour Noël |
 
 Livraison gratuite partout (intégrée dans le prix). Garantie 1 an + retour 30 jours.
 
@@ -59,8 +59,8 @@ Livraison gratuite partout (intégrée dans le prix). Garantie 1 an + retour 30 
 | Coût d'acquisition max (seuil de rentabilité) | 33 $ | 26 $ |
 | Objectif de coût d'acquisition | ≤ 20 $ | ≤ 16 $ |
 
-Le **Kit Matin** ajoute environ 15–20 $ de marge pour un coût d'acquisition presque identique. C'est lui qui rend
-la pub rentable.
+Le **Duo cadeau** rapporte environ 55 $ de marge pour un coût d'acquisition presque identique. C'est lui qui rend
+la pub rentable en novembre–décembre.
 
 ### 1.5 Pourquoi un entrepôt américain et pas la Chine en direct
 - Depuis 2025, les États-Unis n'exemptent plus les petits colis (fin du « de minimis » à 800 $). Les produits
@@ -148,9 +148,9 @@ Thank you,
 
 ### 5.1 Pages
 1. **Accueil** — bannière (photo matin d'hiver + promesse), problème (« Il fait noir à 16 h »), la lampe,
-   comment ça marche en 3 étapes, avis, Kit Matin, garantie, FAQ courte, inscription courriel.
+   comment ça marche en 3 étapes, avis, Duo cadeau, garantie, FAQ courte, inscription courriel.
 2. **Page produit** (la plus importante, détail ci‑dessous).
-3. **Kit Matin** (page produit de l'ensemble).
+3. **Idées cadeaux** (collection : Duo cadeau, lampe, carte-cadeau).
 4. **Notre histoire** — marque née au Québec, pensée pour les hivers du Nord.
 5. **FAQ**.
 6. **Suivi de commande**.
@@ -159,7 +159,7 @@ Thank you,
 
 ### 5.2 Page produit — sections dans l'ordre
 1. Galerie : 6–8 photos + 1 vidéo de 15 s (pièce sombre → lampe allumée).
-2. Titre, ★ avis, prix, **sélecteur Lampe seule / Kit Matin / Duo cadeau** (Kit Matin présélectionné).
+2. Titre, ★ avis, prix, **sélecteur Lampe seule / Duo cadeau**.
 3. 4 points clés avec icônes : 10 000 lux · Sans UV · Minuterie · Prête en 30 secondes.
 4. Bandeau de confiance : livraison gratuite 3–7 jours · retour 30 jours · garantie 1 an · paiement sécurisé.
 5. « Pourquoi ça fait du bien » : le matin, 20–30 minutes de lumière vive pendant le café ou les courriels.
@@ -235,7 +235,7 @@ santé si vous avez une condition médicale ou des troubles oculaires. »
 - **5 vidéos courtes (9:16, 15–30 s)** :
   1. « Il est 7 h et il fait noir. » → on allume la lampe.
   2. La routine du matin : café + lampe + courriels, 20 minutes.
-  3. Déballage du Kit Matin.
+  3. Déballage de la lampe.
   4. « 3 choses que je fais pour survivre à l'hiver au Québec » (la lampe est la n° 2).
   5. Idée cadeau : « Pour la personne qui déteste l'hiver ».
 - Option : 2–3 créateurs UGC (Billo, Insense, TikTok Creator Marketplace), ~100–200 $ par vidéo.
@@ -253,7 +253,7 @@ Ensuite, on ajoute TikTok Ads et **Google Shopping** (les gens cherchent déjà 
 ### 7.3 Courriels automatiques (Klaviyo / Shopify Email)
 1. Bienvenue (−10 % sur la 1re commande).
 2. Panier abandonné (3 courriels : 1 h, 24 h, 48 h).
-3. Après l'achat : comment bien l'utiliser (J+3), demande d'avis (J+14), offre réveil d'aube (J+21).
+3. Après l'achat : comment bien l'utiliser (J+3), demande d'avis (J+14), offre « une lampe à offrir » (J+21).
 
 ### 7.4 Calendrier des fêtes 2026
 - **Black Friday : vendredi 27 novembre** · Cyber Monday : 30 novembre.
@@ -277,7 +277,7 @@ Ensuite, on ajoute TikTok Ads et **Google Shopping** (les gens cherchent déjà 
 | Poste | Montant |
 |---|---|
 | Shopify (2 premiers mois) + domaine | 30 – 120 $ |
-| Échantillons (3 modèles + réveil) | 150 – 250 $ |
+| Échantillons (1 à 3 lampes) | 50 – 150 $ |
 | Luxmètre + accessoires photo | 50 $ |
 | Applis (2 mois) | 0 – 80 $ |
 | Créateurs UGC (optionnel) | 0 – 600 $ |
@@ -286,7 +286,7 @@ Ensuite, on ajoute TikTok Ads et **Google Shopping** (les gens cherchent déjà 
 | **Total** | **~2 300 – 4 100 $** |
 
 **Règle d'arrêt :** si après ~1 000 $ de publicité aucune pub ne descend sous 30 $ par achat, on change d'angle
-ou de produit (plan B : réveil simulateur d'aube vendu seul) plutôt que d'insister.
+(routine du matin ↔ cadeau), de page produit ou de produit plutôt que d'insister.
 
 ---
 
@@ -319,3 +319,7 @@ Marge estimée par lampe à 69,99 $ CA : 69,99 − 36 (produit + livraison) − 
 moins les droits de douane éventuels (à confirmer : la ligne est-elle DDP ?).
 
 Conséquence pour Noël : avec jusqu'à 18 jours de délai, la date limite « livré avant Noël » est vers le **4 décembre**.
+
+### 23 oct. 2026 — Réveil d'aube abandonné
+Le réveil d'aube (2e variante chez QKsource) n'existe qu'en prise européenne. **Kit Matin retiré partout.** Offres :
+lampe seule (69,99 $) et **Duo cadeau** (119,99 $, 2 lampes, ~55 $ de marge), mis en avant pour Noël.
