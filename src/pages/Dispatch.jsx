@@ -550,7 +550,7 @@ export default function Dispatch() {
                         .sort((x, y) => (x.heure || "") < (y.heure || "") ? -1 : 1);
                       return (
                         <div className="dv-col" key={pl.id}>
-                          <div className="dv-head">
+                          <div className="dv-head plombier">
                             <button className="emp-link" onClick={() => setSelected(pl)}>
                               <span className="emp-avatar sm">{pl.name.charAt(0)}</span>{pl.name}
                             </button>
@@ -598,7 +598,7 @@ export default function Dispatch() {
                     {viewMode === "employees"
                       ? plombiers.map((pl) => (
                           <tr key={pl.id}>
-                            <td className="cal-row-head">
+                            <td className="cal-row-head plombier">
                               <button className="emp-link" onClick={() => setSelected(pl)}>
                                 <span className="emp-avatar sm">{pl.name.charAt(0)}</span>{pl.name}
                               </button>

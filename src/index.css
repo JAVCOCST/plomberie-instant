@@ -1964,6 +1964,9 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
   padding: 0.6rem 0.8rem; min-width: 160px; font-weight: 600;
 }
 .cal-row-head .emp-link { color: #0c4a6e; }
+/* En-tete plombier : meme bleu nuit que le menu de gauche */
+.cal-row-head.plombier { background: var(--side-bg); color: #fff; }
+.cal-row-head.plombier .emp-link { color: #fff; }
 
 .day-cell { vertical-align: top; padding: 5px; min-width: 150px; height: 62px; }
 .day-cell.over { background: rgba(71, 85, 105, 0.14); }
@@ -1984,6 +1987,9 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
   color: #0c4a6e; font-weight: 600; padding: 0 0.4rem;
 }
 .dv-head .emp-link { color: #0c4a6e; }
+/* En-tete plombier (vue Jour) : meme bleu nuit que le menu de gauche */
+.dv-head.plombier { background: var(--side-bg); border-bottom-color: rgba(255, 255, 255, 0.12); }
+.dv-head.plombier .emp-link { color: #fff; }
 .dv-corner {
   font-size: 0.72rem; color: #0c4a6e; text-transform: uppercase; letter-spacing: 0.04em;
 }
