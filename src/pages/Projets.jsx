@@ -153,7 +153,7 @@ export default function Projets() {
             const photo = Array.isArray(p.photos) && p.photos.length > 0 ? p.photos[0] : null;
             const nb = counts[p.id] || 0;
             return (
-              <div key={p.id} className={`proj-row ${p._status} ${p.is_soumission ? "soumission" : ""}`}
+              <div key={p.id} className={`proj-row ${p._status} ${p.call_type === "soumission" ? "soumission" : p.call_type === "contrat" ? "contrat" : ""}`}
                 onPointerDown={(e) => onCardPointerDown(e, p)}
                 onClick={() => setModal(p)}
                 title="Glisse-moi vers Dispatch, à gauche, pour me placer au calendrier">
@@ -163,7 +163,8 @@ export default function Projets() {
                 <div className="proj-row-main">
                   <div className="proj-row-top">
                     <span className="proj-row-name">{p.name}</span>
-                    {p.is_soumission && <span className="proj-pill soumission">Soumission</span>}
+                    {p.call_type === "soumission" && <span className="proj-pill soumission">Soumission</span>}
+                    {p.call_type === "contrat" && <span className="proj-pill contrat">Contrat</span>}
                     <span className={`proj-pill ${p._status}`}><Icon size={12} /> {STATUS[p._status].label}</span>
                   </div>
                   <div className="proj-row-meta">
@@ -304,8 +305,10 @@ function ProjectEditor({ project, onClose, onSaved }) {
   const [address, setAddress] = useState(project?.address || "");
   const [existing, setExisting] = useState(Array.isArray(project?.photos) ? project.photos : []);
   const [files, setFiles] = useState([]);
+  const [ctype, setCtype] = useState(project?.call_type || "call");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+  const color = ctype === "soumission" ? "#2563eb" : ctype === "contrat" ? "#ff2d95" : "#6d7b8d";
 
   const save = async () => {
     setErr("");
@@ -315,7 +318,7 @@ function ProjectEditor({ project, onClose, onSaved }) {
       let id = project?.id;
       if (!isEdit) {
         const { data, error } = await supabase.from("pi_projets")
-          .insert({ name: name.trim(), address: address || null, color: "#6d7b8d" }).select().single();
+          .insert({ name: name.trim(), address: address || null, color, call_type: ctype, is_soumission: ctype === "soumission" }).select().single();
         if (error) throw error;
         id = data.id;
       }
@@ -329,7 +332,7 @@ function ProjectEditor({ project, onClose, onSaved }) {
         urls.push(supabase.storage.from("bons-photos").getPublicUrl(path).data.publicUrl);
       }
       const { error: uErr } = await supabase.from("pi_projets")
-        .update({ name: name.trim(), address: address || null, photos: urls }).eq("id", id);
+        .update({ name: name.trim(), address: address || null, photos: urls, color, call_type: ctype, is_soumission: ctype === "soumission" }).eq("id", id);
       if (uErr) throw uErr;
       onSaved();
     } catch (e) { setErr(e?.message || "Échec."); setSaving(false); }
@@ -351,6 +354,11 @@ function ProjectEditor({ project, onClose, onSaved }) {
         </div>
         {err && <div className="msg error" style={{ margin: "1rem 1.25rem 0" }}>{err}</div>}
         <div className="modal-section">
+          <div className="soum-toggle-row">
+            <button type="button" className={`soum-tab ${ctype === "call" ? "on" : ""}`} onClick={() => setCtype("call")}>Call (avec bon)</button>
+            <button type="button" className={`soum-tab ${ctype === "soumission" ? "on" : ""}`} onClick={() => setCtype("soumission")}>Soumission</button>
+            <button type="button" className={`soum-tab ${ctype === "contrat" ? "on contrat" : ""}`} onClick={() => setCtype("contrat")}>Contrat</button>
+          </div>
           <div className="fld" style={{ marginBottom: "0.8rem" }}>
             <label>Nom du projet</label>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Rénovation salle de bain — Laval" />

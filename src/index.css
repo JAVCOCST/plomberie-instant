@@ -2476,3 +2476,29 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
   font-size: 0.62rem; font-weight: 800; background: #dbeafe; color: #1d4ed8;
   vertical-align: middle;
 }
+
+/* ===== Type « Contrat » : rose fluo (déjà facturé, aucun bon requis) ===== */
+.soum-tab.on.contrat { background: #ff2d95; color: #fff; border-color: #ff2d95; }
+.emp-soum-badge.contrat { background: #ffe0ef; color: #be185d; }
+.soum-tag.contrat { background: #ffe0ef; color: #be185d; }
+.proj-row.contrat { border-left-color: #ff2d95; }
+.proj-pill.contrat { background: #ffe0ef; color: #be185d; }
+
+.call-entry.contrat {
+  background: #ffe0ef; border: 1px solid #f9a8d4; border-left: 5px solid #ff2d95;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.call-entry.contrat .call-name,
+.call-entry.contrat .call-time { color: #9d174d; }
+.call-entry.contrat.done { background: #fdf2f8; }
+
+/* Sélecteur de type dans le détail d'un call (changer la couleur à la volée) */
+.type-pick { display: flex; gap: 6px; }
+.type-opt {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 10px; border-radius: 9px; cursor: pointer;
+  border: 1px solid var(--border); background: #fff; color: var(--muted);
+  font-size: 0.82rem; font-weight: 700;
+}
+.type-opt.on { border-color: var(--tc); color: var(--tc); background: color-mix(in srgb, var(--tc) 8%, #fff); }
+.type-dot { width: 11px; height: 11px; border-radius: 999px; flex-shrink: 0; }

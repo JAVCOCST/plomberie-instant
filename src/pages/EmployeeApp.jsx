@@ -152,12 +152,15 @@ export default function EmployeeApp({ plombierId }) {
                     const punch = punchFor(a.jour, a.projet_id);
                     const done = punch && punch.heure_fin;
                     const open = punch && !punch.heure_fin;
+                    const noBon = proj?.call_type === "soumission" || proj?.call_type === "contrat";
+                    const borderCol = proj?.call_type === "soumission" ? "#2563eb" : proj?.call_type === "contrat" ? "#ff2d95" : "#94a3b8";
                     return (
-                      <div key={a.id} className="emp-job" style={{ borderLeftColor: proj?.is_soumission ? "#2563eb" : "#94a3b8" }}>
+                      <div key={a.id} className="emp-job" style={{ borderLeftColor: borderCol }}>
                         <div className="emp-job-top">
                           <span className="emp-job-name">
                             {proj?.name || "Projet"}
-                            {proj?.is_soumission && <span className="emp-soum-badge">Soumission</span>}
+                            {proj?.call_type === "soumission" && <span className="emp-soum-badge">Soumission</span>}
+                            {proj?.call_type === "contrat" && <span className="emp-soum-badge contrat">Contrat</span>}
                           </span>
                           <span className="emp-job-per">{a.heure ? a.heure.slice(0, 5) : ""}</span>
                         </div>
@@ -181,9 +184,9 @@ export default function EmployeeApp({ plombierId }) {
                               <CheckCircle2 size={16} /> Terminé · {punch.heure_debut?.slice(0,5)}–{punch.heure_fin?.slice(0,5)} ({fmtHours(hoursBetween(punch.heure_debut, punch.heure_fin))})
                             </span>
                           ) : open ? (
-                            proj?.is_soumission ? (
+                            noBon ? (
                               <button className="emp-btn out" onClick={() => finishBon(punch.id)}>
-                                <CheckCircle2 size={16} /> Punch out — soumission (sans bon)
+                                <CheckCircle2 size={16} /> Punch out — {proj?.call_type === "contrat" ? "contrat" : "soumission"} (sans bon)
                               </button>
                             ) : (
                               <button className="emp-btn out" onClick={() => setBonFor({ projet_id: a.projet_id, punchId: punch.id })}>
@@ -210,7 +213,7 @@ export default function EmployeeApp({ plombierId }) {
                                   onChange={(e) => { addPunchPhotos(punch, e.target.files); e.target.value = ""; }} />
                               </label>
                             </div>
-                            <p className="emp-hint"><Clock size={12} /> Punché à {punch.heure_debut?.slice(0,5)} — {proj?.is_soumission ? "soumission : punche out directement, aucun bon requis." : "ajoute des photos pendant le travail, puis remplis le bon pour puncher out."}</p>
+                            <p className="emp-hint"><Clock size={12} /> Punché à {punch.heure_debut?.slice(0,5)} — {noBon ? `${proj?.call_type === "contrat" ? "contrat" : "soumission"} : punche out directement, aucun bon requis.` : "ajoute des photos pendant le travail, puis remplis le bon pour puncher out."}</p>
                           </>
                         )}
                       </div>

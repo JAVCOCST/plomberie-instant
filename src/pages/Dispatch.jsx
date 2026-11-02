@@ -25,6 +25,13 @@ const PALETTE = [
   "#b08968", "#9c6b4f", "#5f7470", "#a8895c", "#7a6c5d",
 ];
 
+// Type de call → classe CSS et couleur de pastille (réserve / aperçu de glisser)
+// 'soumission' = bleu · 'contrat' = rose fluo (déjà facturé, aucun bon requis) · sinon neutre
+const typeClass = (proj) =>
+  proj?.call_type === "soumission" ? "soumission" : proj?.call_type === "contrat" ? "contrat" : "";
+const typeColor = (proj) =>
+  proj?.call_type === "soumission" ? "#2563eb" : proj?.call_type === "contrat" ? "#ff2d95" : "#64748b";
+
 const hhmm = (t) => (t ? String(t).slice(0, 5) : "");
 const dayKey = (rowId, jour) => `${rowId}|${jour}`;
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -104,7 +111,7 @@ function fmtMin(m) {
   return `${mm}min`;
 }
 
-function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, state, soum, manualDone, onResizeStart, onOpen, onTime, onToggleDone, onRemove }) {
+function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, state, callType, manualDone, onResizeStart, onOpen, onTime, onToggleDone, onRemove }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `asg:${a.id}`, data: { kind: "assignment", assignment: a },
   });
@@ -115,7 +122,7 @@ function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, pu
   const noDrag = (e) => e.stopPropagation();
   return (
     <div ref={setNodeRef} {...listeners} {...attributes}
-      className={`call-entry draggable ${state || "todo"} ${soum ? "soumission" : ""} ${positioned ? "positioned" : ""}`}
+      className={`call-entry draggable ${state || "todo"} ${callType === "soumission" ? "soumission" : callType === "contrat" ? "contrat" : ""} ${positioned ? "positioned" : ""}`}
       style={{ opacity: isDragging ? 0.4 : 1, ...style }}
       onClick={() => onOpen()}>
       <span className="call-grip" title="Déplacer"><GripVertical size={12} /></span>
@@ -188,7 +195,9 @@ export default function Dispatch() {
     if (data) setPlombiers(data);
   };
   const reloadProjects = async () => {
-    const { data } = await supabase.from("pi_projets").select("*").neq("status", "termine").order("created_at");
+    // On charge TOUS les projets (même terminés) : un call terminé doit rester
+    // visible dans l'horaire (en vert). La réserve, elle, exclut les terminés.
+    const { data } = await supabase.from("pi_projets").select("*").order("created_at");
     if (data) setProjects(data);
   };
   const updateProjectColor = async (projetId, color) => {
@@ -208,7 +217,7 @@ export default function Dispatch() {
       setLoading(true);
       const [pl, pr, as] = await Promise.all([
         supabase.from("pi_plombiers").select("*").neq("active", false).order("created_at"),
-        supabase.from("pi_projets").select("*").neq("status", "termine").order("created_at"),
+        supabase.from("pi_projets").select("*").order("created_at"),
         supabase.from("pi_assignations").select("id,plombier_id,projet_id,jour,heure,duree_min,manual_done"),
       ]);
       if (pl.error || pr.error || as.error) { setError("Impossible de charger le dispatch."); setLoading(false); return; }
@@ -261,11 +270,20 @@ export default function Dispatch() {
     return m;
   }, [assignments]);
 
-  // Projets jamais placés (peu importe la semaine) : une fois cédulé, il sort de la réserve
+  // Projets jamais placés (peu importe la semaine) : une fois cédulé, il sort de la réserve.
+  // Les projets terminés n'apparaissent pas dans la réserve.
   const availableProjects = useMemo(() => {
     const placed = new Set(assignments.map((a) => a.projet_id));
-    return projects.filter((p) => !placed.has(p.id));
+    return projects.filter((p) => !placed.has(p.id) && p.status !== "termine");
   }, [projects, assignments]);
+
+  // Projets ayant au moins une affectation (pour la vue Projets, on masque les
+  // terminés sans affectation afin de ne pas encombrer la liste).
+  const assignedPids = useMemo(() => new Set(assignments.map((a) => a.projet_id)), [assignments]);
+  const projectRows = useMemo(
+    () => projects.filter((p) => p.status !== "termine" || assignedPids.has(p.id)),
+    [projects, assignedPids]
+  );
 
   // Vue Jour : assignations du jour groupées par plombier (timeline)
   const dayIso = iso(current);
@@ -404,8 +422,9 @@ export default function Dispatch() {
   // Rend une entrée de call (employees view: projet ; projects view: plombier)
   const todayIso = iso(now);
   // Statut → couleur : jaune (à faire), vert (terminé), rouge (non fait/en retard)
-  const callState = (a, st) => {
+  const callState = (a, st, proj) => {
     if (a.manual_done) return "done";               // marqué vert par l'admin
+    if (proj?.status === "termine") return "done";  // call terminé → reste vert dans l'horaire
     if (st && st.heure_fin) return "done";          // punché out → vert
     if (a.jour < todayIso) return "overdue";        // jour passé, pas terminé → rouge
     if (st) return "live";                           // en cours (sur place)
@@ -423,7 +442,7 @@ export default function Dispatch() {
     return (
       <CallEntry key={a.id} a={a} proj={proj} pl={pl} st={st} mode={mode}
         nowHM={nowHM} positioned={extra?.positioned} style={extra?.style}
-        durMin={extra?.durMin} punched={extra?.punched} state={callState(a, st)} soum={!!proj.is_soumission}
+        durMin={extra?.durMin} punched={extra?.punched} state={callState(a, st, proj)} callType={proj.call_type}
         manualDone={!!a.manual_done}
         onResizeStart={(e) => startResize(e, a)}
         onOpen={() => { if (!justDragged.current) setJobDetail({ punch: st, plombier: pl, projet: proj }); }}
@@ -490,7 +509,7 @@ export default function Dispatch() {
                   {availableProjects.length === 0 && <span className="res-empty">Tous les calls sont placés cette semaine.</span>}
                   {availableProjects.map((p) => (
                     <div className="pool-item" key={p.id}>
-                      <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={p.is_soumission ? "#2563eb" : "#64748b"} label={p.name} />
+                      <Chip id={`proj:${p.id}`} data={{ kind: "project", project: p }} color={typeColor(p)} label={p.name} />
                       {Array.isArray(p.photos) && p.photos.length > 0 && (
                         <img src={p.photos[0]} className="proj-thumb" alt="" onClick={() => setProjectModal(p)} />
                       )}
@@ -594,10 +613,10 @@ export default function Dispatch() {
                             })}
                           </tr>
                         ))
-                      : projects.map((pr) => (
+                      : projectRows.map((pr) => (
                           <tr key={pr.id}>
                             <td className="cal-row-head">
-                              <span className="row-head-name">{pr.name}{pr.is_soumission && <span className="soum-tag">Soum.</span>}</span>
+                              <span className="row-head-name">{pr.name}{pr.call_type === "soumission" && <span className="soum-tag">Soum.</span>}{pr.call_type === "contrat" && <span className="soum-tag contrat">Contrat</span>}</span>
                               <button className="addr-btn set" onClick={() => setProjectModal(pr)} aria-label="Modifier"><Pencil size={13} /></button>
                             </td>
                             {days.map((d) => {
@@ -625,15 +644,15 @@ export default function Dispatch() {
           const st = punchByKey[`${a.plombier_id}|${a.jour}|${a.projet_id}`];
           const geo = callGeometry(a, st);
           return (
-            <div className={`call-entry dragging ${callState(a, st)} ${proj?.is_soumission ? "soumission" : ""}`} style={{ height: geo.height, width: 230, alignItems: "flex-start" }}>
+            <div className={`call-entry dragging ${callState(a, st, proj)} ${typeClass(proj)}`} style={{ height: geo.height, width: 230, alignItems: "flex-start" }}>
               <span className="call-grip"><GripVertical size={12} /></span>
               <span className="call-name" style={{ whiteSpace: "normal" }}>{proj?.name || "Call"}</span>
             </div>
           );
         })() : (
           <div className="disp-chip dragging" style={{
-            background: dragged.kind === "project" ? (dragged.project.is_soumission ? "#2563eb" : "#64748b")
-              : dragged.kind === "assignment" ? (projectById[dragged.assignment.projet_id]?.is_soumission ? "#2563eb" : "#64748b")
+            background: dragged.kind === "project" ? typeColor(dragged.project)
+              : dragged.kind === "assignment" ? typeColor(projectById[dragged.assignment.projet_id])
               : "#334155",
           }}>
             <span className="chip-name">
@@ -651,6 +670,7 @@ export default function Dispatch() {
       )}
       {jobDetail && (
         <JobDetail punch={jobDetail.punch} plombier={jobDetail.plombier} projet={jobDetail.projet}
+          onChanged={reloadProjects}
           onClose={() => setJobDetail(null)} onFinished={() => { reloadProjects(); setJobDetail(null); }} />
       )}
       {projectModal && (
@@ -662,9 +682,23 @@ export default function Dispatch() {
 }
 
 /* Détail d'un call : statut + photos temps réel + terminer */
-function JobDetail({ punch, plombier, projet, onClose, onFinished }) {
+const TYPES = [
+  { v: "call", l: "Call", c: "#6d7b8d" },
+  { v: "soumission", l: "Soumission", c: "#2563eb" },
+  { v: "contrat", l: "Contrat", c: "#ff2d95" },
+];
+
+function JobDetail({ punch, plombier, projet, onChanged, onClose, onFinished }) {
   const [photos, setPhotos] = useState([]);
   const [finishing, setFinishing] = useState(false);
+  const [ctype, setCtype] = useState(projet?.call_type || "call");
+
+  // Changer le type (couleur) du call à la volée — corrige une erreur de saisie
+  const changeType = async (t) => {
+    setCtype(t);
+    await supabase.from("pi_projets").update({ call_type: t, is_soumission: t === "soumission" }).eq("id", projet.id);
+    onChanged && onChanged();
+  };
 
   const finish = async () => {
     setFinishing(true);
@@ -704,6 +738,22 @@ function JobDetail({ punch, plombier, projet, onClose, onFinished }) {
           {projet?.address && <button className="emp-gps" onClick={() => openGps(projet.address)}><Navigation size={14} /> {projet.address}</button>}
         </div>
         <div className="modal-section">
+          <h3>Type de call</h3>
+          <div className="type-pick">
+            {TYPES.map((t) => (
+              <button key={t.v} type="button" className={`type-opt ${ctype === t.v ? "on" : ""}`}
+                onClick={() => changeType(t.v)} style={{ "--tc": t.c }}>
+                <span className="type-dot" style={{ background: t.c }} />{t.l}
+              </button>
+            ))}
+          </div>
+          <p className="page-sub" style={{ margin: "0.5rem 0 0" }}>
+            {ctype === "contrat" ? "Contrat (rose) : déjà facturé, aucun bon requis au punch out."
+              : ctype === "soumission" ? "Soumission (bleu) : aucun bon requis au punch out."
+              : "Call normal : bon de travail requis au punch out."}
+          </p>
+        </div>
+        <div className="modal-section">
           <h3>Photos du chantier {punch && `(${photos.length})`}</h3>
           {!punch ? <p className="page-sub">Le plombier n'a pas encore punché ce call.</p>
             : photos.length === 0 ? <p className="page-sub">Aucune photo pour l'instant — elles s'afficheront ici en direct.</p>
@@ -728,11 +778,12 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
   const [address, setAddress] = useState(project?.address || "");
   const [existing, setExisting] = useState(Array.isArray(project?.photos) ? project.photos : []);
   const [newFiles, setNewFiles] = useState([]);
-  const [isSoum, setIsSoum] = useState(project?.is_soumission || false);
+  const [ctype, setCtype] = useState(project?.call_type || "call");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
-  // Plus de couleur choisie manuellement : bleu pour une soumission, gris neutre sinon.
-  const color = isSoum ? "#2563eb" : "#6d7b8d";
+  const isSoum = ctype === "soumission";
+  // Couleur déduite du type : bleu (soumission), rose (contrat), gris neutre (call).
+  const color = ctype === "soumission" ? "#2563eb" : ctype === "contrat" ? "#ff2d95" : "#6d7b8d";
 
   const save = async () => {
     setErr("");
@@ -741,7 +792,7 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
     try {
       let id = project?.id;
       if (!isEdit) {
-        const { data, error } = await supabase.from("pi_projets").insert({ name: name.trim(), address: address || null, color, is_soumission: isSoum }).select().single();
+        const { data, error } = await supabase.from("pi_projets").insert({ name: name.trim(), address: address || null, color, call_type: ctype, is_soumission: isSoum }).select().single();
         if (error) throw error;
         id = data.id;
       }
@@ -755,7 +806,7 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
         const { data } = supabase.storage.from("bons-photos").getPublicUrl(path);
         urls.push(data.publicUrl);
       }
-      const { error: uErr } = await supabase.from("pi_projets").update({ name: name.trim(), address: address || null, color, photos: urls, is_soumission: isSoum }).eq("id", id);
+      const { error: uErr } = await supabase.from("pi_projets").update({ name: name.trim(), address: address || null, color, photos: urls, call_type: ctype, is_soumission: isSoum }).eq("id", id);
       if (uErr) throw uErr;
       onSaved();
     } catch (e) { setErr(e?.message || "Échec."); setSaving(false); }
@@ -773,17 +824,18 @@ function ProjectModal({ project, paletteIndex, onClose, onSaved }) {
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <span className="proj-dot" style={{ background: color, width: 14, height: 14 }} />
-          <h2>{isEdit ? "Modifier le call" : (isSoum ? "Nouvelle soumission" : "Nouveau call")}</h2>
+          <h2>{isEdit ? "Modifier le call" : (ctype === "soumission" ? "Nouvelle soumission" : ctype === "contrat" ? "Nouveau contrat" : "Nouveau call")}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button>
         </div>
         {err && <div className="msg error" style={{ margin: "1rem 1.25rem 0" }}>{err}</div>}
         <div className="modal-section">
           <div className="soum-toggle-row">
-            <button type="button" className={`soum-tab ${!isSoum ? "on" : ""}`} onClick={() => setIsSoum(false)}>Call (avec bon)</button>
-            <button type="button" className={`soum-tab ${isSoum ? "on" : ""}`} onClick={() => setIsSoum(true)}>Soumission (sans bon)</button>
+            <button type="button" className={`soum-tab ${ctype === "call" ? "on" : ""}`} onClick={() => setCtype("call")}>Call (avec bon)</button>
+            <button type="button" className={`soum-tab ${ctype === "soumission" ? "on" : ""}`} onClick={() => setCtype("soumission")}>Soumission</button>
+            <button type="button" className={`soum-tab ${ctype === "contrat" ? "on contrat" : ""}`} onClick={() => setCtype("contrat")}>Contrat</button>
           </div>
           <div className="fld" style={{ marginBottom: "0.8rem" }}>
-            <label>{isSoum ? "Nom de la soumission" : "Nom du call"}</label>
+            <label>{ctype === "soumission" ? "Nom de la soumission" : ctype === "contrat" ? "Nom du contrat" : "Nom du call"}</label>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Rénovation salle de bain — Laval" />
           </div>
           <div className="fld">
