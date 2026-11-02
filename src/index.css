@@ -2061,8 +2061,15 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 }
 /* Terminé (punché out) → vert pâle */
 .call-entry.done { background: #dcf5e3; border-color: #a7e3b8; border-left-color: #22c55e; }
-/* Non fait / jour passé → rouge pâle (à reglisser sur un autre jour) */
-.call-entry.overdue { background: #fde2e2; border-color: #f4b4b4; border-left-color: #ef4444; }
+/* Non fait / jour passé → rouge plein (bien distinct du rose contrat) */
+.call-entry.overdue { background: #ef4444; border-color: #dc2626; border-left-color: #b91c1c; }
+.call-entry.overdue .call-name,
+.call-entry.overdue .call-time { color: #fff; }
+.call-entry.overdue .call-grip,
+.call-entry.overdue .call-done,
+.call-entry.overdue .call-rm,
+.call-entry.overdue .gps-btn { color: rgba(255, 255, 255, 0.85); }
+.call-entry.overdue .call-dur { color: #fff; }
 
 .call-time {
   width: 70px; flex-shrink: 0; border: none;

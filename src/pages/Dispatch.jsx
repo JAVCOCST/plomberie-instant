@@ -641,7 +641,7 @@ export default function Dispatch() {
                   { label: "À faire", bg: "#fdf3c7", bd: "#eab308" },
                   { label: "En cours (sur place)", bg: "#fdf3c7", bd: "#16a34a", ring: true },
                   { label: "Terminé", bg: "#dcf5e3", bd: "#22c55e" },
-                  { label: "En retard / non fait", bg: "#fde2e2", bd: "#ef4444" },
+                  { label: "En retard / non fait", bg: "#ef4444", bd: "#b91c1c" },
                   { label: "Soumission — sans bon", bg: "#dbeafe", bd: "#2563eb" },
                   { label: "Contrat — déjà facturé, sans bon", bg: "#ffe0ef", bd: "#ff2d95" },
                 ].map((it) => (
