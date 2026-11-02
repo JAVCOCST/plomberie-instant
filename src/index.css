@@ -6,9 +6,10 @@
 
 :root {
   --card: #ffffff;
-  --primary: #111111;
-  --primary-hover: #2b2b2b;
-  --text: #0f172a;
+  --primary: #1b2440;
+  --primary-hover: #28344f;
+  --text: #1a2340;
+  --font-head: "Lora", Georgia, "Times New Roman", serif;
   --muted: #64748b;
   --border: #e2e8f0;
   --field-bg: #f8fafc;
@@ -21,7 +22,7 @@ html,
 body,
 #root {
   height: 100%;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Lato", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: linear-gradient(135deg, #1e293b 0%, #0b1120 100%);
   color: var(--text);
 }
@@ -182,7 +183,9 @@ button:disabled {
 }
 
 .portal h2 {
-  font-size: 1.3rem;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 1.35rem;
   margin-bottom: 0.5rem;
 }
 
@@ -201,15 +204,16 @@ button:disabled {
    ========================================================= */
 
 :root {
-  --app-bg: #f7f8fa;
-  --side-bg: #ffffff;
-  --side-border: #e7ebf0;
+  --app-bg: #f4f5f7;
+  --side-bg: #141a2e;                      /* menu bleu nuit */
+  --side-border: #e7ebf0;                  /* bordures claires (topbar, cartes) */
+  --side-divider: rgba(255, 255, 255, 0.09); /* séparateurs dans le menu sombre */
   --side-width: 264px;
-  --nav-muted: #64748b;
-  --nav-text: #475569;
-  --nav-active-bg: #f1f5f9;
-  --nav-active-text: #0f172a;
-  --accent: #111827;
+  --nav-muted: #7e889f;                    /* libellés de groupe */
+  --nav-text: #c3cbdc;                     /* items du menu */
+  --nav-active-bg: rgba(255, 255, 255, 0.08);
+  --nav-active-text: #ffffff;
+  --accent: #15b2c6;                       /* turquoise Poynt */
 }
 
 .shell {
@@ -223,7 +227,8 @@ button:disabled {
 .sidebar {
   width: var(--side-width);
   background: var(--side-bg);
-  border-right: 1px solid var(--side-border);
+  color: var(--nav-text);
+  border-right: 1px solid var(--side-bg);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -258,8 +263,10 @@ button:disabled {
   align-items: center;
   gap: 0.6rem;
   padding: 1.1rem 1rem;
-  border-bottom: 1px solid var(--side-border);
+  border-bottom: 1px solid var(--side-divider);
 }
+
+.sidebar-brand { color: #fff; }
 
 .sidebar-logo {
   width: 30px;
@@ -364,10 +371,11 @@ button:disabled {
 
 .nav-item.active {
   background: var(--nav-active-bg);
-  color: var(--nav-active-text);
-  font-weight: 600;
+  color: #fff;
+  font-weight: 700;
   border-left-color: var(--accent);
 }
+.nav-item.active .nav-item-icon { color: var(--accent); }
 
 .nav-item-icon {
   flex-shrink: 0;
@@ -376,7 +384,7 @@ button:disabled {
 /* ---------- Pied : déconnexion ---------- */
 .sidebar-foot {
   padding: 0.75rem;
-  border-top: 1px solid var(--side-border);
+  border-top: 1px solid var(--side-divider);
 }
 
 .logout-btn {
@@ -388,15 +396,15 @@ button:disabled {
   padding: 0.6rem 0.7rem;
   background: none;
   color: var(--nav-text);
-  border: 1px solid var(--side-border);
+  border: 1px solid var(--side-divider);
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 500;
 }
 
 .logout-btn:hover {
-  background: #f8fafc;
-  color: var(--nav-active-text);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 /* ---------- Colonne principale ---------- */
@@ -449,8 +457,11 @@ button:disabled {
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text);
   margin-bottom: 0.35rem;
 }
 
@@ -997,7 +1008,7 @@ button:disabled {
   padding: 1.1rem 1.25rem;
   border-bottom: 1px solid var(--side-border);
 }
-.modal-head h2 { flex: 1; font-size: 1.15rem; font-weight: 700; }
+.modal-head h2 { flex: 1; font-family: var(--font-head); font-size: 1.2rem; font-weight: 600; }
 .modal-close {
   width: auto;
   background: none;
