@@ -633,6 +633,28 @@ export default function Dispatch() {
                 </table>
               </div>
             )}
+
+            <div className="cal-legend">
+              <span className="cal-legend-title">Légende des couleurs</span>
+              <div className="cal-legend-items">
+                {[
+                  { label: "À faire", bg: "#fdf3c7", bd: "#eab308" },
+                  { label: "En cours (sur place)", bg: "#fdf3c7", bd: "#16a34a", ring: true },
+                  { label: "Terminé", bg: "#dcf5e3", bd: "#22c55e" },
+                  { label: "En retard / non fait", bg: "#fde2e2", bd: "#ef4444" },
+                  { label: "Soumission — sans bon", bg: "#dbeafe", bd: "#2563eb" },
+                  { label: "Contrat — déjà facturé, sans bon", bg: "#ffe0ef", bd: "#ff2d95" },
+                ].map((it) => (
+                  <span className="cal-legend-item" key={it.label}>
+                    <span className="cal-legend-dot" style={{
+                      background: it.bg, borderLeft: `4px solid ${it.bd}`, borderColor: it.bd,
+                      boxShadow: it.ring ? `0 0 0 2px ${it.bd}66` : "none",
+                    }} />
+                    {it.label}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>

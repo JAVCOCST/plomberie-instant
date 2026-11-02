@@ -2477,6 +2477,24 @@ body.proj-dragging, body.proj-dragging * { cursor: grabbing !important; user-sel
   vertical-align: middle;
 }
 
+/* ===== Légende des couleurs sous le calendrier ===== */
+.cal-legend {
+  margin-top: 0.9rem; padding: 0.85rem 1rem; background: #fff;
+  border: 1px solid var(--border); border-radius: 14px;
+}
+.cal-legend-title {
+  display: block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem;
+}
+.cal-legend-items { display: flex; flex-wrap: wrap; gap: 0.55rem 1.1rem; }
+.cal-legend-item {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; font-weight: 600; color: var(--text);
+}
+.cal-legend-dot {
+  width: 26px; height: 16px; border-radius: 5px; border: 1px solid; flex-shrink: 0;
+}
+
 /* ===== Type « Contrat » : rose fluo (déjà facturé, aucun bon requis) ===== */
 .soum-tab.on.contrat { background: #ff2d95; color: #fff; border-color: #ff2d95; }
 .emp-soum-badge.contrat { background: #ffe0ef; color: #be185d; }
