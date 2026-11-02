@@ -2085,6 +2085,14 @@ a.cl-link:hover { color: var(--accent); text-decoration: underline; }
 }
 .call-rm:hover { color: var(--error); }
 
+/* Bouton « marquer terminé » (force le vert) */
+.call-done {
+  width: auto; background: none; border: none; color: #94a3b8;
+  padding: 2px; display: inline-flex; flex-shrink: 0; cursor: pointer;
+}
+.call-done:hover { color: #16a34a; }
+.call-done.on { color: #16a34a; }
+
 /* =========================================================
    PAGE PROJETS (moderne, par statut)
    gris = à dispatcher · jaune = en cours · rouge = terminé

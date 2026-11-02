@@ -104,7 +104,7 @@ function fmtMin(m) {
   return `${mm}min`;
 }
 
-function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, state, soum, onResizeStart, onOpen, onTime, onRemove }) {
+function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, punched, state, soum, manualDone, onResizeStart, onOpen, onTime, onToggleDone, onRemove }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `asg:${a.id}`, data: { kind: "assignment", assignment: a },
   });
@@ -137,6 +137,11 @@ function CallEntry({ a, proj, pl, st, mode, positioned, style, nowHM, durMin, pu
           <Navigation size={12} />
         </button>
       )}
+      <button className={`call-done ${manualDone ? "on" : ""}`} onPointerDown={noDrag}
+        onClick={(e) => { e.stopPropagation(); onToggleDone(); }}
+        title={manualDone ? "Remettre en cours" : "Marquer terminé (vert)"} aria-label="Marquer terminé">
+        <CheckCircle2 size={12} />
+      </button>
       <button className="call-rm" onPointerDown={noDrag}
         onClick={(e) => { e.stopPropagation(); onRemove(); }} aria-label="Retirer">
         <X size={12} />
@@ -204,7 +209,7 @@ export default function Dispatch() {
       const [pl, pr, as] = await Promise.all([
         supabase.from("pi_plombiers").select("*").neq("active", false).order("created_at"),
         supabase.from("pi_projets").select("*").neq("status", "termine").order("created_at"),
-        supabase.from("pi_assignations").select("id,plombier_id,projet_id,jour,heure,duree_min"),
+        supabase.from("pi_assignations").select("id,plombier_id,projet_id,jour,heure,duree_min,manual_done"),
       ]);
       if (pl.error || pr.error || as.error) { setError("Impossible de charger le dispatch."); setLoading(false); return; }
       setPlombiers(pl.data || []);
@@ -321,7 +326,7 @@ export default function Dispatch() {
 
   const addAssignment = async (plombier_id, projet_id, jour, heure = "08:00") => {
     const { data, error: e } = await supabase.from("pi_assignations")
-      .insert({ plombier_id, projet_id, jour, heure }).select("id,plombier_id,projet_id,jour,heure,duree_min").single();
+      .insert({ plombier_id, projet_id, jour, heure }).select("id,plombier_id,projet_id,jour,heure,duree_min,manual_done").single();
     if (e) { setError("Échec de l'ajout du call."); return; }
     setAssignments((prev) => [...prev, data]);
   };
@@ -400,11 +405,15 @@ export default function Dispatch() {
   const todayIso = iso(now);
   // Statut → couleur : jaune (à faire), vert (terminé), rouge (non fait/en retard)
   const callState = (a, st) => {
+    if (a.manual_done) return "done";               // marqué vert par l'admin
     if (st && st.heure_fin) return "done";          // punché out → vert
     if (a.jour < todayIso) return "overdue";        // jour passé, pas terminé → rouge
     if (st) return "live";                           // en cours (sur place)
     return "todo";                                   // à faire → jaune
   };
+
+  // Bascule manuelle vert (terminé) par l'admin, sans punch
+  const toggleDone = (a) => updateAssignment(a.id, { manual_done: !a.manual_done });
 
   const renderEntry = (a, mode, extra) => {
     const proj = projectById[a.projet_id];
@@ -415,9 +424,11 @@ export default function Dispatch() {
       <CallEntry key={a.id} a={a} proj={proj} pl={pl} st={st} mode={mode}
         nowHM={nowHM} positioned={extra?.positioned} style={extra?.style}
         durMin={extra?.durMin} punched={extra?.punched} state={callState(a, st)} soum={!!proj.is_soumission}
+        manualDone={!!a.manual_done}
         onResizeStart={(e) => startResize(e, a)}
         onOpen={() => { if (!justDragged.current) setJobDetail({ punch: st, plombier: pl, projet: proj }); }}
         onTime={(h) => updateAssignmentTime(a.id, h)}
+        onToggleDone={() => toggleDone(a)}
         onRemove={() => removeAssignment(a.id)} />
     );
   };
