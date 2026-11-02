@@ -525,7 +525,7 @@ export default function Dispatch() {
                 <span className="res-label">Plombiers</span>
                 <div className="res-chips">
                   {plombiers.map((p) => (
-                    <Chip key={p.id} id={`plb:${p.id}`} data={{ kind: "plombier", plombier: p }} color="#dce4fb" className="plombier" label={p.name} initials={p.name.charAt(0)} />
+                    <Chip key={p.id} id={`plb:${p.id}`} data={{ kind: "plombier", plombier: p }} color="#141a2e" className="plombier" label={p.name} initials={p.name.charAt(0)} />
                   ))}
                   <button className="mini-add" onClick={addPlombier} aria-label="Ajouter un plombier"><Plus size={16} /></button>
                 </div>
@@ -675,7 +675,7 @@ export default function Dispatch() {
           <div className="disp-chip dragging" style={{
             background: dragged.kind === "project" ? typeColor(dragged.project)
               : dragged.kind === "assignment" ? typeColor(projectById[dragged.assignment.projet_id])
-              : "#334155",
+              : "#141a2e",
           }}>
             <span className="chip-name">
               {dragged.kind === "project" ? dragged.project.name
